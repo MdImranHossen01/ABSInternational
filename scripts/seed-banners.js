@@ -16,7 +16,7 @@ if (fs.existsSync(envPath)) {
 
 if (!mongodbUri) {
   // Fallback if env file doesn't parse correctly
-  mongodbUri = 'mongodb+srv://Climax Apparels:S4Epscw0SOkd5ZtG@cluster0.e5n1hnl.mongodb.net/Climax Apparels';
+  mongodbUri = 'mongodb+srv://ABS International:S4Epscw0SOkd5ZtG@cluster0.e5n1hnl.mongodb.net/ABS International';
 }
 
 console.log('Connecting to MongoDB...');
@@ -84,7 +84,7 @@ const banners = [
     isActive: true,
   },
   {
-    title: 'The Climax Apparels Collection',
+    title: 'The ABS International Collection',
     image: '/assets/images/Banner/gentsity-exclusive-collection-banner.webp',
     link: '/shop',
     primaryBtnText: 'Shop Collection',

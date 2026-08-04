@@ -5,8 +5,8 @@ import { Separator } from '@/components/ui/separator';
 import { ShieldCheck, Info, Share2, Lock, Eye, Bell } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Climax Apparels',
-  description: 'Learn how Climax Apparels collects, uses, and protects your personal information.',
+  title: 'Privacy Policy | ABS International',
+  description: 'Learn how ABS International collects, uses, and protects your personal information.',
 };
 
 async function getSettings() {
@@ -15,9 +15,9 @@ async function getSettings() {
     const settings = await GlobalSettings.findOne().lean();
     if (!settings) {
       return {
-        brandName: "Climax Apparels",
+        brandName: "ABS International",
         contact: {
-          email: "support@climaxapparels.com"
+          email: "support@absinternational.com"
         }
       };
     }
@@ -25,9 +25,9 @@ async function getSettings() {
   } catch (error) {
     console.error('Error fetching settings for privacy page:', error);
     return {
-      brandName: "Climax Apparels",
+      brandName: "ABS International",
       contact: {
-        email: "support@climaxapparels.com"
+        email: "support@absinternational.com"
       }
     };
   }
@@ -36,7 +36,7 @@ async function getSettings() {
 export default async function PrivacyPage() {
   const settings = await getSettings();
   const brandName = settings.brandName || "RPL Market";
-  const contactEmail = settings.contact?.email || "support@climaxapparels.com";
+  const contactEmail = settings.contact?.email || "support@absinternational.com";
   const lastUpdated = "April 04, 2026";
 
   return (

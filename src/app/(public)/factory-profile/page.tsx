@@ -27,8 +27,8 @@ import { Button } from '@/components/ui/button';
 import { CounterSection } from './CounterSection';
 
 export const metadata: Metadata = {
-  title: 'Factory Profile | Climax Apparels',
-  description: 'Climax Apparels - State-of-the-art underwear and apparel manufacturing facility in Dhaka, Bangladesh. Specializing in high-capacity OEM & private label production for global brands.',
+  title: 'Factory Profile | ABS International',
+  description: 'ABS International - State-of-the-art underwear and apparel manufacturing facility in Dhaka, Bangladesh. Specializing in high-capacity OEM & private label production for global brands.',
 };
 
 async function getSettings() {
@@ -37,9 +37,9 @@ async function getSettings() {
     const settings = await GlobalSettings.findOne().lean();
     if (!settings) {
       return {
-        brandName: "Climax Apparels",
+        brandName: "ABS International",
         contact: {
-          email: "info@climaxapparels.com",
+          email: "info@absinternational.com",
           phone: "+8801724-338581",
           address: "Sarkarbari, Helal Market, Uttar Khan, Dhaka, Bangladesh"
         }
@@ -54,8 +54,8 @@ async function getSettings() {
 
 export default async function FactoryProfilePage() {
   const settings = await getSettings();
-  const brandName = settings?.brandName || "Climax Apparels";
-  const contactEmail = settings?.contact?.email || "info@climaxapparels.com";
+  const brandName = settings?.brandName || "ABS International";
+  const contactEmail = settings?.contact?.email || "info@absinternational.com";
   const contactPhone = settings?.contact?.phone || "+8801724-338581";
   const factoryAddress = settings?.contact?.address || "Sarkarbari, Helal Market, Uttar Khan, Dhaka, Bangladesh";
 

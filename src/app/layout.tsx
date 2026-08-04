@@ -102,21 +102,21 @@ export async function generateMetadata(): Promise<Metadata> {
       appleWebApp: {
         capable: true,
         statusBarStyle: 'default',
-        title: settings.brandName || "Climax Apparels",
+        title: settings.brandName || "ABS International",
       },
       formatDetection: {
         telephone: false,
       },
       openGraph: {
-        title: settings.metaTitle || settings.brandName || "Climax Apparels",
+        title: settings.metaTitle || settings.brandName || "ABS International",
         description: settings.metaDescription || settings.brandName || "Your ultimate destination for quality products.",
         url: baseUrl,
-        siteName: settings.brandName || "Climax Apparels",
+        siteName: settings.brandName || "ABS International",
         type: 'website',
       },
       twitter: {
         card: 'summary_large_image',
-        title: settings.metaTitle || settings.brandName || "Climax Apparels",
+        title: settings.metaTitle || settings.brandName || "ABS International",
         description: settings.metaDescription || settings.brandName || "Your ultimate destination for quality products.",
       },
       verification: {
@@ -133,7 +133,7 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   } catch (error) {
     return {
-      title: "Climax Apparels",
+      title: "ABS International",
       description: "Your ultimate destination for quality products.",
     };
   }

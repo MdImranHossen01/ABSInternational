@@ -34,7 +34,7 @@ export default function BlogListingV1({
             Latest Stories & <span className="text-primary italic">Insights</span>
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Product ideas, commerce playbooks, and practical updates from Climax Apparels.
+            Product ideas, commerce playbooks, and practical updates from ABS International.
           </p>
         </div>
 

@@ -5,8 +5,8 @@ import { Separator } from '@/components/ui/separator';
 import { FileText, ShoppingBag, Truck, UserCheck, Scale, HelpCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Terms & Conditions | Climax Apparels',
-  description: 'Understand the terms and conditions for shopping at Climax Apparels.',
+  title: 'Terms & Conditions | ABS International',
+  description: 'Understand the terms and conditions for shopping at ABS International.',
 };
 
 async function getSettings() {
@@ -15,9 +15,9 @@ async function getSettings() {
     const settings = await GlobalSettings.findOne().lean();
     if (!settings) {
       return {
-        brandName: "Climax Apparels",
+        brandName: "ABS International",
         contact: {
-          email: "support@climaxapparels.com",
+          email: "support@absinternational.com",
           phone: "+8801234567890"
         }
       };
@@ -26,9 +26,9 @@ async function getSettings() {
   } catch (error) {
     console.error('Error fetching settings for terms page:', error);
     return {
-      brandName: "Climax Apparels",
+      brandName: "ABS International",
       contact: {
-        email: "support@climaxapparels.com",
+        email: "support@absinternational.com",
         phone: "+8801234567890"
       }
     };
@@ -38,7 +38,7 @@ async function getSettings() {
 export default async function TermsPage() {
   const settings = await getSettings();
   const brandName = settings.brandName || "RPL Market";
-  const contactEmail = settings.contact?.email || "support@climaxapparels.com";
+  const contactEmail = settings.contact?.email || "support@absinternational.com";
   const lastUpdated = "April 04, 2026";
 
   return (

@@ -7,8 +7,8 @@ import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Climax Apparels',
-  description: 'Get in touch with Climax Apparels for any inquiries, support, or feedback.',
+  title: 'Contact Us | ABS International',
+  description: 'Get in touch with ABS International for any inquiries, support, or feedback.',
 };
 
 async function getSettings() {
@@ -17,9 +17,9 @@ async function getSettings() {
     const settings = await GlobalSettings.findOne().lean();
     if (!settings) {
       return {
-        brandName: "Climax Apparels",
+        brandName: "ABS International",
         contact: {
-          email: "support@climaxapparels.com",
+          email: "support@absinternational.com",
           phone: "+8801234567890",
           address: "Dhaka, Bangladesh"
         },
@@ -145,7 +145,7 @@ export default async function ContactPage() {
                 </p>
                 <div className="aspect-video w-full rounded-2xl overflow-hidden shadow-md border bg-muted">
                   <iframe
-                    title="Climax Apparels Location"
+                    title="ABS International Location"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}

@@ -105,7 +105,7 @@ export default function ReviewsSection({ productId }: ReviewsSectionProps) {
             <Badge variant="secondary" className="rounded-full">{reviews.length}</Badge>
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
-            Real feedback from verified Climax Apparels customers.
+            Real feedback from verified ABS International customers.
           </p>
         </div>
 
