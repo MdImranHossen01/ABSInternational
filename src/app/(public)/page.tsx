@@ -1,402 +1,309 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Metadata } from 'next';
-import { ArrowRight, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
-import connectToDatabase from '@/lib/db';
-import Banner from '@/models/Banner';
-import Category from '@/models/Category';
-import Product from '@/models/Product';
-import Blog from '@/models/Blog';
-import FAQ from '@/models/FAQ';
-import GlobalSettings from '@/models/GlobalSettings';
-import Coupon from '@/models/Coupon';
-import dynamic from 'next/dynamic';
-import { HeroSlider } from '@/components/storefront/HeroSlider';
-import { FreeDeliveryBanner } from '@/components/storefront/FreeDeliveryBanner';
-import {
-  SectionSkeleton,
-  CategoryShowcaseSkeleton,
-  BannerSkeleton,
-  BlogRecentSkeleton,
-  FeaturesSectionSkeleton,
-  FAQSectionSkeleton,
-  TestimonialsSkeleton
-} from '@/components/storefront/Skeletons';
-import { Button } from '@/components/ui/button';
+import { 
+  ArrowRight,
+  Target, 
+  Eye, 
+  ShieldCheck, 
+  MapPin, 
+  Award, 
+  HeartHandshake, 
+  Stethoscope, 
+  Heart, 
+  Truck, 
+  Store
+} from 'lucide-react';
 import Link from 'next/link';
-
-import { headers } from 'next/headers';
-import {
-  getCachedBanners,
-  getCachedCategories,
-  getCachedProducts,
-  getTrendingProducts,
-  getCachedBlogs,
-  getCachedFAQs,
-  getCachedSettings,
-  getCachedActiveCoupon
-} from '@/lib/data-fetching';
-import { generateOrganizationSchema } from '@/lib/seo';
-import Script from 'next/script';
-
-const sanitizeForScript = (json: any) => {
-  return JSON.stringify(json).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
-};
+import { getCachedSettings } from '@/lib/data-fetching';
+import HeroBanner from '@/components/storefront/HeroBanner';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [settings, banners] = await Promise.all([
-    getCachedSettings(),
-    getCachedBanners()
-  ]);
-
+  const settings = await getCachedSettings();
   const brandName = settings?.brandName || 'ABS International';
-  const metaTitle = settings?.metaTitle || brandName;
-  const description = settings?.metaDescription || settings?.siteDescription || 'Your ultimate destination for quality products.';
-  const ogImage = banners?.[0]?.image || settings?.logoUrl || '';
-
-  const headersList = await headers();
-  const hostname = headersList.get('host') || 'localhost';
-  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-  const baseUrl = `${protocol}://${hostname}`;
+  const metaTitle = settings?.metaTitle || `${brandName} | MLM & Service Platform`;
+  const description = settings?.metaDescription || settings?.siteDescription || 'Your trusted partner in health, beauty and wellness.';
 
   return {
-    title: {
-      default: metaTitle,
-      template: `%s | ${brandName}`,
-    },
+    title: metaTitle,
     description,
     openGraph: {
       title: brandName,
       description,
-      url: baseUrl,
-      siteName: brandName,
-      images: ogImage ? [ogImage] : [],
       type: 'website',
     },
-    twitter: {
-      card: 'summary_large_image',
-      title: brandName,
-      description,
-      images: ogImage ? [ogImage] : [],
-    },
-    metadataBase: new URL(baseUrl),
   };
-}
-
-// Lazy load components below the fold
-const CategoryShowcase = dynamic(() => import('@/components/storefront/CategoryShowcase').then(mod => mod.CategoryShowcase), {
-  loading: () => <CategoryShowcaseSkeleton />
-});
-
-const ProductCarouselSection = dynamic(() => import('@/components/storefront/ProductCarouselSection').then(mod => mod.ProductCarouselSection), {
-  loading: () => <SectionSkeleton />
-});
-
-const BlogRecent = dynamic(() => import('@/components/storefront/BlogRecent').then(mod => mod.BlogRecent), {
-  loading: () => <BlogRecentSkeleton />
-});
-
-const FAQSection = dynamic(() => import('@/components/storefront/FAQSection').then(mod => mod.FAQSection), {
-  loading: () => <FAQSectionSkeleton />
-});
-
-const Testimonials = dynamic(() => import('@/components/storefront/Testimonials').then(mod => mod.Testimonials), {
-  loading: () => <TestimonialsSkeleton />
-});
-
-const FeaturesSection = dynamic(() => import('@/components/storefront/FeaturesSection').then(mod => mod.FeaturesSection), {
-  loading: () => <FeaturesSectionSkeleton />
-});
-
-const LoyaltyBanner = dynamic(() => import('@/components/storefront/LoyaltyBanner').then(mod => mod.LoyaltyBanner), {
-  loading: () => <BannerSkeleton />
-});
-
-const ComboOfferBanner = dynamic(() => import('@/components/storefront/ComboOfferBanner').then(mod => mod.ComboOfferBanner), {
-  loading: () => <BannerSkeleton />
-});
-
-const NewsletterV2 = dynamic(() => import('@/components/storefront/NewsletterV2').then(mod => mod.NewsletterV2), {
-  loading: () => <BannerSkeleton />
-});
-
-async function getHomeData() {
-  try {
-    const [
-      banners,
-      categories,
-      featuredProducts,
-      newArrivals,
-      flashSale,
-      trending,
-      blogs,
-      faqs,
-      settings,
-      activeCoupon
-    ] = await Promise.all([
-      getCachedBanners(),
-      getCachedCategories(),
-      getCachedProducts({ isFeatured: true }, 10),
-      getCachedProducts({ isNewArrival: true }, 10),
-      getCachedProducts({ salePrice: { $exists: true, $ne: null } }, 10, { salePrice: 1 }),
-      getTrendingProducts(10),
-      getCachedBlogs(1),
-      getCachedFAQs(),
-      getCachedSettings(),
-      getCachedActiveCoupon()
-    ]);
-
-    return {
-      banners,
-      categories,
-      featuredProducts,
-      newArrivals,
-      flashSale,
-      trending,
-      blogs,
-      faqs: faqs && faqs.length > 0 ? faqs : [],
-      settings,
-      activeCoupon
-    };
-  } catch (error) {
-    console.error("Error fetching home data via cache:", error);
-    return {
-      banners: [],
-      categories: [],
-      featuredProducts: [],
-      newArrivals: [],
-      flashSale: [],
-      trending: [],
-      blogs: [],
-      faqs: []
-    };
-  }
 }
 
 export default async function Home() {
-  const data = await getHomeData();
-  const ui = {
-    hero: data.settings?.uiTemplates?.hero || 'v1',
-    categories: data.settings?.uiTemplates?.categories || 'v1',
-    productCard: data.settings?.uiTemplates?.productCard || 'v1',
-    layout: data.settings?.uiTemplates?.layout || 'v1'
-  };
-
-  const orgSchema = data.settings ? await generateOrganizationSchema(data.settings) : null;
-  const isLayoutV3 = ui.layout === 'v3';
+  const settings = await getCachedSettings();
+  const brandName = settings?.brandName || 'ABS International';
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {orgSchema && (
-        <Script
-          id="organization-schema"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: sanitizeForScript(orgSchema) }}
-        />
-      )}
-      {/* 0. Free Delivery Announcement Bar */}
-      <FreeDeliveryBanner settings={data.settings} />
+    <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
+      
+      {/* 1. Hero Section */}
+      <HeroBanner brandName={brandName} />
 
-      {isLayoutV3 ? (
-        <div className="container mx-auto max-w-[1400px] px-0 py-0 lg:px-4 lg:py-4 flex gap-6 items-start">
-          {/* Left Sticky Sidebar */}
-          <aside className="w-64 shrink-0 hidden lg:block sticky top-14 bg-card rounded-xl border border-border/80 shadow-sm p-4 overflow-y-auto max-h-[calc(100vh-80px)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <div className="flex flex-col gap-1.5">
-              {data.categories.map((category: any) => (
-                <Link
-                  key={category._id}
-                  href={`/shop?category=${encodeURIComponent(category.slug)}`}
-                  className="flex items-center justify-between p-2.5 rounded-lg hover:bg-accent text-sm font-medium transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    {category.image ? (
-                      <div className="relative w-6 h-6 flex-shrink-0">
-                        <Image 
-                          src={category.image} 
-                          alt={category.name}
-                          fill
-                          sizes="24px"
-                          className="object-contain"
-                        />
-                      </div>
-                    ) : (
-                      <span className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold uppercase">
-                        {category.name.slice(0, 2)}
-                      </span>
-                    )}
-                    <span className="text-foreground text-[13px] font-bold">{category.name}</span>
-                  </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60" />
-                </Link>
-              ))}
+      {/* 2. ABS Dream (Vision & Goals) */}
+      <section className="py-20 bg-muted/30 border-b border-border">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+              ABS Dream: Vision & Goals
+            </h2>
+            <p className="text-muted-foreground">
+              Our ultimate path towards building a sustainable, supportive, and rewarding ecosystem for everyone.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Vision */}
+            <div className="bg-card border border-border p-8 rounded-2xl shadow-sm hover:shadow-md transition-all">
+              <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                <Eye className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Our Vision</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">
+                Empowering individuals across the country to achieve absolute financial independence while prioritizing wellness and health through natural, high-quality products.
+              </p>
             </div>
-          </aside>
 
-          {/* Right Content Area */}
-          <div className="flex-1 min-w-0 flex flex-col gap-6">
-            {/* 1. Hero Section */}
-            <HeroSlider banners={data.banners} style={ui.hero} layout={ui.layout} />
+            {/* Goals */}
+            <div className="bg-card border border-border p-8 rounded-2xl shadow-sm hover:shadow-md transition-all">
+              <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                <Target className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Our Goal</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">
+                To build an extensive, interconnected network of active members supported by solid healthcare privileges, lifestyle rewards, and a transparent system.
+              </p>
+            </div>
 
-            {/* 4. Categories Showcase */}
-            <CategoryShowcase categories={data.categories} style={ui.categories} />
-
-            {/* 8. Featured Products */}
-            {data.featuredProducts.length > 0 && (
-              <ProductCarouselSection
-                title="Featured Collections"
-                description="Explore our best-selling and most popular products hand-picked just for you."
-                products={data.featuredProducts}
-                viewAllLink="/shop?filter=featured"
-                bgColor="bg-background"
-                cardStyle={ui.productCard}
-                layout={ui.layout}
-              />
-            )}
-
-            {/* 8. Loyalty Promotion */}
-            <LoyaltyBanner settings={data.settings} layout={ui.layout} />
-
-            {/* 3. Flash Sale (Timed) */}
-            {data.flashSale.length > 0 && (
-              <ProductCarouselSection
-                title="Flash Sale"
-                products={data.flashSale}
-                viewAllLink="/shop?filter=sale"
-                isFlashSale={true}
-                bgColor="bg-primary/5"
-                cardStyle={ui.productCard}
-                layout={ui.layout}
-              />
-            )}
-
-            {/* 7. Combo Discount Promotion */}
-            <ComboOfferBanner activeCoupon={data.activeCoupon} settings={data.settings} layout={ui.layout} />
-
-            {/* 6. Trending Products */}
-            {data.trending.length > 0 && (
-              <ProductCarouselSection
-                title="Trending Now"
-                description="The most popular items according to our community ratings and reviews."
-                products={data.trending}
-                viewAllLink="/shop?filter=trending"
-                bgColor="bg-muted/20"
-                cardStyle={ui.productCard}
-                layout={ui.layout}
-              />
-            )}
-
-            {/* 9. Recent Blogs section */}
-            <BlogRecent blogs={data.blogs} />
-
-            {/* 5. New Arrivals */}
-            {data.newArrivals.length > 0 && (
-              <ProductCarouselSection
-                title="New Arrivals"
-                description="Discover the latest additions to our collection. Stay ahead of the curve."
-                products={data.newArrivals}
-                viewAllLink="/shop?filter=new"
-                bgColor="bg-background"
-                cardStyle={ui.productCard}
-                layout={ui.layout}
-              />
-            )}
-
-            {/* 2. Our Features (Trust Badges) */}
-            <FeaturesSection />
-
-            {/* 8. Testimonials Section */}
-            <Testimonials />
-
-            {/* 11. Newsletter V2 Integration */}
-            <NewsletterV2 layout={ui.layout} />
-
-            {/* 10. FAQ Accordion Section */}
-            <FAQSection faqs={data.faqs} />
+            {/* Trust & Transparency */}
+            <div className="bg-card border border-border p-8 rounded-2xl shadow-sm hover:shadow-md transition-all">
+              <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                <ShieldCheck className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Core Values</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">
+                Upholding integrity, security, and absolute transparency in every transaction. Providing equal opportunities for everyone to grow and secure their family's future.
+              </p>
+            </div>
           </div>
         </div>
-      ) : (
-        <>
-          {/* 1. Hero Section */}
-          <HeroSlider banners={data.banners} style={ui.hero} layout={ui.layout} />
+      </section>
 
-          {/* 4. Categories Showcase */}
-          <CategoryShowcase categories={data.categories} style={ui.categories} />
+      {/* 3. Seba & Healthcare Benefits Section */}
+      <section className="py-20 border-b border-border">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="text-sm font-bold text-primary tracking-wide uppercase">Exclusive Healthcare Benefit</span>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2 mb-6">
+                Digital Seba Card Benefits
+              </h2>
+              <p className="text-muted-foreground mb-8 leading-relaxed">
+                We believe health is the greatest wealth. Upon joining as a premium member, you receive a digital Seba Card that grants you access to essential medical and healthcare discounts.
+              </p>
+              
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="h-10 w-10 shrink-0 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <Stethoscope className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-base mb-1">Free Doctor Consultations</h4>
+                    <p className="text-muted-foreground text-sm">Get 1 free MBBS Doctor Consultation booking or digital voucher every month.</p>
+                  </div>
+                </div>
 
-          {/* 8. Featured Products */}
-          {data.featuredProducts.length > 0 && (
-            <ProductCarouselSection
-              title="Featured Collections"
-              description="Explore our best-selling and most popular products hand-picked just for you."
-              products={data.featuredProducts}
-              viewAllLink="/shop?filter=featured"
-              bgColor="bg-background"
-              cardStyle={ui.productCard}
-              layout={ui.layout}
-            />
-          )}
+                <div className="flex gap-4">
+                  <div className="h-10 w-10 shrink-0 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <Award className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-base mb-1">50% Diagnostic Discount</h4>
+                    <p className="text-muted-foreground text-sm">Enjoy up to 50% discount on lab reports, diagnostic tests, and health screenings at partner centers.</p>
+                  </div>
+                </div>
 
-          {/* 8. Loyalty Promotion */}
-          <LoyaltyBanner settings={data.settings} layout={ui.layout} />
+                <div className="flex gap-4">
+                  <div className="h-10 w-10 shrink-0 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <Truck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-base mb-1">Emergency Ambulance Service</h4>
+                    <p className="text-muted-foreground text-sm">Avail 50% discount on emergency ambulance bookings with dedicated hotline support.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-          {/* 3. Flash Sale (Timed) */}
-          {data.flashSale.length > 0 && (
-            <ProductCarouselSection
-              title="Flash Sale"
-              products={data.flashSale}
-              viewAllLink="/shop?filter=sale"
-              isFlashSale={true}
-              bgColor="bg-primary/5"
-              cardStyle={ui.productCard}
-              layout={ui.layout}
-            />
-          )}
+            <div className="bg-card border border-border p-8 md:p-12 rounded-3xl relative overflow-hidden shadow-xl">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="border border-primary/20 bg-background/50 rounded-2xl p-6 relative z-10">
+                <div className="flex justify-between items-start mb-10">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">ABS Healthcare Net</p>
+                    <h3 className="font-bold text-lg text-primary tracking-wide">DIGITAL SEBA CARD</h3>
+                  </div>
+                  <div className="bg-primary/10 text-primary p-2 rounded-lg">
+                    <Heart className="h-5 w-5 fill-current" />
+                  </div>
+                </div>
+                <div className="space-y-4 mb-8">
+                  <div className="h-3 w-3/4 bg-muted rounded animate-pulse" />
+                  <div className="h-3 w-1/2 bg-muted rounded animate-pulse" />
+                </div>
+                <div className="flex justify-between items-end border-t border-border pt-4 text-xs text-muted-foreground">
+                  <div>
+                    <p className="font-bold text-foreground">MEMBER ID</p>
+                    <p>ABS-XXXX-XXXX</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-foreground">STATUS</p>
+                    <p className="text-green-500 font-semibold">ACTIVE</p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-8 text-center">
+                <Link 
+                  href="/register" 
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+                >
+                  Activate Your Seba Card
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-          {/* 7. Combo Discount Promotion */}
-          <ComboOfferBanner activeCoupon={data.activeCoupon} settings={data.settings} layout={ui.layout} />
+      {/* 4. MLM & Business Plan Opportunity */}
+      <section className="py-20 bg-muted/30 border-b border-border">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-sm font-bold text-primary tracking-wide uppercase">Earn & Grow</span>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2 mb-4">
+              Our Lucrative Business Plan
+            </h2>
+            <p className="text-muted-foreground">
+              A fair, rewarding, and highly structural commission distribution model designed to support active promoters and builders.
+            </p>
+          </div>
 
-          {/* 6. Trending Products */}
-          {data.trending.length > 0 && (
-            <ProductCarouselSection
-              title="Trending Now"
-              description="The most popular items according to our community ratings and reviews."
-              products={data.trending}
-              viewAllLink="/shop?filter=trending"
-              bgColor="bg-muted/20"
-              cardStyle={ui.productCard}
-              layout={ui.layout}
-            />
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* Package */}
+            <div className="bg-card border border-border p-6 rounded-2xl text-center">
+              <h4 className="text-sm uppercase font-semibold text-muted-foreground mb-2">Joining Package</h4>
+              <p className="text-3xl font-extrabold text-primary mb-4">1,500 BDT</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Join our platform by purchasing the standard product package to unlock all earning opportunities.
+              </p>
+            </div>
 
-          {/* 9. Recent Blogs section */}
-          <BlogRecent blogs={data.blogs} />
+            {/* Sponsor Bonus */}
+            <div className="bg-card border border-border p-6 rounded-2xl text-center">
+              <h4 className="text-sm uppercase font-semibold text-muted-foreground mb-2">Sponsor Bonus</h4>
+              <p className="text-3xl font-extrabold text-primary mb-4">15%</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Earn 225 BDT instantly for every premium member you directly refer to ABS International.
+              </p>
+            </div>
 
-          {/* 5. New Arrivals */}
-          {data.newArrivals.length > 0 && (
-            <ProductCarouselSection
-              title="New Arrivals"
-              description="Discover the latest additions to our collection. Stay ahead of the curve."
-              products={data.newArrivals}
-              viewAllLink="/shop?filter=new"
-              bgColor="bg-background"
-              cardStyle={ui.productCard}
-              layout={ui.layout}
-            />
-          )}
+            {/* Generation Bonus */}
+            <div className="bg-card border border-border p-6 rounded-2xl text-center">
+              <h4 className="text-sm uppercase font-semibold text-muted-foreground mb-2">Generation Bonus</h4>
+              <p className="text-3xl font-extrabold text-primary mb-4">10 Levels</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Earn residual commissions down to 10 generations of your growing downline network.
+              </p>
+            </div>
 
-          {/* 2. Our Features (Trust Badges) */}
-          <FeaturesSection />
+            {/* Global Profit Share */}
+            <div className="bg-card border border-border p-6 rounded-2xl text-center">
+              <h4 className="text-sm uppercase font-semibold text-muted-foreground mb-2">Global Profit Share</h4>
+              <p className="text-3xl font-extrabold text-primary mb-4">2% Pool</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Share from the 2% company-wide profit pool distributed regularly among qualified members.
+              </p>
+            </div>
+          </div>
 
-          {/* 8. Testimonials Section */}
-          <Testimonials />
+          <div className="mt-12 bg-card border border-border p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex gap-4 items-center">
+              <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <HeartHandshake className="h-6 w-6" />
+              </div>
+              <div>
+                <h4 className="font-bold text-lg">Social Contribution</h4>
+                <p className="text-sm text-muted-foreground">1% of all joining packages is allocated to our Charity Fund for orphans and underprivileged people.</p>
+              </div>
+            </div>
+            <Link 
+              href="/register" 
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-all shrink-0"
+            >
+              Start Earning Today
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
 
-          {/* 11. Newsletter V2 Integration */}
-          <NewsletterV2 layout={ui.layout} />
+      {/* 5. ABS Shops & Network Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <span className="text-sm font-bold text-primary tracking-wide uppercase">Physical Network</span>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+                ABS Shops & Distribution Networks
+              </h2>
+              <p className="text-muted-foreground leading-relaxed">
+                We are not just digital; we are physically grounded. ABS International operates local shops, outlets, and distribution centers across various regions to ensure seamless product delivery and client support.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center gap-3">
+                  <MapPin className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-semibold">Regional Outlets</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Store className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-semibold">Distribution Hubs</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <ShieldCheck className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-semibold">Secure Pickups</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Truck className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-semibold">Fast Delivery Networks</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-muted/40 border border-border p-8 rounded-3xl flex flex-col justify-center items-center text-center py-16">
+              <Store className="h-16 w-16 text-primary/80 mb-6" />
+              <h3 className="text-xl font-bold mb-2">Locate an ABS Shop Near You</h3>
+              <p className="text-muted-foreground text-sm max-w-md mb-6">
+                Explore our growing network of outlets. Purchase membership packages or pickup products directly from our distribution centers.
+              </p>
+              <Link 
+                href="/shop" 
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-card border border-border text-foreground font-semibold hover:bg-accent transition-all"
+              >
+                Browse Shop Locations
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
-          {/* 10. FAQ Accordion Section */}
-          <FAQSection faqs={data.faqs} />
-        </>
-      )}
     </div>
   );
 }
+
 

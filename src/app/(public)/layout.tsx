@@ -1,8 +1,6 @@
-﻿import Navbar from '@/components/layout/Navbar';
+import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Marquee } from '@/components/layout/Marquee';
 import { getCachedSettings } from '@/lib/data-fetching';
-import { headers } from 'next/headers';
 import { ScrollToTop } from '@/components/layout/ScrollToTop';
 import { MobileBottomNavbar } from '@/components/layout/MobileBottomNavbar';
 import SubscriptionBlocker from '../components/SubscriptionBlocker';
@@ -37,7 +35,6 @@ export default async function PublicLayout({ children }: { children: React.React
   return (
     <>
       {showBlocker && <SubscriptionBlocker brandName={settings?.brandName || 'ABS International'} />}
-      {ui.layout !== 'v2' && <Marquee marqueeText={marqueeText} />}
       <Navbar style={ui.navbar} />
       <main className="flex-1 pb-16 md:pb-0">{children}</main>
       <Footer style={ui.footer} />
