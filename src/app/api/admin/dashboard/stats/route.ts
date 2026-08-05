@@ -5,6 +5,7 @@ import Order from '@/models/Order';
 import User from '@/models/User';
 import Product from '@/models/Product';
 import Expense from '@/models/Expense';
+import WalletTransaction from '@/models/WalletTransaction';
 
 export async function GET(req: NextRequest) {
   try {
@@ -135,12 +136,29 @@ export async function GET(req: NextRequest) {
       .limit(5)
       .select('name stock price');
 
-    // 9. Loyalty Stats
+    // 9. Loyalty & MLM System Stats
     const activeSubscribers = await User.countDocuments({ isSubscriptionActive: true });
-    const totalWalletBalanceResult = await User.aggregate([
-      { $group: { _id: null, total: { $sum: '$walletBalance' } } }
+    
+    const walletSumResult = await User.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalDeposit: { $sum: '$depositWallet' },
+          totalBonus: { $sum: '$bonusWallet' },
+          totalWithdrawal: { $sum: '$withdrawalWallet' },
+          totalWalletBalance: { $sum: '$walletBalance' }
+        }
+      }
     ]);
-    const totalWalletTokens = totalWalletBalanceResult[0]?.total || 0;
+    const totalDepositWallet = walletSumResult[0]?.totalDeposit || 0;
+    const totalBonusWallet = walletSumResult[0]?.totalBonus || 0;
+    const totalWithdrawalWallet = walletSumResult[0]?.totalWithdrawal || 0;
+    const totalWalletTokens = walletSumResult[0]?.totalWalletBalance || 0;
+    
+    const pendingWithdrawalsCount = await WalletTransaction.countDocuments({ type: 'withdrawal', status: 'pending' });
+    const pendingDepositsCount = await WalletTransaction.countDocuments({ type: 'deposit', status: 'pending' });
+    const pendingKycCount = await User.countDocuments({ nidStatus: 'Pending' });
+    const charityFund = activeSubscribers * 15;
 
     // 10. Top Selling Products
     const topSellingProducts = await Order.aggregate([
@@ -272,7 +290,14 @@ export async function GET(req: NextRequest) {
         totalAdSpend,
         newUsersCount,
         returningUsersCount,
-        projectedMonthlyRevenue
+        projectedMonthlyRevenue,
+        pendingWithdrawalsCount,
+        pendingDepositsCount,
+        pendingKycCount,
+        charityFund,
+        totalDepositWallet,
+        totalBonusWallet,
+        totalWithdrawalWallet
       },
       recentOrders,
       lowStockProducts,

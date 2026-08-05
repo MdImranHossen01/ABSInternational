@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import {
   ShoppingCart,
@@ -17,27 +16,18 @@ import {
   Settings,
   Package,
   Truck,
-  HelpCircle,
-  ChevronDown
+
 } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ModeToggle } from '@/components/mode-toggle';
 import { useAppSelector } from '@/store/hooks';
 import { CartDrawer } from '@/components/layout/CartDrawer';
-import { CategoryNav } from '@/components/layout/CategoryNav';
-import { AIChatbot } from '@/components/layout/AIChatbot';
 import { Logo } from '@/components/ui/logo';
 import { useSettings } from '@/components/SettingsProvider';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,9 +41,8 @@ import Swal from 'sweetalert2';
 
 const navItems = [
   { href: '/', label: 'Home' },
-  { href: '/shop', label: 'Shop' },
-  { href: '/factory-profile', label: 'Factory Profile' },
-  { href: '/catalog', label: 'Catalog' },
+  { href: '/about', label: 'About Us' },
+  { href: '/shop', label: 'Products' },
   { href: '/blog', label: 'Blogs' },
   { href: '/contact', label: 'Contact' },
 ];
@@ -338,26 +327,6 @@ export default function Navbar() {
                             >
                               {item.label}
                             </Link>
-                            {/* Insert Categories Accordion after Home (index 0) */}
-                            {index === 0 && (
-                              <Accordion type="single" collapsible>
-                                <AccordionItem value="cats" className="border-none">
-                                  <AccordionTrigger className="py-2 hover:no-underline uppercase text-[12px] font-bold tracking-[0.2em] text-left">Categories</AccordionTrigger>
-                                  <AccordionContent className="pt-2 pl-4 flex flex-col gap-3">
-                                    {mainCategories.map(cat => (
-                                      <Link
-                                        key={cat._id}
-                                        href={`/shop?category=${cat.slug}`}
-                                        onClick={() => setOpen(false)}
-                                        className="hover:text-primary text-[11px] font-bold uppercase tracking-[0.1em]"
-                                      >
-                                        {cat.name}
-                                      </Link>
-                                    ))}
-                                  </AccordionContent>
-                                </AccordionItem>
-                              </Accordion>
-                            )}
                           </React.Fragment>
                         );
                       })}
@@ -369,9 +338,9 @@ export default function Navbar() {
 
             {/* Logo (Centered in desktop, Left-ish in mobile) */}
             <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center justify-center">
-              <Logo 
-                imageClassName="md:size-16" 
-                textClassName="text-lg md:text-3xl whitespace-nowrap" 
+              <Logo
+                imageClassName="md:size-16"
+                textClassName="text-lg md:text-3xl whitespace-nowrap"
                 sizes="(max-width: 768px) 24px, 64px"
               />
             </div>
@@ -560,12 +529,6 @@ export default function Navbar() {
                       {item.label}
                     </Link>
                   </li>
-                  {/* Insert CategoryNav after Home (index 0) */}
-                  {index === 0 && (
-                    <li className="flex items-center h-full">
-                      <CategoryNav />
-                    </li>
-                  )}
                 </React.Fragment>
               );
             })}

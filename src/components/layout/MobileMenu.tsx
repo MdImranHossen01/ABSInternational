@@ -63,29 +63,6 @@ export function MobileMenu({ navItems, categories, session, triggerClassName }: 
                     >
                       {item.label}
                     </Link>
-
-                    {/* Insert Categories Accordion after Home (index 0) */}
-                    {index === 0 && (
-                      <Accordion type="single" collapsible className="w-full">
-                        <AccordionItem value="categories" className="border-none px-4">
-                          <AccordionTrigger className="py-3 text-sm font-bold uppercase tracking-widest text-foreground/70 hover:text-primary hover:no-underline">
-                            Categories
-                          </AccordionTrigger>
-                          <AccordionContent className="flex flex-col gap-3 pt-2 pl-4">
-                            {categories.map((cat: any) => (
-                              <Link
-                                key={cat._id}
-                                href={`/shop?category=${cat.slug}`}
-                                className="text-[11px] font-black uppercase tracking-widest text-foreground/50 hover:text-primary transition-colors"
-                                onClick={() => setOpen(false)}
-                              >
-                                {cat.name}
-                              </Link>
-                            ))}
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    )}
                   </React.Fragment>
                 );
               })}

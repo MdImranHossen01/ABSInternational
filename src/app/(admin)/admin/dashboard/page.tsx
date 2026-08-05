@@ -252,7 +252,7 @@ export default function AdminDashboard() {
         <Link href="/admin/users" className="block transition-transform hover:scale-[1.02] active:scale-95">
           <Card className="bg-blue-500/5 border-blue-500/20 relative overflow-hidden group h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Members</CardTitle>
               <Users className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
@@ -262,29 +262,33 @@ export default function AdminDashboard() {
           </Card>
         </Link>
 
-        {/* ROAS Card (NEW) */}
-        <Card className="bg-purple-500/5 border-purple-500/20 relative overflow-hidden group">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ad ROI (ROAS)</CardTitle>
-            <Target className="h-4 w-4 text-purple-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-700">{stats?.roas ? `${stats.roas}x` : '—'}</div>
-            <p className="text-xs text-muted-foreground">Revenue per ৳1 Ad Spend</p>
-          </CardContent>
-        </Card>
+        {/* Pending Withdrawals Card */}
+        <Link href="/admin/withdrawals" className="block transition-transform hover:scale-[1.02] active:scale-95">
+          <Card className="bg-purple-500/5 border-purple-500/20 relative overflow-hidden group h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Pending Withdrawals</CardTitle>
+              <Wallet className="h-4 w-4 text-purple-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-700">{stats?.pendingWithdrawalsCount || 0}</div>
+              <p className="text-xs text-muted-foreground">Payouts to approve</p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        {/* Forecast Card (NEW) */}
-        <Card className="bg-orange-500/5 border-orange-500/20 relative overflow-hidden group border-dashed">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sales Forecast</CardTitle>
-            <LineChartIcon className="h-4 w-4 text-orange-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-700">৳{Math.round(stats?.projectedMonthlyRevenue || 0).toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Projected next 30 days</p>
-          </CardContent>
-        </Card>
+        {/* Pending KYC / NID Card */}
+        <Link href="/admin/kyc" className="block transition-transform hover:scale-[1.02] active:scale-95">
+          <Card className="bg-orange-500/5 border-orange-500/20 relative overflow-hidden group h-full border-dashed">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Pending KYC (NID)</CardTitle>
+              <Receipt className="h-4 w-4 text-orange-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-700">{stats?.pendingKycCount || 0}</div>
+              <p className="text-xs text-muted-foreground">Pending verifications</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <div className="grid gap-4 grid-cols-1">
@@ -422,35 +426,28 @@ export default function AdminDashboard() {
           <Card className="bg-muted/20">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" />
-                Customer Insights
+                <Wallet className="h-4 w-4 text-primary" />
+                System Wallets
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-around py-2 border-b">
-                <div className="text-center">
-                  <p className="text-[10px] uppercase text-muted-foreground font-bold">New</p>
-                  <p className="text-xl font-black">{stats?.newUsersCount}</p>
-                </div>
-                <div className="h-8 w-px bg-border"></div>
-                <div className="text-center">
-                  <p className="text-[10px] uppercase text-muted-foreground font-bold">Returning</p>
-                  <p className="text-xl font-black">{stats?.returningUsersCount}</p>
-                </div>
-              </div>
-              
               <div className="space-y-2">
-                <p className="text-[10px] font-bold uppercase text-muted-foreground">Top Spenders</p>
-                {topCustomers && topCustomers.length > 0 ? (
-                  topCustomers.map((customer: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between text-xs">
-                      <span className="font-medium truncate max-w-[120px]">{customer.name}</span>
-                      <span className="font-bold text-primary">৳{Math.round(customer.totalSpend || 0).toLocaleString()}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-[10px] text-muted-foreground italic py-2 text-center">No customers yet</p>
-                )}
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground font-medium">Deposit Wallets (Total)</span>
+                  <span className="font-bold text-foreground">৳{Math.round(stats?.totalDepositWallet || 0).toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground font-medium">Bonus Wallets (Total)</span>
+                  <span className="font-bold text-foreground">৳{Math.round(stats?.totalBonusWallet || 0).toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground font-medium">Withdrawal Wallets (Total)</span>
+                  <span className="font-bold text-foreground">৳{Math.round(stats?.totalWithdrawalWallet || 0).toLocaleString()}</span>
+                </div>
+                <div className="pt-2 border-t flex items-center justify-between text-xs font-bold">
+                  <span className="text-primary">Total System Tokens</span>
+                  <span className="text-primary">৳{Math.round(stats?.totalWalletTokens || 0).toLocaleString()}</span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -459,12 +456,12 @@ export default function AdminDashboard() {
             <CardContent className="pt-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <p className="text-xs opacity-70">Loyalty Members</p>
-                  <p className="text-xl font-bold">{stats?.activeSubscribers}</p>
+                  <p className="text-xs opacity-70">Active MLM Packages</p>
+                  <p className="text-xl font-bold">{stats?.activeSubscribers || 0}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs opacity-70">Pending Orders</p>
-                  <p className="text-xl font-bold">{stats?.pendingOrdersCount}</p>
+                  <p className="text-xs opacity-70">Charity Fund (1%)</p>
+                  <p className="text-xl font-bold">৳{(stats?.charityFund || 0).toLocaleString()}</p>
                 </div>
               </div>
             </CardContent>
