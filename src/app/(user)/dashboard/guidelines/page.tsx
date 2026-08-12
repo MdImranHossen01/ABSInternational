@@ -32,8 +32,10 @@ export default function GuidelinesPage() {
               <Button size="sm" variant="outline" className="flex-1 rounded-lg text-xs font-bold gap-1" onClick={() => window.open(manual.file, '_blank')}>
                 <Eye className="h-3.5 w-3.5" /> View PDF
               </Button>
-              <Button size="sm" className="flex-1 rounded-lg text-xs font-bold gap-1" onClick={() => window.open(manual.file, '_blank')}>
-                <Download className="h-3.5 w-3.5" /> Download
+              <Button size="sm" asChild className="flex-1 rounded-lg text-xs font-bold gap-1">
+                <a href={manual.file} download>
+                  <Download className="h-3.5 w-3.5" /> Download
+                </a>
               </Button>
             </CardContent>
           </Card>

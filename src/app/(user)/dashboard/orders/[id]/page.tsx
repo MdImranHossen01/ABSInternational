@@ -26,7 +26,7 @@ import { generateInvoicePDF } from '@/lib/invoice-generator';
 
 export default function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const router = useRouter();
     const [order, setOrder] = useState<any>(null);
     const [settings, setSettings] = useState<any>(null);
@@ -81,7 +81,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
             <div className="text-center p-20 space-y-4">
                 <AlertCircle className="h-16 w-16 text-muted-foreground mx-auto opacity-20" />
                 <h2 className="text-2xl font-bold">Order Not Found</h2>
-                <Button onClick={() => router.push('/dashboard')}>Back to Orders</Button>
+                <Button onClick={() => router.push('/dashboard/orders')}>Back to Orders</Button>
             </div>
         );
     }

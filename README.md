@@ -1,36 +1,16 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ABS International Demo Project
 
-## Getting Started
+## Demo Users (All Passwords are `12345678`)
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Rank | Name | Email | Phone | Password |
+| :--- | :--- | :--- | :--- | :--- |
+| General Member (user) | General Member | general@abs.com | 01700000000 | 12345678 |
+| Premium Member | Premium Member | premium@abs.com | 01700000001 | 12345678 |
+| Team Manager | Team Manager | team@abs.com | 01700000002 | 12345678 |
+| Royal Manager | Royal Manager | royal@abs.com | 01700000003 | 12345678 |
+| Silver Manager | Silver Manager | silver@abs.com | 01700000004 | 12345678 |
+| Gold Manager | Gold Manager | gold@abs.com | 01700000005 | 12345678 |
+| Diamond Manager | Diamond Manager | diamond@abs.com | 01700000006 | 12345678 |
+| Crown Manager | Crown Manager | crown@abs.com | 01700000007 | 12345678 |
+| Director | Director One | director1@abs.com | 01700000008 | 12345678 |
+| Director | Director Two | director2@abs.com | 01700000009 | 12345678 |

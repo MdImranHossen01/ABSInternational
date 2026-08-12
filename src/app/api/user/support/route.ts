@@ -18,6 +18,7 @@ const SupportTicketSchema = new mongoose.Schema({
 
 const SupportTicket = mongoose.models.SupportTicket || mongoose.model('SupportTicket', SupportTicketSchema);
 
+// GET all tickets for the logged-in user
 export async function GET(req: NextRequest) {
   try {
     const session = await auth();
@@ -35,6 +36,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// POST — create a new ticket
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
@@ -61,6 +63,36 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Support ticket opened successfully!', ticket }, { status: 201 });
   } catch (error: any) {
     console.error('Error opening support ticket:', error);
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+// PATCH — user replies to an existing ticket
+export async function PATCH(req: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { ticketId, replyMessage } = await req.json();
+    if (!ticketId || !replyMessage) {
+      return NextResponse.json({ message: 'ticketId and replyMessage are required.' }, { status: 400 });
+    }
+
+    await connectToDatabase();
+    const ticket = await SupportTicket.findOne({ _id: ticketId, userId: (session.user as any).id });
+    if (!ticket) return NextResponse.json({ message: 'Ticket not found' }, { status: 404 });
+    if (ticket.status === 'Closed') {
+      return NextResponse.json({ message: 'Cannot reply to a closed ticket.' }, { status: 400 });
+    }
+
+    ticket.replies.push({ sender: 'user', message: replyMessage, createdAt: new Date() });
+    await ticket.save();
+
+    return NextResponse.json({ message: 'Reply sent successfully', ticket });
+  } catch (error: any) {
+    console.error('Error replying to ticket:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }

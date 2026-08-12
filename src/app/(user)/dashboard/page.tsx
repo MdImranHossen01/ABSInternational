@@ -3,19 +3,17 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { 
-    Clock, 
-    CheckCircle2, 
-    Truck, 
-    Package,
-    ChevronRight,
-    Loader2,
-    TrendingUp,
-    Users,
-    Wallet,
-    Award,
-    ShieldAlert,
-    AlertCircle
+import {
+
+  Package,
+
+  Loader2,
+  TrendingUp,
+  Users,
+  Wallet,
+  Award,
+
+  AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -54,25 +52,44 @@ export default function UserDashboard() {
 
   const handleActivate = async () => {
     if (!profile) return;
-    
+
     const result = await Swal.fire({
       title: 'Activate Account?',
-      text: 'This will purchase the Joining Package for 1,500 BDT from your Deposit Wallet. You will become a Premium Member and receive Seba health benefits.',
+      html: `
+        <div class="text-left space-y-3">
+          <p class="text-sm text-gray-600">This will purchase the Joining Package for 1,500 BDT from your Deposit Wallet. You will become a Premium Member and receive Seba health benefits.</p>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Sponsor ID (Optional)</label>
+            <input id="swal-sponsor-id" class="swal2-input !m-0 !w-full text-sm font-mono" placeholder="Enter Sponsor ID (e.g. ABS123456)" value="${(profile.sponsorId || '').replace(/"/g, '&quot;')}" />
+            <p class="text-[11px] text-gray-500 mt-1">If someone referred you, enter their Member ID above. Leave blank if none.</p>
+          </div>
+        </div>
+      `,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, Activate!',
       cancelButtonText: 'Cancel',
       confirmButtonColor: 'var(--primary)',
-      background: 'white'
+      background: 'white',
+      preConfirm: () => {
+        const el = document.getElementById('swal-sponsor-id') as HTMLInputElement;
+        return el ? el.value.trim() : '';
+      }
     });
 
     if (!result.isConfirmed) return;
 
+    const sponsorIdInput = result.value;
+
     setActivating(true);
     try {
-      const res = await fetch('/api/user/activate', { method: 'POST' });
+      const res = await fetch('/api/user/activate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sponsorId: sponsorIdInput })
+      });
       const data = await res.json();
-      
+
       if (res.ok) {
         Swal.fire({
           title: 'Success!',
@@ -144,8 +161,8 @@ export default function UserDashboard() {
           </div>
         </div>
         {!profile?.isSubscriptionActive && (
-          <Button 
-            onClick={handleActivate} 
+          <Button
+            onClick={handleActivate}
             disabled={activating}
             className="bg-white text-primary hover:bg-white/90 font-bold h-12 px-6 rounded-xl shrink-0"
           >

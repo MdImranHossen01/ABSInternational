@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
@@ -15,6 +16,13 @@ export async function GET(req: NextRequest) {
     const loggedInUser = await User.findById((session.user as any).id);
     if (!loggedInUser) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    }
+
+    if (!loggedInUser.memberId) {
+      return NextResponse.json({
+        directTeam: [],
+        generations: Array.from({ length: 10 }, (_, i) => ({ level: i + 1, members: [] }))
+      });
     }
 
     const searchParams = req.nextUrl.searchParams;
@@ -35,7 +43,7 @@ export async function GET(req: NextRequest) {
     // Fetch 10 generations count and structured tree
     // We will do a breadth-first search up to 10 levels
     const generations: any[] = [];
-    let currentLevelMemberIds = [loggedInUser.memberId];
+    let currentLevelMemberIds: string[] = [loggedInUser.memberId].filter((id): id is string => Boolean(id && id.trim() !== ''));
 
     for (let level = 1; level <= 10; level++) {
       if (currentLevelMemberIds.length === 0) {
@@ -67,7 +75,9 @@ export async function GET(req: NextRequest) {
         }))
       });
 
-      currentLevelMemberIds = levelMembers.map(m => m.memberId);
+      currentLevelMemberIds = levelMembers
+        .map(m => m.memberId)
+        .filter((id): id is string => Boolean(id && id.trim() !== ''));
     }
 
     return NextResponse.json({

@@ -28,9 +28,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
 export default function NetworkPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [network, setNetwork] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [refetching, setRefetching] = useState(false);
   const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [openGen, setOpenGen] = useState<number | null>(null);
@@ -38,7 +39,9 @@ export default function NetworkPage() {
   useEffect(() => {
     async function fetchNetwork() {
       try {
-        setLoading(true);
+        if (!network) setLoading(true);
+        else setRefetching(true);
+
         const res = await fetch(`/api/user/network?status=${filter}`);
         if (res.ok) {
           const data = await res.json();
@@ -50,18 +53,24 @@ export default function NetworkPage() {
         toast.error('Connection issue');
       } finally {
         setLoading(false);
+        setRefetching(false);
       }
     }
-    if (session?.user) {
-      fetchNetwork();
-    }
-  }, [session, filter]);
 
-  const filteredDirects = network?.directTeam?.filter((member: any) => 
-    member.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    member.memberId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.phone?.includes(searchTerm)
-  ) || [];
+    if (status === 'authenticated' && session?.user) {
+      fetchNetwork();
+    } else if (status === 'unauthenticated') {
+      setLoading(false);
+    }
+  }, [session, status, filter]);
+
+  const filteredDirects = network?.directTeam?.filter((member: any) => {
+    const term = searchTerm.toLowerCase();
+    const nameMatch = (member.name || '').toLowerCase().includes(term);
+    const idMatch = (member.memberId || '').toLowerCase().includes(term);
+    const phoneMatch = member.phone ? member.phone.includes(searchTerm) : false;
+    return nameMatch || idMatch || phoneMatch;
+  }) || [];
 
   if (loading) {
     return (

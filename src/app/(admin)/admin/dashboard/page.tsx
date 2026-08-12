@@ -28,7 +28,14 @@ import {
   Star,
   UserPlus,
   Target,
-  BarChart3
+  BarChart3,
+  Globe,
+  Zap,
+  Trophy,
+  Crown,
+  Heart,
+  Share2,
+  Building2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,6 +48,8 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { format, subDays, parseISO, isAfter, startOfToday } from 'date-fns';
+import { toast } from 'sonner';
+import Swal from 'sweetalert2';
 
 const chartConfig = {
   revenue: {
@@ -63,6 +72,54 @@ export default function AdminDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [activeChart, setActiveChart] = useState<keyof typeof chartConfig>("revenue");
+
+  // MLM Fund Pool state
+  const [fundPool, setFundPool] = useState<any>(null);
+  const [fundLoading, setFundLoading] = useState(true);
+  const [distributing, setDistributing] = useState(false);
+
+  const fetchFundPool = async () => {
+    try {
+      const res = await fetch('/api/admin/mlm-funds');
+      if (res.ok) setFundPool(await res.json());
+    } catch {}
+    finally { setFundLoading(false); }
+  };
+
+  const handleDistributeGlobalProfit = async () => {
+    if (!fundPool?.globalProfit) return;
+
+    const confirm = await Swal.fire({
+      title: 'Distribute Global Profit?',
+      text: `Are you sure you want to distribute ৳${(fundPool.globalProfit || 0).toLocaleString()} across all active members?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Distribute',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: 'var(--primary)',
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    setDistributing(true);
+    try {
+      const res = await fetch('/api/admin/mlm-funds', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'distribute_global_profit' }),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        toast.success(`Global Profit distributed! ৳${result.perMemberAmount} to each of ${result.activeMembers} members.`);
+        fetchFundPool();
+      } else {
+        toast.error(result?.message || 'Failed to distribute global profit.');
+      }
+    } catch { toast.error('Network error'); }
+    finally { setDistributing(false); }
+  };
+
+  useEffect(() => { fetchFundPool(); }, []);
   
   // Date filter state
   const [dateRange, setDateRange] = useState({
@@ -289,6 +346,75 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </Link>
+
+        {/* Company Net Revenue Card */}
+        <Card className="bg-emerald-500/5 border-emerald-500/20 relative overflow-hidden group h-full">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Company Net Revenue</CardTitle>
+            <Building2 className="h-4 w-4 text-emerald-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-700">
+              {fundLoading
+                ? '...'
+                : `৳${((fundPool?.totalActivations ?? 0) * 983).toLocaleString()}`
+              }
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {fundLoading ? '' : `${fundPool?.totalActivations ?? 0} activation${(fundPool?.totalActivations ?? 0) !== 1 ? 's' : ''} × ৳983`}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ── MLM Fund Pool Widget ─────────────────────────────────────────── */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h3 className="text-lg font-bold">MLM Fund Pools</h3>
+            <p className="text-xs text-muted-foreground">Accumulated from each 1,500 BDT activation package</p>
+          </div>
+          <Button
+            size="sm"
+            onClick={handleDistributeGlobalProfit}
+            disabled={distributing || !fundPool?.globalProfit}
+            className="gap-2 text-xs font-bold"
+          >
+            {distributing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Share2 className="h-3 w-3" />}
+            Distribute Global Profit
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {[
+            { key: 'autoProfit',          label: 'Auto Profit',         pct: '3.5%', color: 'bg-violet-50 border-violet-200 text-violet-700', icon: Zap },
+            { key: 'globalProfit',        label: 'Global Profit',       pct: '2%',   color: 'bg-blue-50 border-blue-200 text-blue-700',     icon: Globe },
+            { key: 'incentiveFund',       label: 'Incentive Fund',      pct: '2%',   color: 'bg-orange-50 border-orange-200 text-orange-700', icon: Trophy },
+            { key: 'rankDevelopmentFund', label: 'Rank Dev Fund',       pct: '2%',   color: 'bg-green-50 border-green-200 text-green-700',   icon: TrendingUp },
+            { key: 'royaltyFund',         label: 'Royalty Fund',        pct: '2%',   color: 'bg-yellow-50 border-yellow-200 text-yellow-700', icon: Crown },
+            { key: 'charityFund',         label: 'Charity Fund',        pct: '1%',   color: 'bg-pink-50 border-pink-200 text-pink-700',      icon: Heart },
+          ].map(({ key, label, pct, color, icon: Icon }) => (
+            <Card key={key} className={`border ${color.split(' ')[1]} overflow-hidden`}>
+              <CardContent className={`p-4 ${color.split(' ')[0]}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className={`text-[10px] font-bold uppercase tracking-wide ${color.split(' ')[2]}`}>{pct}</span>
+                  <Icon className={`h-4 w-4 ${color.split(' ')[2]}`} />
+                </div>
+                <div className={`text-xl font-black ${color.split(' ')[2]}`}>
+                  {fundLoading ? '...' : `৳${(fundPool?.[key] ?? 0).toLocaleString()}`}
+                </div>
+                <p className="text-[11px] font-medium text-muted-foreground mt-1">{label}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        {fundPool?.totalActivations !== undefined && (
+          <p className="text-[11px] text-muted-foreground mt-2">
+            Total activations: <strong>{fundPool.totalActivations}</strong>
+            {' · '}
+            Per activation: ৳517 distributed (34.5%) + <strong className="text-emerald-600">৳983 company (65.5%)</strong>
+            {fundPool.lastUpdated && ` · Last updated: ${new Date(fundPool.lastUpdated).toLocaleString()}`}
+          </p>
+        )}
       </div>
 
       <div className="grid gap-4 grid-cols-1">

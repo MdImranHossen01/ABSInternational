@@ -15,7 +15,8 @@ import {
   Megaphone,
   Store,
   Mail,
-  CreditCard
+  CreditCard,
+  LifeBuoy
 } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 
@@ -52,7 +53,23 @@ const data = {
         {
           title: "Dashboard",
           url: "/admin/dashboard",
-        }
+        },
+        {
+          title: "KYC Queue",
+          url: "/admin/kyc",
+        },
+        {
+          title: "Withdrawals Queue",
+          url: "/admin/withdrawals",
+        },
+        {
+          title: "Deposits Queue",
+          url: "/admin/deposits",
+        },
+        {
+          title: "Support Tickets",
+          url: "/admin/support",
+        },
       ],
     },
     {
@@ -121,18 +138,6 @@ const data = {
         {
           title: "All Users",
           url: "/admin/users",
-        },
-        {
-          title: "KYC Queue",
-          url: "/admin/kyc",
-        },
-        {
-          title: "Withdrawals Queue",
-          url: "/admin/withdrawals",
-        },
-        {
-          title: "Deposits Queue",
-          url: "/admin/deposits",
         },
       ],
     },

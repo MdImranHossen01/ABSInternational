@@ -2,20 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { 
-    Activity, 
-    Stethoscope, 
-    Truck, 
-    FileText, 
-    Loader2, 
-    CheckCircle2,
-    Calendar,
-    BadgeAlert
+import {
+  Activity,
+  Loader2,
+
+  BadgeAlert
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Table,
@@ -44,8 +39,12 @@ export default function SebaPage() {
         fetch('/api/user/seba')
       ]);
 
-      if (profileRes.ok) setProfile(await profileRes.json());
-      if (bookingsRes.ok) setBookings(await bookingsRes.json());
+      if (!profileRes.ok || !bookingsRes.ok) {
+        throw new Error('Failed response from server');
+      }
+
+      setProfile(await profileRes.json());
+      setBookings(await bookingsRes.json());
     } catch (err) {
       toast.error('Failed to load Seba details');
     } finally {
@@ -109,7 +108,7 @@ export default function SebaPage() {
       </div>
 
       {/* Digital Seba Card Container */}
-      {profile?.isSebaCardGenerated ? (
+      {profile?.isSebaCardGenerated && profile?.isSubscriptionActive ? (
         <Card className="max-w-2xl bg-linear-to-r from-emerald-600 to-teal-700 text-white rounded-2xl shadow-xl overflow-hidden relative">
           <div className="absolute right-0 bottom-0 opacity-10">
             <Activity className="h-64 w-64 translate-x-20 translate-y-20" />
@@ -153,7 +152,7 @@ export default function SebaPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
+
         {/* Booking Request Form */}
         <Card className="lg:col-span-1 border shadow-xs bg-white">
           <CardHeader>
@@ -164,8 +163,8 @@ export default function SebaPage() {
             <form onSubmit={handleBooking} className="space-y-4">
               <div className="space-y-2">
                 <Label>Benefit Type</Label>
-                <select 
-                  value={bookingType} 
+                <select
+                  value={bookingType}
                   onChange={(e) => setBookingType(e.target.value as any)}
                   className="w-full h-11 rounded-lg border px-3 text-sm outline-none focus:border-primary transition-all bg-white"
                   disabled={!profile?.isSubscriptionActive}
@@ -178,8 +177,8 @@ export default function SebaPage() {
 
               <div className="space-y-2">
                 <Label>Additional Details / Patient Name</Label>
-                <textarea 
-                  value={bookingDetails} 
+                <textarea
+                  value={bookingDetails}
                   onChange={(e) => setBookingDetails(e.target.value)}
                   placeholder="Insert patient details or special queries..."
                   className="w-full h-24 rounded-lg border p-3 text-sm outline-none focus:border-primary resize-none"
@@ -187,9 +186,9 @@ export default function SebaPage() {
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                disabled={submitting || !profile?.isSubscriptionActive} 
+              <Button
+                type="submit"
+                disabled={submitting || !profile?.isSubscriptionActive}
                 className="w-full h-11 font-bold rounded-lg"
               >
                 {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

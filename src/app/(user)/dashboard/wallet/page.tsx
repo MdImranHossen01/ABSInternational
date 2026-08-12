@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { 
@@ -11,7 +12,9 @@ import {
     History, 
     Loader2, 
     AlertCircle,
-    CheckCircle2
+    CheckCircle2,
+    RefreshCw,
+    Copy
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,6 +43,7 @@ import Swal from 'sweetalert2';
 export default function WalletPage() {
   const { data: session } = useSession();
   const [data, setData] = useState<any>(null);
+  const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -62,6 +66,10 @@ export default function WalletPage() {
   const [pinNew, setPinNew] = useState('');
   const [pinOld, setPinOld] = useState('');
 
+  // Convert form
+  const [convertAmount, setConvertAmount] = useState('');
+  const [convertPin, setConvertPin] = useState('');
+
   async function fetchWalletData() {
     try {
       const res = await fetch('/api/user/wallet');
@@ -78,6 +86,10 @@ export default function WalletPage() {
   useEffect(() => {
     if (session?.user) {
       fetchWalletData();
+      fetch('/api/settings')
+        .then((res) => res.json())
+        .then((sData) => setSettings(sData))
+        .catch((err) => console.error('Failed to load settings', err));
     }
   }, [session]);
 
@@ -189,6 +201,43 @@ export default function WalletPage() {
     }
   };
 
+  const handleConvert = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!convertAmount || !convertPin) {
+      toast.error('All fields are required');
+      return;
+    }
+    if (Number(convertAmount) <= 0) {
+      toast.error('Enter a valid amount');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/user/wallet/convert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: Number(convertAmount),
+          pin: convertPin,
+        }),
+      });
+      const resData = await res.json();
+      if (res.ok) {
+        Swal.fire('Success! 🎉', resData.message, 'success');
+        setConvertAmount('');
+        setConvertPin('');
+        fetchWalletData();
+      } else {
+        toast.error(resData.message || 'Conversion failed');
+      }
+    } catch (err) {
+      toast.error('Network error');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleUpdatePin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!pinNew) {
@@ -287,11 +336,86 @@ export default function WalletPage() {
         </Card>
       </div>
 
+      {/* ── Auto Profit Matrix ────────────────────────────────────────────── */}
+      {data?.autoProfit && (
+        <Card className="border border-violet-500/20 bg-violet-500/[0.02]">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <CardTitle className="text-base font-bold">Auto Profit Matrix</CardTitle>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  প্রতিটি downline activation-এ ৫২ BDT আপনার personal pool-এ জমা হয়।
+                  Pool নির্দিষ্ট tier threshold পৌঁছালে স্বয়ংক্রিয়ভাবে payout হয়।
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-xs text-muted-foreground">Completed Tiers</p>
+                <p className="text-2xl font-black text-violet-700">{data.autoProfit.completedTier} / 10</p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Current pool & progress */}
+            {!data.autoProfit.isComplete ? (
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs font-medium">
+                  <span className="text-muted-foreground">Pool Balance: <strong className="text-foreground">৳{data.autoProfit.pool.toLocaleString()}</strong></span>
+                  <span className="text-muted-foreground">Next Tier {data.autoProfit.completedTier + 1}: <strong className="text-violet-700">৳{(data.autoProfit.nextTierAmount || 0).toLocaleString()}</strong></span>
+                </div>
+                <div className="h-2.5 bg-violet-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-violet-500 rounded-full transition-all duration-700"
+                    style={{ width: `${data.autoProfit.tierProgress}%` }}
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground text-right">{data.autoProfit.tierProgress.toFixed(1)}% complete</p>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-sm font-bold text-violet-700 bg-violet-50 rounded-xl px-4 py-3 border border-violet-200">
+                🎉 সব ১০টি tier সম্পূর্ণ হয়েছে! Total payout: ৳{[240, 720, 2160, 7776, 46656, 233280, 1399680, 5038848, 30233088, 120932352].reduce((a, b) => a + b, 0).toLocaleString()} BDT
+              </div>
+            )}
+
+            {/* Tier grid */}
+            <div className="grid grid-cols-5 gap-2">
+              {(data.autoProfit.allTiers || []).map((amt: number, idx: number) => {
+                const done = idx < data.autoProfit.completedTier;
+                const active = idx === data.autoProfit.completedTier;
+                return (
+                  <div
+                    key={idx}
+                    className={`rounded-xl border p-2 text-center transition-all ${
+                      done
+                        ? 'bg-violet-500 border-violet-500 text-white'
+                        : active
+                        ? 'bg-violet-50 border-violet-400 text-violet-700 ring-2 ring-violet-300'
+                        : 'bg-muted/30 border-muted text-muted-foreground'
+                    }`}
+                  >
+                    <p className="text-[9px] font-bold uppercase tracking-wide opacity-75">Tier {idx + 1}</p>
+                    <p className="text-[11px] font-black mt-0.5">
+                      {amt >= 1000000
+                        ? `৳${(amt / 100000).toFixed(1)}L`
+                        : amt >= 1000
+                        ? `৳${(amt / 1000).toFixed(0)}K`
+                        : `৳${amt}`}
+                    </p>
+                    {done && <p className="text-[9px] mt-0.5">✓ Done</p>}
+                    {active && <p className="text-[9px] mt-0.5">← Next</p>}
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Tabs defaultValue="statement" className="w-full space-y-6">
-        <TabsList className="grid grid-cols-5 bg-muted rounded-xl p-1 w-full max-w-2xl overflow-x-auto">
+        <TabsList className="grid grid-cols-6 bg-muted rounded-xl p-1 w-full max-w-3xl overflow-x-auto">
           <TabsTrigger value="statement" className="rounded-lg gap-1.5"><History className="h-4 w-4" /> Statement</TabsTrigger>
           <TabsTrigger value="deposit" className="rounded-lg gap-1.5"><ArrowUpCircle className="h-4 w-4" /> Deposit</TabsTrigger>
           <TabsTrigger value="withdraw" className="rounded-lg gap-1.5"><ArrowDownCircle className="h-4 w-4" /> Withdraw</TabsTrigger>
+          <TabsTrigger value="convert" className="rounded-lg gap-1.5 text-blue-600"><RefreshCw className="h-4 w-4" /> Convert</TabsTrigger>
           <TabsTrigger value="transfer" className="rounded-lg gap-1.5"><Send className="h-4 w-4" /> Transfer</TabsTrigger>
           <TabsTrigger value="pin" className="rounded-lg gap-1.5"><Key className="h-4 w-4" /> Secure PIN</TabsTrigger>
         </TabsList>
@@ -360,6 +484,67 @@ export default function WalletPage() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Official Payment Account Information Box */}
+                {(() => {
+                  const methodConfig = settings?.manualPaymentConfig?.[depositMethod as keyof typeof settings.manualPaymentConfig] as { number?: string; qrCode?: string; active?: boolean } | undefined;
+                  const methodNumber = methodConfig?.number;
+                  const qrCode = methodConfig?.qrCode;
+                  const methodName = depositMethod === 'bkash' ? 'bKash' : depositMethod === 'nagad' ? 'Nagad' : depositMethod === 'rocket' ? 'Rocket' : depositMethod;
+
+                  return (
+                    <div className="p-4 rounded-xl bg-primary/5 border border-primary/15 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-700 dark:text-zinc-300">
+                          Official Company {methodName} Number:
+                        </span>
+                        <Badge variant="outline" className="text-[10px] bg-primary/10 border-primary/20 text-primary font-semibold">
+                          Send Money
+                        </Badge>
+                      </div>
+
+                      {methodNumber ? (
+                        <div className="flex items-center gap-2">
+                          <p className="flex-1 font-mono text-base font-black tracking-wider text-primary bg-background px-3 py-2 rounded-lg border border-primary/20 select-all">
+                            {methodNumber}
+                          </p>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-10 px-3 font-semibold border-primary/30 hover:bg-primary hover:text-white transition-all shrink-0"
+                            onClick={() => {
+                              navigator.clipboard.writeText(methodNumber);
+                              toast.success(`${methodName} number copied to clipboard!`);
+                            }}
+                          >
+                            <Copy className="h-4 w-4 mr-1.5" />
+                            Copy
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20 text-xs text-amber-700 dark:text-amber-400">
+                          No official {methodName} number configured in admin settings yet. Please contact support to get the official number.
+                        </div>
+                      )}
+
+                      {qrCode && (
+                        <div className="flex flex-col items-center gap-1.5 pt-2 border-t border-primary/10">
+                          <p className="text-[10px] font-bold uppercase opacity-60">Scan QR Code to Pay</p>
+                          <div className="p-2 bg-white rounded-xl shadow-xs border border-primary/15">
+                            <Image src={qrCode} alt={`${methodName} QR`} width={128} height={128} className="h-28 w-28 object-contain" />
+                          </div>
+                        </div>
+                      )}
+
+                      {settings?.manualPaymentConfig?.instructions && (
+                        <p className="text-xs leading-relaxed text-muted-foreground pt-1 border-t border-primary/10">
+                          {settings.manualPaymentConfig.instructions}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 <div className="space-y-2">
                   <Label>Amount (BDT)</Label>
@@ -463,6 +648,98 @@ export default function WalletPage() {
                 <Button type="submit" disabled={submitting} className="w-full h-11 font-bold rounded-lg mt-2">
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Submit Withdrawal Request
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Convert Form: Bonus → Withdrawal */}
+        <TabsContent value="convert">
+          <Card className="max-w-xl border-blue-500/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <RefreshCw className="h-5 w-5 text-blue-600" />
+                Bonus → Withdrawal Convert
+              </CardTitle>
+              <CardDescription>
+                Bonus Wallet থেকে Withdrawal Wallet এ টাকা নিন, তারপর bKash/Nagad/Bank এ cashout করুন।
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Balance preview */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-center">
+                  <p className="text-xs font-bold uppercase tracking-wide text-blue-600 mb-1">Bonus Wallet</p>
+                  <p className="text-2xl font-black text-blue-900">৳{(data?.balances?.bonusWallet || 0).toLocaleString()}</p>
+                  <p className="text-[10px] text-blue-500 mt-1">Available to convert</p>
+                </div>
+                <div className="rounded-xl border border-purple-200 bg-purple-50 p-4 text-center">
+                  <p className="text-xs font-bold uppercase tracking-wide text-purple-600 mb-1">Withdrawal Wallet</p>
+                  <p className="text-2xl font-black text-purple-900">৳{(data?.balances?.withdrawalWallet || 0).toLocaleString()}</p>
+                  <p className="text-[10px] text-purple-500 mt-1">After convert, withdraw here</p>
+                </div>
+              </div>
+
+              {/* Arrow indicator */}
+              <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
+                <span className="font-semibold text-blue-600">Bonus Wallet</span>
+                <RefreshCw className="h-4 w-4 text-muted-foreground animate-spin" style={{ animationDuration: '3s' }} />
+                <span className="font-semibold text-purple-600">Withdrawal Wallet</span>
+              </div>
+
+              <form onSubmit={handleConvert} className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Convert Amount (BDT)</Label>
+                  <div className="relative">
+                    <Input
+                      type="number"
+                      placeholder="Enter amount to convert"
+                      value={convertAmount}
+                      onChange={(e) => setConvertAmount(e.target.value)}
+                      className="h-11 rounded-lg pr-20"
+                      min={1}
+                      max={data?.balances?.bonusWallet || 0}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setConvertAmount(String(data?.balances?.bonusWallet || 0))}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded-md transition-colors"
+                    >
+                      Max
+                    </button>
+                  </div>
+                  {convertAmount && Number(convertAmount) > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      After convert: Bonus ৳{Math.max(0, (data?.balances?.bonusWallet || 0) - Number(convertAmount)).toLocaleString()} → Withdrawal ৳{((data?.balances?.withdrawalWallet || 0) + Number(convertAmount)).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Secure Transaction PIN</Label>
+                  <Input
+                    type="password"
+                    placeholder="Enter transaction PIN"
+                    value={convertPin}
+                    onChange={(e) => setConvertPin(e.target.value)}
+                    maxLength={6}
+                    className="h-11 rounded-lg"
+                  />
+                  <p className="text-xs text-muted-foreground">PIN সেট না থাকলে আগে &quot;Secure PIN&quot; tab থেকে set করুন।</p>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={submitting || !convertAmount || Number(convertAmount) <= 0}
+                  className="w-full h-11 font-bold rounded-lg mt-2 bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {submitting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                  )}
+                  Convert to Withdrawal Wallet
                 </Button>
               </form>
             </CardContent>

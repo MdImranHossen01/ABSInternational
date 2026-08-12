@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import connectToDatabase from './lib/db';
@@ -13,19 +14,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
+        email: { label: 'Email or Phone', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error('Please provide both email and password.');
+        const rawEmail = typeof credentials?.email === 'string' ? credentials.email : '';
+        const identifier = rawEmail.trim();
+        if (!identifier || typeof credentials?.password !== 'string' || !credentials.password) {
+          throw new Error('Please provide both email/phone and password.');
         }
 
         await connectToDatabase();
-        const user = await User.findOne({ email: credentials.email }).select('+password');
+        const user = await User.findOne({
+          $or: [
+            { email: identifier },
+            { phone: identifier },
+          ]
+        }).select('+password');
 
         if (!user || !user.password) {
-          throw new Error('No user found with this email on this store.');
+          throw new Error('Invalid credentials.');
         }
 
         const isPasswordValid = await bcrypt.compare(credentials.password as string, user.password);
@@ -60,7 +68,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         try {
           await connectToDatabase();
           const mongoose = (await import('mongoose')).default;
-          
+
           if (user.id && mongoose.Types.ObjectId.isValid(user.id)) {
             const dbUser = await User.findById(user.id);
             if (dbUser) {
@@ -79,21 +87,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (session?.name !== undefined) token.name = session.name;
         if (session?.image !== undefined) token.image = session.image;
       }
-      
+
       if (token.email === 'imranshuvo101@gmail.com') {
         token.role = 'super_admin';
       }
-      
+
       return token;
     },
     async signIn({ user, account }) {
       if (account?.provider === 'google') {
         if (!user.email) return false;
-        
+
         try {
           const savedUser = await User.findOneAndUpdate(
             { email: user.email },
-            { 
+            {
               $set: {
                 name: user.name || 'Unknown',
                 image: user.image || '',
@@ -116,7 +124,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return true;
         } catch (error) {
           console.error('Error in Google signIn:', error);
-          return true;
+          return false;
         }
       }
       return true;

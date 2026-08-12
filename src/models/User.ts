@@ -25,6 +25,8 @@ export interface IUser extends Document {
   personalSales: number;
   teamSales: number;
   teamCount: number;
+  autoProfitPool: number;    // accumulated 52 BDT contributions from direct downline activations
+  autoProfitTier: number;   // current completed tier (0-10)
   nidNumber?: string;
   nidFrontImage?: string;
   nidBackImage?: string;
@@ -97,6 +99,8 @@ const UserSchema: Schema<IUser> = new Schema(
     personalSales: { type: Number, default: 0 },
     teamSales: { type: Number, default: 0 },
     teamCount: { type: Number, default: 0 },
+    autoProfitPool: { type: Number, default: 0 },
+    autoProfitTier: { type: Number, default: 0, min: 0, max: 10 },
     nidNumber: { type: String },
     nidFrontImage: { type: String },
     nidBackImage: { type: String },

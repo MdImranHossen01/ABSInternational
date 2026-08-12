@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
@@ -7,10 +7,9 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Loader2, GalleryVerticalEnd, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -28,12 +27,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from "@/lib/utils";
 import { Logo } from '@/components/ui/logo';
 
 const loginSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address' }),
+  email: z.string().min(1, { message: 'Email or phone number is required' }).refine(
+    (val) => {
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+      const isPhone = /^[0-9]{11,}$/.test(val);
+      return isEmail || isPhone;
+    },
+    { message: 'Please enter a valid email or phone number' }
+  ),
   password: z.string().min(1, { message: 'Password is required' }),
 });
 
@@ -86,7 +90,7 @@ export default function LoginPage() {
       });
 
       if (response?.error) {
-        toast.error(response.error);
+        toast.error('Invalid email/phone or password. Please try again.');
       } else {
         toast.success('Logged in successfully!');
         window.location.href = '/dashboard';
@@ -100,37 +104,9 @@ export default function LoginPage() {
 
   return (
     <main className="relative min-h-screen">
-      {/* Left Side: Image Banner */}
-      <motion.div
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="fixed inset-y-0 left-0 hidden w-1/2 bg-muted lg:block"
-      >
-        <Image
-          src="/assets/login_banner_v2.webp"
-          alt="Login Banner"
-          fill
-          className="absolute inset-0 h-full w-full object-cover brightness-[0.8] contrast-[1.1]"
-          sizes="50vw"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex flex-col justify-end p-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-          >
-            <h2 className="text-4xl font-bold text-white mb-4 font-serif">Discover the Best Deals</h2>
-            <p className="text-lg text-white/80 max-w-md">
-              Join ABS International today and get access to exclusive offers, personalized recommendations, and a seamless shopping experience.
-            </p>
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* Right Side: Login Form */}
-      <div className="flex flex-col p-6 md:p-10 bg-background lg:ml-[50%] min-h-screen">
-        <div className="flex justify-center gap-2 md:justify-start mb-8">
+      {/* Login Form centered */}
+      <div className="flex flex-col p-6 md:p-10 bg-background min-h-screen items-center justify-center w-full">
+        <div className="flex justify-center mb-8">
           <Logo />
         </div>
 
@@ -179,7 +155,7 @@ export default function LoginPage() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-background px-4 text-muted-foreground">
-                    Or continue with email
+                    email or phone
                   </span>
                 </div>
               </div>
@@ -191,11 +167,11 @@ export default function LoginPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email Address</FormLabel>
+                        <FormLabel>Email or Phone Number</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="m@example.com"
-                            type="email"
+                            placeholder="email@example.com or 017xxxxxxxx"
+                            type="text"
                             {...field}
                             disabled={isLoading || isGoogleLoading}
                             className="h-11 focus-visible:ring-primary/20"
@@ -292,4 +268,3 @@ export default function LoginPage() {
     </main>
   );
 }
-

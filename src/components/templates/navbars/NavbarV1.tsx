@@ -43,6 +43,7 @@ const navItems = [
   { href: '/', label: 'Home' },
   { href: '/about', label: 'About Us' },
   { href: '/shop', label: 'Products' },
+  { href: '/gallery', label: 'Gallery' },
   { href: '/blog', label: 'Blogs' },
   { href: '/contact', label: 'Contact' },
 ];
@@ -63,6 +64,9 @@ export default function Navbar() {
   const { totalQuantity: cartCount, totalAmount } = useAppSelector((state) => state.cart);
   const { items: wishlistItems } = useAppSelector((state) => state.wishlist);
   const settings = useSettings();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const [categories, setCategories] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
@@ -387,7 +391,7 @@ export default function Navbar() {
                   >
                     <div className="relative">
                       <ShoppingCart className="h-5 w-5 stroke-[1.5]" />
-                      {cartCount > 0 && (
+                      {mounted && cartCount > 0 && (
                         <span className="absolute -top-2 -right-2 h-4 w-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center animate-in zoom-in">
                           {cartCount}
                         </span>
