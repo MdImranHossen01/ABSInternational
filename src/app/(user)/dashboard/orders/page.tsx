@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -24,18 +26,18 @@ import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  'Order Placed':           { label: 'Order Placed',         color: 'bg-blue-100 text-blue-700 border-blue-200',       icon: Clock },
-  'Confirmed':              { label: 'Confirmed',            color: 'bg-indigo-100 text-indigo-700 border-indigo-200', icon: CheckCircle2 },
-  'Processing':             { label: 'Processing',           color: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: Package },
-  'Ready for Delivery':     { label: 'Ready for Delivery',   color: 'bg-orange-100 text-orange-700 border-orange-200', icon: Package },
-  'Released for Delivery':  { label: 'Out for Delivery',     color: 'bg-purple-100 text-purple-700 border-purple-200', icon: Truck },
-  'Delivered':              { label: 'Delivered',            color: 'bg-green-100 text-green-700 border-green-200',     icon: CheckCircle2 },
-  'Cancelled':              { label: 'Cancelled',            color: 'bg-red-100 text-red-700 border-red-200',           icon: XCircle },
+  'Order Placed': { label: 'Order Placed', color: 'bg-blue-100 text-blue-700 border-blue-200', icon: Clock },
+  'Confirmed': { label: 'Confirmed', color: 'bg-indigo-100 text-indigo-700 border-indigo-200', icon: CheckCircle2 },
+  'Processing': { label: 'Processing', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: Package },
+  'Ready for Delivery': { label: 'Ready for Delivery', color: 'bg-orange-100 text-orange-700 border-orange-200', icon: Package },
+  'Released for Delivery': { label: 'Out for Delivery', color: 'bg-purple-100 text-purple-700 border-purple-200', icon: Truck },
+  'Delivered': { label: 'Delivered', color: 'bg-green-100 text-green-700 border-green-200', icon: CheckCircle2 },
+  'Cancelled': { label: 'Cancelled', color: 'bg-red-100 text-red-700 border-red-200', icon: XCircle },
 };
 
 const FILTER_TABS = [
-  { key: 'all',       label: 'All Orders' },
-  { key: 'active',    label: 'Active' },
+  { key: 'all', label: 'All Orders' },
+  { key: 'active', label: 'Active' },
   { key: 'Delivered', label: 'Delivered' },
   { key: 'Cancelled', label: 'Cancelled' },
 ];
@@ -48,21 +50,19 @@ function OrderProgress({ status }: { status: string }) {
   return (
     <div className="flex items-center gap-0">
       {STEPS.map((step, i) => {
-        const done   = i <= current;
+        const done = i <= current;
         const isLast = i === STEPS.length - 1;
         return (
           <div key={step} className="flex items-center flex-1">
             <div
               title={step}
-              className={`w-2.5 h-2.5 rounded-full shrink-0 transition-colors ${
-                done ? 'bg-primary' : 'bg-muted-foreground/25'
-              }`}
+              className={`w-2.5 h-2.5 rounded-full shrink-0 transition-colors ${done ? 'bg-primary' : 'bg-muted-foreground/25'
+                }`}
             />
             {!isLast && (
               <div
-                className={`h-0.5 flex-1 transition-colors ${
-                  i < current ? 'bg-primary' : 'bg-muted-foreground/20'
-                }`}
+                className={`h-0.5 flex-1 transition-colors ${i < current ? 'bg-primary' : 'bg-muted-foreground/20'
+                  }`}
               />
             )}
           </div>
@@ -76,22 +76,16 @@ export default function MyOrdersPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const [orders, setOrders]       = useState<any[]>([]);
-  const [loading, setLoading]     = useState(true);
-  const [error, setError]         = useState<string | null>(null);
-  const [search, setSearch]       = useState('');
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState('all');
 
-  useEffect(() => {
-    if (status === 'unauthenticated') { router.push('/login'); return; }
-    if (status !== 'authenticated') return;
-    fetchOrders();
-  }, [status]);
-
-  const fetchOrders = async () => {
-    setLoading(true);
-    setError(null);
+  const fetchOrders = useCallback(async () => {
     try {
+      setLoading(true);
+      setError(null);
       const res = await fetch('/api/orders');
       if (res.ok) {
         const data = await res.json();
@@ -108,7 +102,19 @@ export default function MyOrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') { router.push('/login'); return; }
+    if (status !== 'authenticated') return;
+    
+    let isMounted = true;
+    const load = async () => {
+      await fetchOrders();
+    };
+    load();
+    return () => { isMounted = false; };
+  }, [status, fetchOrders]);
 
   const filtered = orders.filter((o) => {
     const matchesTab =
@@ -152,11 +158,10 @@ export default function MyOrdersPage() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-                activeTab === tab.key
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-muted/50 text-muted-foreground border-transparent hover:bg-muted'
-              }`}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${activeTab === tab.key
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-muted/50 text-muted-foreground border-transparent hover:bg-muted'
+                }`}
             >
               {tab.label}
               {tab.key === 'all' && (
@@ -207,11 +212,11 @@ export default function MyOrdersPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map((order) => {
-            const cfg        = STATUS_CONFIG[order.status] ?? STATUS_CONFIG['Order Placed'];
-            const Icon       = cfg.icon;
-            const firstItem  = order.items?.[0];
+            const cfg = STATUS_CONFIG[order.status] ?? STATUS_CONFIG['Order Placed'];
+            const Icon = cfg.icon;
+            const firstItem = order.items?.[0];
             const extraCount = (order.items?.length ?? 1) - 1;
-            const orderDate  = order.createdAt
+            const orderDate = order.createdAt
               ? format(new Date(order.createdAt), 'dd MMM yyyy')
               : '—';
 
