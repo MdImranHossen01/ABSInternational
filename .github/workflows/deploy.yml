@@ -58,7 +58,7 @@ jobs:
                 image: ${{ env.DOCKER_IMAGE_TAG }}
                 container_name: absinternational-app
                 restart: always
-                mem_limit: 180m
+                mem_limit: 150m
                 mem_reservation: 80m
                 ports:
                   - "3002:3000"
