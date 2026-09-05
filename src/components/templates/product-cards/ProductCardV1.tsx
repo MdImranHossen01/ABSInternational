@@ -176,7 +176,7 @@ export default function ProductCardV1({ product: initialProduct, isFlashSale }: 
   const categoryName = mainCategory?.name || 'ABS INTERNATIONAL';
 
   return (
-    <div className="w-full bg-card border border-border/40 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group flex flex-col h-full relative">
+    <div className="w-full bg-card border border-border/40 rounded-none overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group flex flex-col h-full relative">
       {/* Image Area */}
       <div className="relative w-full aspect-[4/5] bg-muted/10 overflow-hidden">
         <Link prefetch={true} href={`/product/${product.slug}`} className="relative block h-full w-full">
@@ -193,9 +193,9 @@ export default function ProductCardV1({ product: initialProduct, isFlashSale }: 
         {(isFlashSale || discount > 0 || product.isNewArrival || product.isFeatured) && (
           <div className="absolute top-0 left-0 overflow-hidden w-20 h-20 z-10 pointer-events-none">
             <div className={`absolute top-0 left-0 text-[8px] font-black py-0.5 w-28 text-center -rotate-45 -translate-x-8 translate-y-3.5 shadow-md uppercase tracking-wider ${isFlashSale ? 'bg-orange-600 text-white animate-pulse' :
-                discount > 0 ? 'bg-primary text-primary-foreground' :
-                  product.isNewArrival ? 'bg-emerald-600 text-white' :
-                    'bg-amber-400 text-neutral-950'
+              discount > 0 ? 'bg-primary text-primary-foreground' :
+                product.isNewArrival ? 'bg-emerald-600 text-white' :
+                  'bg-amber-400 text-neutral-950'
               }`}>
               {isFlashSale ? 'Flash' :
                 discount > 0 ? `${discount}% OFF` :
