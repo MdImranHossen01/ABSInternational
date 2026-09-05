@@ -60,8 +60,8 @@ export default function ProductCardV1({ product: initialProduct, isFlashSale }: 
 
   const [product] = useState(initialProduct);
   const [showQuickViewModal, setShowQuickViewModal] = useState(false);
-
-  const isAdmin = session?.user?.role === 'admin' || session?.user?.role === 'superadmin';
+  const user = session?.user as any;
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
 
   const calculateDiscount = () => {
     if (product.salePrice && product.salePrice < product.price) {

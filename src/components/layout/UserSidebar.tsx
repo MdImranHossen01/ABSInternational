@@ -94,11 +94,13 @@ export function UserSidebar() {
                   : pathname.startsWith(item.href)
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
-                      <Link href={item.href}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
+                    <SidebarMenuButton
+                      render={<Link href={item.href} />}
+                      isActive={isActive}
+                      tooltip={item.title}
+                    >
+                      <item.icon />
+                      <span>{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )
