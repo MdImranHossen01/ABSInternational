@@ -2,11 +2,24 @@ import { Metadata } from 'next';
 import connectToDatabase from '@/lib/db';
 import GlobalSettings from '@/models/GlobalSettings';
 import { Separator } from '@/components/ui/separator';
-import { ShieldCheck, Info, Share2, Lock, Eye, Bell } from 'lucide-react';
+import { 
+  ShieldCheck, 
+  Info, 
+  Share2, 
+  Lock, 
+  Eye, 
+  Bell, 
+  CreditCard, 
+  UserCheck, 
+  Database, 
+  Stethoscope, 
+  HeartHandshake 
+} from 'lucide-react';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | ABS International',
-  description: 'Learn how ABS International collects, uses, and protects your personal information.',
+  description: 'Privacy Policy and Data Protection guidelines for ABS International e-commerce, MLM network, and Seba healthcare platform.',
 };
 
 async function getSettings() {
@@ -15,169 +28,249 @@ async function getSettings() {
     const settings = await GlobalSettings.findOne().lean();
     if (!settings) {
       return {
-        brandName: "ABS International",
+        brandName: 'ABS International',
         contact: {
-          email: "support@absinternational.com"
-        }
+          email: 'support@absinternationalltd.com',
+          phone: '+880 1800-000000',
+        },
       };
     }
     return JSON.parse(JSON.stringify(settings));
   } catch (error) {
     console.error('Error fetching settings for privacy page:', error);
     return {
-      brandName: "ABS International",
+      brandName: 'ABS International',
       contact: {
-        email: "support@absinternational.com"
-      }
+        email: 'support@absinternationalltd.com',
+        phone: '+880 1800-000000',
+      },
     };
   }
 }
 
 export default async function PrivacyPage() {
   const settings = await getSettings();
-  const brandName = settings.brandName || "RPL Market";
-  const contactEmail = settings.contact?.email || "support@absinternational.com";
-  const lastUpdated = "April 04, 2026";
+  const brandName = settings.brandName || 'ABS International';
+  const contactEmail = settings.contact?.email || 'support@absinternationalltd.com';
+  const lastUpdated = 'September 2026';
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background">
       {/* Hero Header */}
       <section className="bg-primary/5 py-16 md:py-24 border-b">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4 text-center max-w-4xl">
           <div className="inline-flex items-center justify-center p-3 mb-6 rounded-full bg-primary/10 text-primary">
             <ShieldCheck className="h-8 w-8" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
             Privacy <span className="text-primary">Policy</span>
           </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Your privacy is important to us. This policy explains how we handle your data and ensure your security while shopping with us.
+          <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+            At {brandName}, your privacy and data security are our top priorities. This policy outlines how we collect, store, verify, and protect your personal, financial, and network information.
           </p>
-          <p className="mt-8 text-sm font-medium text-muted-foreground uppercase tracking-wider">
-            Last Updated: {lastUpdated}
-          </p>
+          <div className="mt-6 inline-block bg-muted/60 px-4 py-1.5 rounded-full text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+            Effective Date &bull; {lastUpdated}
+          </div>
         </div>
       </section>
 
       {/* Content Section */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 max-w-4xl">
-          <div className="prose prose-slate dark:prose-invert max-w-none space-y-12">
+          <div className="space-y-12 text-foreground/90">
 
-            {/* Introduction */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Info className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold m-0 italic">Introduction</h2>
+            {/* 1. Introduction */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Info className="h-6 w-6 text-primary shrink-0" />
+                <h2 className="text-2xl font-bold tracking-tight">1. Introduction & Scope</h2>
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                Welcome to {brandName}. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you visit our website and tell you about your privacy rights and how the law protects you.
+                This Privacy Policy applies to all users of <strong className="text-foreground">{brandName}</strong>, including public shoppers, registered customers, affiliate members, and Seba benefit recipients. By accessing our web application, mobile app, or related digital services, you consent to the data collection and processing methods described herein.
               </p>
             </div>
 
-            <Separator className="my-8" />
+            <Separator />
 
-            {/* Information We Collect */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Eye className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold m-0 italic">Information We Collect</h2>
+            {/* 2. Information We Collect */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Eye className="h-6 w-6 text-primary shrink-0" />
+                <h2 className="text-2xl font-bold tracking-tight">2. Information We Collect</h2>
               </div>
-              <p className="text-muted-foreground mb-4 leading-relaxed">
-                We may collect, use, store and transfer different kinds of personal data about you which we have grouped together as follows:
+              <p className="text-muted-foreground leading-relaxed">
+                To deliver our e-commerce store, affiliate MLM engine, secure wallets, and Seba healthcare features, we collect several categories of information:
               </p>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-muted-foreground list-none p-0">
-                <li className="flex gap-3 bg-muted/30 p-4 rounded-xl border">
-                  <span className="font-bold text-primary">Identity:</span> Includes first name, last name, and username.
-                </li>
-                <li className="flex gap-3 bg-muted/30 p-4 rounded-xl border">
-                  <span className="font-bold text-primary">Contact:</span> Includes email address, phone number, and delivery address.
-                </li>
-                <li className="flex gap-3 bg-muted/30 p-4 rounded-xl border">
-                  <span className="font-bold text-primary">Financial:</span> Includes payment card details (processed securely).
-                </li>
-                <li className="flex gap-3 bg-muted/30 p-4 rounded-xl border">
-                  <span className="font-bold text-primary">Technical:</span> Includes IP address, browser type, and login data.
-                </li>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div className="p-5 rounded-2xl border bg-card/60 space-y-2">
+                  <div className="flex items-center gap-2 text-primary font-bold text-base">
+                    <UserCheck className="h-5 w-5" />
+                    <span>Identity & Profile Data</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Full name, email address, contact phone number, delivery address, Sponsor ID, and account profile credentials.
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-2xl border bg-card/60 space-y-2">
+                  <div className="flex items-center gap-2 text-primary font-bold text-base">
+                    <ShieldCheck className="h-5 w-5" />
+                    <span>KYC & Government Verification</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    National ID (NID) number and encrypted NID card photos for member authentication, anti-fraud compliance, and payout validation.
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-2xl border bg-card/60 space-y-2">
+                  <div className="flex items-center gap-2 text-primary font-bold text-base">
+                    <CreditCard className="h-5 w-5" />
+                    <span>Financial & Payout Details</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    bKash, Nagad, Rocket phone numbers, bank account numbers, transaction hashes, and deposit/withdrawal histories. (Encrypted PINs are never stored in plaintext).
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-2xl border bg-card/60 space-y-2">
+                  <div className="flex items-center gap-2 text-primary font-bold text-base">
+                    <Database className="h-5 w-5" />
+                    <span>MLM & Ledger Activity</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Sponsor referrals, downline generation tree connections, rank progression logs, wallet transaction ledgers, and commission statements.
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-2xl border bg-card/60 space-y-2 md:col-span-2">
+                  <div className="flex items-center gap-2 text-primary font-bold text-base">
+                    <Stethoscope className="h-5 w-5" />
+                    <span>Digital Seba Card & Healthcare Records</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Seba Card membership ID, doctor consultation appointment requests, diagnostic discount voucher redemptions, and ambulance helpline logs.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* 3. How We Use Your Data */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Bell className="h-6 w-6 text-primary shrink-0" />
+                <h2 className="text-2xl font-bold tracking-tight">3. How We Use Your Information</h2>
+              </div>
+              <ul className="list-disc list-inside space-y-2 text-muted-foreground pl-2 sm:pl-4">
+                <li><strong className="text-foreground">Order & Delivery Fulfillment:</strong> To process product orders, calculate courier charges, generate delivery invoices, and dispatch packages via courier APIs.</li>
+                <li><strong className="text-foreground">Automated Commission & MLM Ledger Calculations:</strong> To distribute Sponsor Bonuses, Generation Bonuses, Auto Profit pools, and rank incentives accurately.</li>
+                <li><strong className="text-foreground">KYC Compliance & Anti-Fraud Security:</strong> To verify genuine identities, prevent multi-account manipulations, and ensure safe financial withdrawals.</li>
+                <li><strong className="text-foreground">Healthcare & Partner Services:</strong> To validate digital Seba vouchers with partner diagnostic centers and medical professionals.</li>
+                <li><strong className="text-foreground">Account Notifications:</strong> To provide SMS or email alerts regarding wallet transactions, downline achievements, and order updates.</li>
               </ul>
             </div>
 
-            <Separator className="my-8" />
+            <Separator />
 
-            {/* How We Use Your Data */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Bell className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold m-0 italic">How We Use Your Data</h2>
+            {/* 4. Data Sharing & Third Parties */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Share2 className="h-6 w-6 text-primary shrink-0" />
+                <h2 className="text-2xl font-bold tracking-tight">4. Third-Party Data Sharing Policy</h2>
               </div>
-              <p className="text-muted-foreground leading-relaxed">
-                We will only use your personal data for the following purposes:
-              </p>
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground pl-4">
-                <li>To register you as a new customer and process your orders.</li>
-                <li>To deliver and manage payments, fees, and charges.</li>
-                <li>To manage our relationship with you, including notifications about policy changes.</li>
-                <li>To enable you to partake in competitions or complete surveys.</li>
-                <li>To improve our website, products, services, and customer experiences.</li>
-              </ul>
-            </div>
-
-            <Separator className="my-8" />
-
-            {/* Data Sharing */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Share2 className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold m-0 italic">Sharing Your Information</h2>
-              </div>
-              <p className="text-muted-foreground leading-relaxed">
-                We do not sell your personal data to third parties. We only share your data with trusted partners (like delivery services and payment processors) who are essential for fulfilling your orders and providing our services. All third-party service providers are required to take appropriate security measures to protect your personal data.
-              </p>
-            </div>
-
-            <Separator className="my-8" />
-
-            {/* Security */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Lock className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold m-0 italic">Security of Data</h2>
-              </div>
-              <div className="bg-primary/5 border border-primary/20 p-6 rounded-2xl">
-                <p className="text-muted-foreground italic leading-relaxed m-0">
-                  We have put in place appropriate security measures to prevent your personal data from being accidentally lost, used or accessed in an unauthorized way, altered or disclosed. In addition, we limit access to your personal data to those employees and partners who have a business need to know.
+              <div className="p-4 rounded-xl border bg-primary/5 text-sm leading-relaxed text-muted-foreground space-y-2">
+                <p className="font-semibold text-foreground">
+                  We do NOT sell, rent, or trade your personal or financial data to any third-party marketing companies.
                 </p>
+                <p>Data is strictly shared on a need-to-know basis with:</p>
+                <ul className="list-disc list-inside space-y-1 pl-2">
+                  <li><strong className="text-foreground">Logistics Partners:</strong> Steadfast, Pathao, or Redx solely for shipping address label generation and parcel tracking.</li>
+                  <li><strong className="text-foreground">Payment Gateways & MFS:</strong> SSLCommerz, bKash, Nagad, and Rocket for secure deposit validation.</li>
+                  <li><strong className="text-foreground">Healthcare Partners:</strong> Affiliated hospitals and diagnostic centers solely to verify Seba Card eligibility upon presentation.</li>
+                  <li><strong className="text-foreground">Legal & Regulatory Authorities:</strong> When required by the law enforcement agencies of Bangladesh.</li>
+                </ul>
               </div>
             </div>
 
-            <Separator className="my-8" />
+            <Separator />
 
-            {/* Contact Information */}
-            <div className="bg-muted p-8 rounded-3xl text-center shadow-inner">
-              <h2 className="text-2xl font-bold mb-4 italic">Questions or Concerns?</h2>
-              <p className="text-muted-foreground mb-6">
-                If you have any questions about this privacy policy or our privacy practices, please contact us.
+            {/* 5. Data Security & Encryption */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Lock className="h-6 w-6 text-primary shrink-0" />
+                <h2 className="text-2xl font-bold tracking-tight">5. Data Security & Storage Architecture</h2>
+              </div>
+              <p className="text-muted-foreground leading-relaxed">
+                {brandName} implements bank-grade security protocols to protect your information:
               </p>
-              <a
-                href={`mailto:${contactEmail}`}
-                className="text-primary font-bold text-lg hover:underline transition-all"
-              >
-                {contactEmail}
-              </a>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+                <div className="p-4 rounded-xl border bg-card/60 text-center space-y-1">
+                  <div className="text-primary font-bold text-base">Atomic Ledgers</div>
+                  <p className="text-xs text-muted-foreground">ACID-compliant database transactions preventing double-spending.</p>
+                </div>
+                <div className="p-4 rounded-xl border bg-card/60 text-center space-y-1">
+                  <div className="text-primary font-bold text-base">KYC Document Encryption</div>
+                  <p className="text-xs text-muted-foreground">Encrypted cloud storage for NID documents and ID proofs.</p>
+                </div>
+                <div className="p-4 rounded-xl border bg-card/60 text-center space-y-1">
+                  <div className="text-primary font-bold text-base">HTTPS & SSL/TLS</div>
+                  <p className="text-xs text-muted-foreground">End-to-end encrypted browser sessions across all pages.</p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* 6. User Rights & Account Control */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <UserCheck className="h-6 w-6 text-primary shrink-0" />
+                <h2 className="text-2xl font-bold tracking-tight">6. Your Rights & Account Controls</h2>
+              </div>
+              <p className="text-muted-foreground leading-relaxed">
+                You have the right to access your personal profile, view your complete wallet transaction statement, change your account password, update your transaction PIN, and submit support tickets regarding any data inquiries.
+              </p>
+            </div>
+
+            <Separator />
+
+            {/* Contact / Help CTA */}
+            <div className="bg-primary/5 p-8 sm:p-10 rounded-3xl text-center shadow-sm border border-primary/10">
+              <div className="flex flex-col items-center">
+                <ShieldCheck className="h-10 w-10 text-primary mb-4" />
+                <h3 className="text-2xl font-bold mb-3">Data Privacy Inquiries</h3>
+                <p className="text-muted-foreground max-w-md mx-auto mb-6 text-sm">
+                  If you have concerns about your data, KYC verification, or privacy practices, reach out directly to our Data Protection Officer.
+                </p>
+                <div className="flex flex-wrap gap-4 justify-center items-center">
+                  <Link
+                    href="/contact"
+                    className="px-6 py-2.5 bg-primary text-primary-foreground font-semibold rounded-full hover:bg-primary/90 transition-all text-sm"
+                  >
+                    Contact Support
+                  </Link>
+                  <a
+                    href={`mailto:${contactEmail}`}
+                    className="px-6 py-2.5 bg-card border font-semibold rounded-full hover:bg-muted transition-all text-sm text-foreground"
+                  >
+                    {contactEmail}
+                  </a>
+                </div>
+              </div>
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* Footer Disclaimer */}
-      <section className="bg-muted/50 py-12 border-t">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-xs text-muted-foreground max-w-xl mx-auto">
-            This privacy policy is a living document. We reserve the right to update it as our services and legal requirements evolve. Your continued use of {brandName} constitutes acceptance of these terms.
-          </p>
+      {/* Footer disclaimer */}
+      <footer className="bg-muted/40 py-8 border-t mt-auto text-center text-xs text-muted-foreground">
+        <div className="container mx-auto px-4">
+          <p>© {new Date().getFullYear()} {brandName}. All rights reserved. Registered under laws of Bangladesh.</p>
         </div>
-      </section>
+      </footer>
     </div>
   );
 }
