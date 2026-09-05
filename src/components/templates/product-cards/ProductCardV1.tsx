@@ -192,16 +192,15 @@ export default function ProductCardV1({ product: initialProduct, isFlashSale }: 
         {/* Unified Ribbon Badge (Top Left) */}
         {(isFlashSale || discount > 0 || product.isNewArrival || product.isFeatured) && (
           <div className="absolute top-0 left-0 overflow-hidden w-20 h-20 z-10 pointer-events-none">
-            <div className={`absolute top-0 left-0 text-[8px] font-black py-0.5 w-28 text-center -rotate-45 -translate-x-8 translate-y-3.5 shadow-md uppercase tracking-wider ${
-              isFlashSale ? 'bg-orange-600 text-white animate-pulse' :
-              discount > 0 ? 'bg-primary text-primary-foreground' :
-              product.isNewArrival ? 'bg-emerald-600 text-white' :
-              'bg-amber-400 text-neutral-950'
-            }`}>
+            <div className={`absolute top-0 left-0 text-[8px] font-black py-0.5 w-28 text-center -rotate-45 -translate-x-8 translate-y-3.5 shadow-md uppercase tracking-wider ${isFlashSale ? 'bg-orange-600 text-white animate-pulse' :
+                discount > 0 ? 'bg-primary text-primary-foreground' :
+                  product.isNewArrival ? 'bg-emerald-600 text-white' :
+                    'bg-amber-400 text-neutral-950'
+              }`}>
               {isFlashSale ? 'Flash' :
                 discount > 0 ? `${discount}% OFF` :
-                product.isNewArrival ? 'New' :
-                'Featured'}
+                  product.isNewArrival ? 'New' :
+                    'Featured'}
             </div>
           </div>
         )}
@@ -312,7 +311,7 @@ export default function ProductCardV1({ product: initialProduct, isFlashSale }: 
           <Button
             onClick={handleAddToCartClick}
             disabled={product.stock === 0}
-            className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 px-5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors duration-200"
+            className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 px-5 py-2.5 rounded-none text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors duration-200"
           >
             <ShoppingBag className="h-4 w-4" />
             {product.stock === 0 ? 'Out' : 'Add'}
