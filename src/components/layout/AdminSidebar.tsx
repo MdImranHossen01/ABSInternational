@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ShoppingBag, Users, LayoutDashboard, Settings, FileText, Image as ImageIcon, Tag, Monitor } from 'lucide-react';
+import { ShoppingBag, Users, LayoutDashboard, Settings, FileText, Tag, Monitor } from 'lucide-react';
 
 export default function AdminSidebar() {
   return (
@@ -26,11 +26,32 @@ export default function AdminSidebar() {
             Categories
           </Link>
           <Link
+            href="/admin/brands"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+          >
+            <Tag className="h-4 w-4" />
+            Brands
+          </Link>
+          <Link
             href="/admin/products"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
           >
             <ShoppingBag className="h-4 w-4" />
             Products
+          </Link>
+          <Link
+            href="/admin/upcoming-expiry"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+          >
+            <ShoppingBag className="h-4 w-4" />
+            Upcoming Expiry
+          </Link>
+          <Link
+            href="/admin/low-stock"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+          >
+            <ShoppingBag className="h-4 w-4" />
+            Low Stock Alerts
           </Link>
           <Link
             href="/admin/orders"
@@ -45,13 +66,6 @@ export default function AdminSidebar() {
           >
             <Users className="h-4 w-4" />
             Users
-          </Link>
-          <Link
-            href="/admin/cms"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-          >
-            <ImageIcon className="h-4 w-4" />
-            CMS Manager
           </Link>
           <Link
             href="/admin/landing-pages"

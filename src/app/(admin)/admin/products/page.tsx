@@ -11,7 +11,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Plus, Edit, Trash, Loader2, Search, DatabaseZap, Download } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Plus, Edit, Trash, Loader2, Search, DatabaseZap, Download, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -28,6 +35,8 @@ interface AdminProduct {
   price: number;
   salePrice?: number;
   stock: number;
+  brand?: { _id?: string; name?: string; slug?: string } | null;
+  batches?: { batchNumber: string; expiryDate?: Date; stock: number }[];
   isPublished: boolean;
   images?: string[];
   slug: string;
@@ -49,6 +58,15 @@ function ProductsContent() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [exportLoading, setExportLoading] = useState(false);
   const limit = 10;
+
+  // Add Stock Modal State
+  const [addStockModalOpen, setAddStockModalOpen] = useState(false);
+  const [addStockProduct, setAddStockProduct] = useState<AdminProduct | null>(null);
+  const [addStockBatchNumber, setAddStockBatchNumber] = useState('');
+  const [addStockExpiryDate, setAddStockExpiryDate] = useState('');
+  const [addStockTopLevel, setAddStockTopLevel] = useState<number>(0);
+  const [addStockVariants, setAddStockVariants] = useState<Array<{ variantId: string; color?: string; size?: string; stockToAdd: number }>>([]);
+  const [addingStock, setAddingStock] = useState(false);
 
   const fetchProducts = async (signal?: AbortSignal, page = currentPage) => {
     try {
@@ -110,11 +128,71 @@ function ProductsContent() {
     }
   };
 
+  const handleOpenAddStock = (product: AdminProduct) => {
+    setAddStockProduct(product);
+    setAddStockBatchNumber(product.batches?.[0]?.batchNumber || '');
+    setAddStockExpiryDate(
+      product.batches?.[0]?.expiryDate
+        ? new Date(product.batches[0].expiryDate).toISOString().split('T')[0]
+        : ''
+    );
+    setAddStockTopLevel(0);
+
+    if (product.variants && product.variants.length > 0) {
+      const vItems = product.variants.map((v: any) => ({
+        variantId: v._id?.toString() || v.id?.toString(),
+        color: v.color,
+        size: v.size,
+        stockToAdd: 0,
+      }));
+      setAddStockVariants(vItems);
+    } else {
+      setAddStockVariants([]);
+    }
+
+    setAddStockModalOpen(true);
+  };
+
+  const handleAddStockSubmit = async () => {
+    if (!addStockProduct) return;
+
+    setAddingStock(true);
+    try {
+      const response = await fetch('/api/products/add-stock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: addStockProduct._id,
+          batchNumber: addStockBatchNumber,
+          expiryDate: addStockExpiryDate || undefined,
+          topLevelStock: addStockTopLevel,
+          variantStocks: addStockVariants,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        toast.success('Stock added successfully');
+        setAddStockModalOpen(false);
+        setAddStockProduct(null);
+        fetchProducts();
+      } else {
+        toast.error(data.message || 'Failed to add stock');
+      }
+    } catch (error) {
+      console.error('Error adding stock:', error);
+      toast.error('Failed to add stock');
+    } finally {
+      setAddingStock(false);
+    }
+  };
+
   const filteredProducts = products.filter(p => {
     const searchLower = (search ?? '').toLowerCase();
     const nameLower = (p.name ?? '').toLowerCase();
     const skuLower = (p.sku ?? '').toLowerCase();
-    return nameLower.includes(searchLower) || skuLower.includes(searchLower);
+    const brandLower = (p.brand?.name ?? '').toLowerCase();
+    return nameLower.includes(searchLower) || skuLower.includes(searchLower) || brandLower.includes(searchLower);
   });
 
   const toggleSelectAll = () => {
@@ -148,155 +226,85 @@ function ProductsContent() {
   };
 
   const exportToCSV = async () => {
-    let productsToExport: AdminProduct[] = [];
-    setExportLoading(true);
+    if (selectedIds.length === 0) {
+      toast.error('Please select at least one product to export.');
+      return;
+    }
 
     try {
-      toast.info('Fetching products for export...');
-      const response = await fetch(`/api/products?page=1&limit=1000`);
-      if (response.ok) {
-        const data = await response.json();
-        const allProducts: AdminProduct[] = Array.isArray(data.products) ? data.products : [];
-        if (selectedIds.length > 0) {
-          productsToExport = allProducts.filter(p => selectedIds.includes(p._id));
-        } else {
-          productsToExport = allProducts;
-        }
-      } else {
-        productsToExport = selectedIds.length > 0 
-          ? products.filter(p => selectedIds.includes(p._id))
-          : products;
-      }
-
-      if (productsToExport.length === 0) {
-        toast.error('No products to export');
-        return;
-      }
+      setExportLoading(true);
+      const res = await fetch(`/api/products?ids=${selectedIds.join(',')}&limit=1000`);
+      if (!res.ok) throw new Error('Failed to fetch selected products');
+      const data = await res.json();
+      const exportProducts: AdminProduct[] = data.products || [];
 
       const headers = [
         'id',
         'title',
-        'item_group_id',
         'description',
         'availability',
         'condition',
-        'sku',
         'price',
-        'sale_price',
         'link',
         'image_link',
-        'brand',
-        'fb_product_category',
-        'colour',
-        'additional_image_link',
-        'colour'
+        'brand'
       ];
 
-      const rows: any[][] = [];
+      const rows: string[][] = [];
 
-      productsToExport.forEach(p => {
-        if (p.variants && p.variants.length > 0) {
-          p.variants.forEach((v: any, index: number) => {
-            const varPrice = v.price || p.price || 0;
-            const varSalePrice = v.salePrice || p.salePrice || undefined;
-            const varPriceVal = `${Math.round(varPrice)} BDT`;
-            const varSalePriceVal = varSalePrice && varSalePrice < varPrice ? `${Math.round(varSalePrice)} BDT` : '';
-            const varStock = v.stock !== undefined ? v.stock : (p.stock || 0);
+      exportProducts.forEach((p) => {
+        const itemPrice = `${p.salePrice || p.price || 0} BDT`;
+        const itemLink = getAbsoluteUrl(`/product/${p.slug}`);
+        const itemImage = p.images && p.images.length > 0 ? getAbsoluteUrl(p.images[0]) : '';
+        const itemAvailability = (p.stock && p.stock > 0) ? 'in stock' : 'out of stock';
+        const brandName = p.brand?.name || 'ABS International';
 
-            const primaryImage = v.image || (p.images && p.images[0]) || '';
-            const additionalImages = (p.images || [])
-              .filter(img => img !== primaryImage)
-              .map(img => getAbsoluteUrl(img))
-              .join(',');
-
-            rows.push([
-              v._id || `${p._id}-${index}`,
-              p.name,
-              p._id,
-              cleanDescription(p.description),
-              varStock > 0 ? 'in stock' : 'out of stock',
-              'new',
-              v.sku || p.sku || '',
-              varPriceVal,
-              varSalePriceVal,
-              `${window.location.origin}/product/${p.slug}`,
-              getAbsoluteUrl(primaryImage),
-              'unknown',
-              p.categories?.[0]?.name || '',
-              v.color || '',
-              additionalImages,
-              v.color || ''
-            ]);
-          });
-        } else {
-          const priceVal = `${Math.round(p.price || 0)} BDT`;
-          const salePriceVal = p.salePrice && p.salePrice < p.price ? `${Math.round(p.salePrice)} BDT` : '';
-          const stockVal = p.stock || 0;
-
-          const primaryImage = (p.images && p.images[0]) || '';
-          const additionalImages = (p.images || [])
-            .slice(1)
-            .map(img => getAbsoluteUrl(img))
-            .join(',');
-
-          rows.push([
-            p._id,
-            p.name,
-            p._id,
-            cleanDescription(p.description),
-            stockVal > 0 ? 'in stock' : 'out of stock',
-            'new',
-            p.sku || '',
-            priceVal,
-            salePriceVal,
-            `${window.location.origin}/product/${p.slug}`,
-            getAbsoluteUrl(primaryImage),
-            'unknown',
-            p.categories?.[0]?.name || '',
-            '',
-            additionalImages,
-            ''
-          ]);
-        }
+        rows.push([
+          p.sku || p._id,
+          p.name,
+          cleanDescription(p.description),
+          itemAvailability,
+          'new',
+          itemPrice,
+          itemLink,
+          itemImage,
+          brandName
+        ]);
       });
 
       const csvContent = [
         headers.join(','),
-        ...rows.map(row => row.map(cell => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(','))
+        ...rows.map(row =>
+          row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(',')
+        )
       ].join('\n');
 
-      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
       link.setAttribute('href', url);
-      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-      link.setAttribute('download', `fb_catalog_export_${dateStr}.csv`);
-      link.style.visibility = 'hidden';
+      link.setAttribute('download', `catalog_products_${new Date().toISOString().slice(0, 10)}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      toast.success('Facebook Catalog export started');
-    } catch (error) {
-      toast.error('Error exporting products');
+
+      toast.success(`Exported ${rows.length} product(s) to CSV!`);
+    } catch (err) {
+      console.error(err);
+      toast.error('Error generating product catalog export.');
     } finally {
       setExportLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col gap-4 pt-6">
+    <div className="flex-1 space-y-4 px-0 py-4 md:p-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Products</h1>
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Products</h2>
+          <p className="text-muted-foreground">Manage your central warehouse inventory and product catalog.</p>
+        </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={exportToCSV} disabled={exportLoading}>
-            {exportLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="mr-2 h-4 w-4" />
-            )}
-            {selectedIds.length > 0 ? `Export (${selectedIds.length})` : 'Export All'}
-          </Button>
           <Link href="/admin/products/new">
             <Button>
               <Plus className="mr-2 h-4 w-4" /> Add Product
@@ -309,7 +317,7 @@ function ProductsContent() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search products..."
+            placeholder="Search by name, SKU or brand..."
             className="pl-8"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -359,8 +367,8 @@ function ProductsContent() {
                   onCheckedChange={toggleSelectAll}
                 />
               </TableHead>
-              <TableHead className="w-[80px]">Image</TableHead>
-              <TableHead>Name</TableHead>
+              <TableHead className="w-[70px]">Image</TableHead>
+              <TableHead>Name & Brand</TableHead>
               <TableHead>SKU</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Stock</TableHead>
@@ -409,16 +417,24 @@ function ProductsContent() {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="font-medium max-w-[250px] truncate">
-                    <Link 
-                      href={`/product/${product.slug}`} 
-                      target="_blank"
-                      className="hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-4"
-                    >
-                      {product.name}
-                    </Link>
+                  <TableCell className="font-medium max-w-[240px]">
+                    <div className="flex flex-col">
+                      <Link 
+                        href={`/product/${product.slug}`} 
+                        target="_blank"
+                        className="hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-4 truncate font-semibold"
+                      >
+                        {product.name}
+                      </Link>
+                      {product.brand?.name && (
+                        <span className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                          <Sparkles className="h-3 w-3 text-primary" />
+                          {product.brand.name}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
-                  <TableCell>{product.sku}</TableCell>
+                  <TableCell className="font-mono text-xs text-muted-foreground">{product.sku}</TableCell>
                   <TableCell>
                     <div className="flex flex-col">
                       <span className={product.salePrice ? 'text-xs line-through text-muted-foreground' : ''}>
@@ -432,7 +448,7 @@ function ProductsContent() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className={(product.stock ?? 0) <= 5 ? 'text-destructive font-semibold' : ''}>
+                    <span className={(product.stock ?? 0) <= 5 ? 'text-destructive font-bold' : 'font-semibold'}>
                       {product.stock ?? 0}
                     </span>
                   </TableCell>
@@ -448,10 +464,20 @@ function ProductsContent() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1.5">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenAddStock(product)}
+                        className="h-8 px-2 text-xs text-primary border-primary/30 hover:bg-primary/10"
+                        title="Add Stock / Batch"
+                      >
+                        <DatabaseZap className="h-3.5 w-3.5 mr-1" /> Add Stock
+                      </Button>
                       <Button 
                         variant="ghost" 
                         size="icon" 
+                        className="h-8 w-8"
                         onClick={() => router.push(`/admin/products/${product._id}/edit`)}
                       >
                         <Edit className="h-4 w-4" />
@@ -459,7 +485,7 @@ function ProductsContent() {
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="text-destructive" 
+                        className="h-8 w-8 text-destructive" 
                         onClick={() => handleDelete(product._id)}
                       >
                         <Trash className="h-4 w-4" />
@@ -488,6 +514,107 @@ function ProductsContent() {
           />
         </div>
       )}
+
+      {/* Add Stock Dialog Modal */}
+      <Dialog open={addStockModalOpen} onOpenChange={setAddStockModalOpen}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">Add Stock</DialogTitle>
+          </DialogHeader>
+          {addStockProduct && (
+            <div className="grid gap-4 py-3">
+              <div className="flex flex-col gap-0.5 bg-muted/40 p-3 rounded-xl border">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Product</span>
+                <span className="text-sm font-bold text-foreground">{addStockProduct.name}</span>
+                {addStockProduct.brand?.name && (
+                  <span className="text-xs text-primary">Brand: {addStockProduct.brand.name}</span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-4 items-center gap-3">
+                <label className="text-right text-xs font-semibold text-muted-foreground">
+                  Batch Number
+                </label>
+                <Input
+                  className="col-span-3 h-9"
+                  placeholder="e.g. BATCH-002 (Optional)"
+                  value={addStockBatchNumber}
+                  onChange={(e) => setAddStockBatchNumber(e.target.value)}
+                />
+              </div>
+
+              <div className="grid grid-cols-4 items-center gap-3">
+                <label className="text-right text-xs font-semibold text-muted-foreground">
+                  Expiry Date
+                </label>
+                <Input
+                  type="date"
+                  className="col-span-3 h-9"
+                  value={addStockExpiryDate}
+                  onChange={(e) => setAddStockExpiryDate(e.target.value)}
+                />
+              </div>
+
+              <div className="border-t border-border pt-3 mt-1">
+                <h4 className="text-sm font-semibold mb-3">Add Stock Quantities</h4>
+                {addStockVariants.length > 0 ? (
+                  <div className="space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
+                    {addStockVariants.map((variant, index) => (
+                      <div key={variant.variantId || index} className="flex items-center justify-between gap-4 p-2.5 border rounded-xl bg-card">
+                        <div className="text-xs font-medium">
+                          {variant.color && <span className="font-semibold text-foreground">{variant.color}</span>}
+                          {variant.color && variant.size && <span className="mx-1 text-muted-foreground">•</span>}
+                          {variant.size && <span>Size: {variant.size}</span>}
+                        </div>
+                        <Input
+                          type="number"
+                          min="0"
+                          className="w-24 text-right h-8"
+                          value={variant.stockToAdd || ''}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 0;
+                            const newVariants = [...addStockVariants];
+                            newVariants[index].stockToAdd = Math.max(0, val);
+                            setAddStockVariants(newVariants);
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between gap-4 p-3 border rounded-xl bg-card">
+                    <span className="text-sm font-medium text-foreground">Main Product Stock</span>
+                    <Input
+                      type="number"
+                      min="0"
+                      className="w-28 text-right h-9 font-semibold"
+                      value={addStockTopLevel || ''}
+                      onChange={(e) => setAddStockTopLevel(Math.max(0, parseInt(e.target.value) || 0))}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          <DialogFooter className="gap-2 sm:gap-0 pt-2">
+            <Button variant="outline" onClick={() => setAddStockModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddStockSubmit}
+              disabled={addingStock}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+            >
+              {addingStock ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <DatabaseZap className="mr-2 h-4 w-4" />
+              )}
+              Save Stock
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

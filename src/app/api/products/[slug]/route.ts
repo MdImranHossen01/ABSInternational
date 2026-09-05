@@ -21,7 +21,9 @@ export async function GET(
       ? { _id: slug }
       : { slug: slug };
 
-    const product = await Product.findOne(query).populate('categories');
+    const product = await Product.findOne(query)
+      .populate('categories')
+      .populate('brand', 'name image slug');
 
     if (!product) {
       return NextResponse.json({ message: 'Product not found' }, { status: 404 });
@@ -51,8 +53,8 @@ export async function PUT(
 
     // Whitelist allowed fields to prevent mass-assignment
     const allowedFields = [
-      'name', 'slug', 'description', 'price', 'salePrice', 'discountRate',
-      'sku', 'stock', 'categories', 'tags', 'images',
+      'name', 'slug', 'description', 'price', 'salePrice', 'purchasePrice', 'discountRate',
+      'sku', 'stock', 'categories', 'brand', 'batches', 'tags', 'images',
       'attributes', 'variants', 'isFeatured', 'isNewArrival', 'isPublished', 'deliveryCharge'
     ];
     const safeUpdate: any = {};
@@ -62,13 +64,18 @@ export async function PUT(
         let value = body[key];
 
         // Numeric coercion for main fields
-        if (['price', 'salePrice', 'stock', 'discountRate'].includes(key)) {
+        if (['price', 'salePrice', 'purchasePrice', 'stock', 'discountRate'].includes(key)) {
           if (value === '' || value === undefined || value === null) {
-            value = (key === 'salePrice' || key === 'discountRate') ? undefined : 0;
+            value = (key === 'salePrice' || key === 'discountRate' || key === 'purchasePrice') ? undefined : 0;
           } else {
             const parsed = key === 'stock' ? parseInt(value, 10) : parseFloat(value);
-            value = Number.isFinite(parsed) ? parsed : (key === 'salePrice' || key === 'discountRate' ? undefined : 0);
+            value = Number.isFinite(parsed) ? parsed : (key === 'salePrice' || key === 'discountRate' || key === 'purchasePrice' ? undefined : 0);
           }
+        }
+
+        // Handle brand
+        if (key === 'brand') {
+          value = value && value !== '' ? value : null;
         }
 
         // Deep coercion for variants
@@ -85,6 +92,7 @@ export async function PUT(
             salePrice: Number.isFinite(parseFloat(v.salePrice)) ? parseFloat(v.salePrice) : undefined,
             stock: Number.isFinite(parseInt(v.stock, 10)) ? parseInt(v.stock, 10) : 0,
             discountRate: Number.isFinite(parseFloat(v.discountRate)) ? parseFloat(v.discountRate) : undefined,
+            batches: Array.isArray(v.batches) ? v.batches : [],
           }));
         }
 
@@ -102,72 +110,46 @@ export async function PUT(
       ? { _id: slug }
       : { slug: slug };
 
-    if (safeUpdate.slug) {
-      const maxRetries = 3;
-      let attempt = 0;
-      let lastError;
+    const existingProduct = await Product.findOne(query);
 
-      while (attempt < maxRetries) {
-        attempt++;
-        const currentSlugCandidate = attempt === 1 ? safeUpdate.slug : `${safeUpdate.slug}-${attempt - 1}`;
-
-        let actualId = slug;
-        if (!mongoose.Types.ObjectId.isValid(slug)) {
-          const existingProduct = await Product.findOne({ slug: slug });
-          if (existingProduct) actualId = existingProduct._id.toString();
-        }
-
-        const uniqueSlug = await generateUniqueSlug(Product, currentSlugCandidate, actualId);
-
-        try {
-          const updatedProduct = await Product.findOneAndUpdate(
-            query,
-            { $set: { ...safeUpdate, slug: uniqueSlug } },
-            { new: true, runValidators: true }
-          );
-
-          if (!updatedProduct) {
-            return NextResponse.json({ message: 'Product not found' }, { status: 404 });
-          }
-
-          revalidateTag(CACHE_TAGS.products, 'max');
-          revalidatePath('/');
-          return NextResponse.json(updatedProduct);
-        } catch (error: any) {
-          lastError = error;
-          if (error.code === 11000 && error.keyPattern?.slug) {
-            continue;
-          }
-          if (error.code === 11000) {
-            const field = Object.keys(error.keyPattern || {})[0] || 'slug/SKU';
-            return NextResponse.json({ message: `Product with this ${field} already exists.` }, { status: 400 });
-          }
-          throw error;
-        }
-      }
-
-      return NextResponse.json({
-        message: 'Failed to generate a unique slug after several attempts.',
-        error: lastError?.message
-      }, { status: 400 });
-    }
-
-    const updatedProduct = await Product.findOneAndUpdate(
-      query,
-      { $set: safeUpdate },
-      { returnDocument: 'after', runValidators: true }
-    );
-
-    if (!updatedProduct) {
+    if (!existingProduct) {
       return NextResponse.json({ message: 'Product not found' }, { status: 404 });
     }
 
-    revalidateTag('products', 'max');
+    if (safeUpdate.slug && safeUpdate.slug !== existingProduct.slug) {
+      safeUpdate.slug = await generateUniqueSlug(Product, safeUpdate.slug, existingProduct._id.toString());
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      existingProduct._id,
+      { $set: safeUpdate },
+      { new: true, runValidators: true }
+    ).populate('categories').populate('brand', 'name image slug');
+
+    try {
+      revalidateTag(CACHE_TAGS.products, 'max');
+      if (existingProduct.slug) {
+        revalidatePath(`/product/${existingProduct.slug}`);
+      }
+      if (updatedProduct && updatedProduct.slug !== existingProduct.slug) {
+        revalidatePath(`/product/${updatedProduct.slug}`);
+      }
+      revalidatePath('/shop');
+      revalidatePath('/');
+    } catch (e) {
+      // Ignore cache revalidation errors
+    }
 
     return NextResponse.json(updatedProduct);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating product:', error);
-    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern || {})[0] || 'field';
+      return NextResponse.json({
+        message: `Product with this ${field} already exists.`
+      }, { status: 400 });
+    }
+    return NextResponse.json({ message: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -197,9 +179,14 @@ export async function DELETE(
     }
 
     try {
-      await revalidateTag(CACHE_TAGS.products, 'max');
-    } catch (revalidateError) {
-      console.error('Failed to revalidate product tags:', revalidateError);
+      revalidateTag(CACHE_TAGS.products, 'max');
+      if (deletedProduct.slug) {
+        revalidatePath(`/product/${deletedProduct.slug}`);
+      }
+      revalidatePath('/shop');
+      revalidatePath('/');
+    } catch (e) {
+      // Ignore cache revalidation errors
     }
 
     return NextResponse.json({ message: 'Product deleted successfully' });

@@ -2,9 +2,7 @@ import { unstable_cache } from 'next/cache';
 import connectToDatabase from './db';
 import Product from '@/models/Product';
 import Category from '@/models/Category';
-import Banner from '@/models/Banner';
 import Blog from '@/models/Blog';
-import FAQ from '@/models/FAQ';
 import GlobalSettings from '@/models/GlobalSettings';
 import Coupon from '@/models/Coupon';
 import Order from '@/models/Order';
@@ -18,9 +16,7 @@ const serialize = (data: any) => JSON.parse(JSON.stringify(data));
 export const CACHE_TAGS = {
   products: 'products',
   categories: 'categories',
-  banners: 'banners',
   blogs: 'blogs',
-  faqs: 'faqs',
   settings: 'settings',
   coupons: 'coupons',
 };
@@ -156,22 +152,6 @@ export const getCachedCategories = () => {
   )();
 };
 
-// --- BANNERS ---
-
-export const getCachedBanners = () => {
-  return unstable_cache(
-    async () => {
-      await connectToDatabase();
-      const banners = await Banner.find({ isActive: true })
-        .sort({ order: 1 })
-        .lean();
-      return serialize(banners);
-    },
-    ['banners-list'],
-    { revalidate: 60, tags: [CACHE_TAGS.banners] }
-  )();
-};
-
 // --- BLOGS ---
 
 export const getCachedBlogs = (limit = 10) => {
@@ -198,20 +178,6 @@ export const getCachedBlogBySlug = (slug: string) => {
     },
     ['blog-detail', slug],
     { revalidate: 31536000, tags: [CACHE_TAGS.blogs] }
-  )();
-};
-
-// --- FAQs ---
-
-export const getCachedFAQs = () => {
-  return unstable_cache(
-    async () => {
-      await connectToDatabase();
-      const faqs = await FAQ.find({ isActive: true }).sort({ order: 1 }).lean();
-      return serialize(faqs);
-    },
-    ['faqs-list'],
-    { revalidate: 31536000, tags: [CACHE_TAGS.faqs] }
   )();
 };
 

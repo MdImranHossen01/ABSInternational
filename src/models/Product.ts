@@ -11,7 +11,13 @@ export interface IProduct extends Document {
   discountRate?: number;
   sku: string;
   stock: number;
+  batches?: {
+    batchNumber: string;
+    expiryDate?: Date;
+    stock: number;
+  }[];
   categories: mongoose.Types.ObjectId[];
+  brand?: mongoose.Types.ObjectId;
   tags: string[];
   images: string[];
   attributes: {
@@ -30,6 +36,11 @@ export interface IProduct extends Document {
     sku?: string;
     image?: string;
     images?: string[];
+    batches?: {
+      batchNumber: string;
+      expiryDate?: Date;
+      stock: number;
+    }[];
   }[];
   isFeatured: boolean;
   isNewArrival: boolean;
@@ -68,7 +79,15 @@ const ProductSchema: Schema<IProduct> = new Schema(
       sparse: true
     },
     stock: { type: Number, required: true, default: 0, min: [0, 'Stock cannot be negative'] },
+    batches: [
+      {
+        batchNumber: { type: String, required: true },
+        expiryDate: { type: Date },
+        stock: { type: Number, required: true, default: 0, min: [0, 'Stock cannot be negative'] },
+      }
+    ],
     categories: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
+    brand: { type: Schema.Types.ObjectId, ref: 'Brand' },
     tags: [{ type: String }],
     images: [{ type: String }],
     attributes: [
@@ -89,6 +108,13 @@ const ProductSchema: Schema<IProduct> = new Schema(
         sku: { type: String },
         image: { type: String },
         images: [{ type: String }],
+        batches: [
+          {
+            batchNumber: { type: String, required: true },
+            expiryDate: { type: Date },
+            stock: { type: Number, required: true, default: 0, min: [0, 'Stock cannot be negative'] },
+          }
+        ],
       },
     ],
     isFeatured: { type: Boolean, default: false },
@@ -106,6 +132,7 @@ const ProductSchema: Schema<IProduct> = new Schema(
 
 ProductSchema.index({ name: 1 }); // Optimized for search
 ProductSchema.index({ categories: 1 }); // Optimized for category filtering
+ProductSchema.index({ brand: 1 });
 
 ProductSchema.pre('validate', function(this: any) {
   // Main product validation

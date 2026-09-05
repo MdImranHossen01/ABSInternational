@@ -14,7 +14,6 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const ids = searchParams.get('ids');
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
-    // TODO: Consider requiring admin auth for limits > 100 or implementing a separate bulk endpoint
     const limit = Math.min(1000, Math.max(1, parseInt(searchParams.get('limit') || '40')));
     const skip = (page - 1) * limit;
 
@@ -39,9 +38,15 @@ export async function GET(req: NextRequest) {
       query.categories = { $in: category.split(',') };
     }
 
+    const brand = searchParams.get('brand');
+    if (brand) {
+      query.brand = brand;
+    }
+
     const [products, total] = await Promise.all([
       Product.find(query)
         .populate('categories')
+        .populate('brand', 'name image slug')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -79,8 +84,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Invalid JSON request body' }, { status: 400 });
     }
 
-    const { name, slug, description, sku, categories, tags, images, attributes, variants, isFeatured, isNewArrival, isPublished, discountRate } = body;
-    let { price, salePrice, stock } = body;
+    const { 
+      name, 
+      slug, 
+      description, 
+      sku, 
+      categories, 
+      brand,
+      batches,
+      batchNumber,
+      expiryDate,
+      tags, 
+      images, 
+      attributes, 
+      variants, 
+      isFeatured, 
+      isNewArrival, 
+      isPublished, 
+      discountRate 
+    } = body;
+    let { price, salePrice, stock, purchasePrice } = body;
 
     // Numeric validation and coercion
     const rawPrice = parseFloat(price);
@@ -88,6 +111,9 @@ export async function POST(req: NextRequest) {
 
     const rawSalePrice = parseFloat(salePrice);
     const parsedSalePrice = Number.isFinite(rawSalePrice) ? rawSalePrice : undefined;
+
+    const rawPurchasePrice = parseFloat(purchasePrice);
+    const parsedPurchasePrice = Number.isFinite(rawPurchasePrice) ? rawPurchasePrice : undefined;
 
     const rawStock = parseInt(stock, 10);
     const parsedStock = Number.isFinite(rawStock) ? rawStock : 0;
@@ -122,10 +148,22 @@ export async function POST(req: NextRequest) {
       image: v.image,
       images: Array.isArray(v.images) ? v.images : (v.image ? [v.image] : []),
       price: Number.isFinite(parseFloat(v.price)) ? parseFloat(v.price) : 0,
+      purchasePrice: Number.isFinite(parseFloat(v.purchasePrice)) ? parseFloat(v.purchasePrice) : undefined,
       salePrice: Number.isFinite(parseFloat(v.salePrice)) ? parseFloat(v.salePrice) : undefined,
       stock: Number.isFinite(parseInt(v.stock, 10)) ? parseInt(v.stock, 10) : 0,
       discountRate: Number.isFinite(parseFloat(v.discountRate)) ? parseFloat(v.discountRate) : undefined,
+      batches: Array.isArray(v.batches) ? v.batches : [],
     }));
+
+    // Build batches array if provided or single batchNumber provided
+    let finalBatches = Array.isArray(batches) ? batches : [];
+    if (finalBatches.length === 0 && batchNumber && batchNumber.trim()) {
+      finalBatches = [{
+        batchNumber: batchNumber.trim(),
+        expiryDate: expiryDate ? new Date(expiryDate) : undefined,
+        stock: parsedStock,
+      }];
+    }
 
     await connectToDatabase();
 
@@ -145,9 +183,12 @@ export async function POST(req: NextRequest) {
           description,
           price: parsedPrice,
           salePrice: parsedSalePrice,
+          purchasePrice: parsedPurchasePrice,
           discountRate: parsedDiscountRate,
           sku,
           stock: parsedStock,
+          batches: finalBatches,
+          brand: brand || undefined,
           categories: categories || [],
           tags: tags || [],
           images: images || [],
@@ -164,11 +205,9 @@ export async function POST(req: NextRequest) {
       } catch (error: any) {
         lastError = error;
         if (error.code === 11000 && error.keyPattern?.slug) {
-          // If slug conflict, retry with incremented slug
           continue;
         }
 
-        // If other duplicate error (e.g. SKU), or other DB error, return 400
         if (error.code === 11000) {
           const field = Object.keys(error.keyPattern || {})[0] || 'slug/SKU';
           return NextResponse.json({
@@ -179,7 +218,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // If we exhausted retries
     return NextResponse.json({
       message: 'Failed to generate a unique slug after several attempts. Please try a different name or slug.',
       error: lastError?.message
@@ -189,4 +227,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }
-

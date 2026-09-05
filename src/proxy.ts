@@ -42,7 +42,6 @@ export const proxy = auth(async (req) => {
         "/admin/chalans",
         "/admin/bills",
         "/admin/abandoned-carts",
-        "/admin/cms",
         "/admin/landing-pages",
         "/admin/catalog",
         "/admin/blogs",

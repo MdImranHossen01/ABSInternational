@@ -11,36 +11,25 @@ import {
   CardDescription 
 } from '@/components/ui/card';
 import { 
-  DollarSign, 
   Users, 
-  ShoppingBag, 
-  AlertTriangle, 
   Clock, 
   Wallet,
-  ArrowRight,
   Loader2,
   TrendingUp,
-  LineChart as LineChartIcon,
   Filter,
-  ArrowDownCircle,
-  ArrowUpCircle,
   Receipt,
-  Star,
-  UserPlus,
-  Target,
-  BarChart3,
   Globe,
   Zap,
   Trophy,
   Crown,
   Heart,
   Share2,
-  Building2
+  Building2,
+  AlertTriangle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 import {
   ChartContainer,
   ChartTooltip,
@@ -70,7 +59,6 @@ export default function AdminDashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [activeChart, setActiveChart] = useState<keyof typeof chartConfig>("revenue");
 
   // MLM Fund Pool state
@@ -177,7 +165,6 @@ export default function AdminDashboard() {
       if (response.ok) {
         const stats = await response.json();
         setData(stats);
-        setLastUpdated(new Date().toLocaleTimeString());
       } else {
         const errData = await response.json().catch(() => ({}));
         setError(errData.message || `Failed to fetch: ${response.status}`);
@@ -250,7 +237,7 @@ export default function AdminDashboard() {
     );
   }
 
-  const { stats, recentOrders, lowStockProducts, topSellingProducts, topCustomers, chartData } = data || {};
+  const { stats } = data || {};
 
   return (
     <div className="flex-1 space-y-6 px-0 py-4 md:p-8">
@@ -542,155 +529,6 @@ export default function AdminDashboard() {
                 />
               </AreaChart>
             </ChartContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
-        {/* Customer Insights & New vs Returning (NEW/UPDATED) */}
-        <div className="space-y-4">
-          <Card className="bg-muted/20">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <Wallet className="h-4 w-4 text-primary" />
-                System Wallets
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground font-medium">Deposit Wallets (Total)</span>
-                  <span className="font-bold text-foreground">৳{Math.round(stats?.totalDepositWallet || 0).toLocaleString()}</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground font-medium">Bonus Wallets (Total)</span>
-                  <span className="font-bold text-foreground">৳{Math.round(stats?.totalBonusWallet || 0).toLocaleString()}</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground font-medium">Withdrawal Wallets (Total)</span>
-                  <span className="font-bold text-foreground">৳{Math.round(stats?.totalWithdrawalWallet || 0).toLocaleString()}</span>
-                </div>
-                <div className="pt-2 border-t flex items-center justify-between text-xs font-bold">
-                  <span className="text-primary">Total System Tokens</span>
-                  <span className="text-primary">৳{Math.round(stats?.totalWalletTokens || 0).toLocaleString()}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-primary text-primary-foreground shadow-lg">
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-xs opacity-70">Active MLM Packages</p>
-                  <p className="text-xl font-bold">{stats?.activeSubscribers || 0}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs opacity-70">Charity Fund (1%)</p>
-                  <p className="text-xl font-bold">৳{(stats?.charityFund || 0).toLocaleString()}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-destructive/20">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-bold flex items-center gap-2 text-destructive">
-                <AlertTriangle className="h-4 w-4" />
-                Low Stock Alerts
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-3">
-                {lowStockProducts?.map((product: any) => (
-                  <div key={product._id} className="flex items-center justify-between group">
-                    <div className="space-y-0.5">
-                      <p className="text-xs font-semibold group-hover:text-primary transition-colors">{product.name}</p>
-                      <p className="text-[10px] text-muted-foreground">Unit Price: ৳{product.price}</p>
-                    </div>
-                    <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">
-                      {product.stock} Left
-                    </Badge>
-                  </div>
-                ))}
-                {(lowStockProducts?.length ?? 0) === 0 && (
-                  <p className="text-center py-4 text-xs text-muted-foreground italic">Inventory levels are healthy!</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Top Selling Products (NEW) */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-              Top Products
-            </CardTitle>
-            <CardDescription>Best performers by revenue</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {topSellingProducts?.map((product: any, i: number) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-bold text-xs">
-                  {i + 1}
-                </div>
-                <div className="flex-1 space-y-0.5">
-                  <p className="text-sm font-bold leading-none truncate max-w-[150px]">{product._id}</p>
-                  <p className="text-xs text-muted-foreground">{product.quantity} units sold</p>
-                </div>
-                <div className="text-sm font-black">৳{Math.round(product.revenue).toLocaleString()}</div>
-              </div>
-            ))}
-            {(!topSellingProducts || topSellingProducts.length === 0) && (
-              <div className="text-center py-10 text-muted-foreground text-sm">No sales data available</div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent Transactions */}
-        <Card className="shadow-md">
-          <CardHeader className="border-b bg-muted/30">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-xl">Recent Transactions</CardTitle>
-                <CardDescription>Latest orders across the shop</CardDescription>
-              </div>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/admin/orders">Manage All Orders</Link>
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0 max-h-[400px] overflow-y-auto">
-            <div className="divide-y">
-              {recentOrders?.map((order: any) => (
-                <div key={order._id} className="flex items-center justify-between p-4 hover:bg-muted/20 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className={`p-2 rounded-full ${order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>
-                      <ShoppingBag className="h-4 w-4" />
-                    </div>
-                    <div className="space-y-0.5">
-                      <p className="text-sm font-bold leading-none">Order #{order.slug}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>{order.user?.name || 'Guest Customer'}</span>
-                        <span>•</span>
-                        <span>{order?.createdAt ? format(parseISO(order.createdAt), 'dd MMM, p') : '—'}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-1">
-                    <div className="text-sm font-black text-primary">৳{(order?.totalAmount || 0).toLocaleString()}</div>
-                    <Badge 
-                      variant={order.status === 'Delivered' ? 'default' : 'secondary'} 
-                      className={`text-[10px] uppercase font-bold tracking-tighter ${order.status === 'Delivered' ? 'bg-emerald-500' : ''}`}
-                    >
-                      {order.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
           </CardContent>
         </Card>
       </div>

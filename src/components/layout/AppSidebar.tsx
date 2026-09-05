@@ -86,8 +86,20 @@ const data = {
           url: "/admin/products/new",
         },
         {
+          title: "Brands",
+          url: "/admin/brands",
+        },
+        {
           title: "Categories",
           url: "/admin/categories",
+        },
+        {
+          title: "Upcoming Expiry",
+          url: "/admin/upcoming-expiry",
+        },
+        {
+          title: "Low Stock Alerts",
+          url: "/admin/low-stock",
         },
       ],
     },
@@ -138,25 +150,6 @@ const data = {
         {
           title: "All Users",
           url: "/admin/users",
-        },
-      ],
-    },
-    {
-      title: "CMS Manager",
-      url: "#",
-      icon: ImageIcon,
-      items: [
-        {
-          title: "Banners",
-          url: "/admin/cms/banners",
-        },
-        {
-          title: "Testimonials",
-          url: "/admin/cms/testimonials",
-        },
-        {
-          title: "FAQs",
-          url: "/admin/cms/faqs",
         },
       ],
     },

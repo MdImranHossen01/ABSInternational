@@ -1,10 +1,9 @@
-﻿import connectToDatabase from '@/lib/db';
+import connectToDatabase from '@/lib/db';
 import { getEmbedding } from '@/lib/embeddings';
 
 // Import Mongoose models
 import Product from '@/models/Product';
 import Blog from '@/models/Blog';
-import FAQ from '@/models/FAQ';
 import Order from '@/models/Order';
 import Category from '@/models/Category';
 import Coupon from '@/models/Coupon';
@@ -88,7 +87,7 @@ export async function retrieveRelevantContext(
       }
     };
 
-    // 1. Queue searches for products, blogs, and FAQs
+    // 1. Queue searches for products and blogs
     retrievalPromises.push(
       searchModel(
         Product,
@@ -104,15 +103,6 @@ export async function retrieveRelevantContext(
         'Blog',
         (doc) => `Blog: ${doc.title}. Description: ${doc.metaDescription || ''}. Content Summary: ${doc.content.substring(0, 300)}...`,
         (doc) => `/blog/${doc.slug || doc._id}`
-      )
-    );
-
-    retrievalPromises.push(
-      searchModel(
-        FAQ,
-        'FAQ',
-        (doc) => `FAQ Question: ${doc.question}\nAnswer: ${doc.answer}`,
-        () => `/faq`
       )
     );
 
@@ -192,7 +182,6 @@ export async function retrieveRelevantContext(
     // 4. Fetch Global Platform Statistics
     const totalProductsCount = await Product.countDocuments({ isPublished: true });
     const totalCategoriesCount = await Category.countDocuments();
-    const totalFAQsCount = await FAQ.countDocuments({ isActive: true });
 
     // 5. Fetch active coupons
     const now = new Date();
@@ -214,8 +203,7 @@ export async function retrieveRelevantContext(
 
     contextString += `Global Platform Statistics:\n`;
     contextString += `- Total Active Products: ${totalProductsCount}\n`;
-    contextString += `- Total Categories: ${totalCategoriesCount}\n`;
-    contextString += `- Total FAQs: ${totalFAQsCount}\n\n`;
+    contextString += `- Total Categories: ${totalCategoriesCount}\n\n`;
 
     // Coupon context
     if (activeCoupons.length > 0) {
