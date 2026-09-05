@@ -90,16 +90,12 @@ export default function ProductCardV1({ product: initialProduct, isFlashSale }: 
 
     dispatch(
       addToCart({
-        id: `${product._id}`,
         productId: product._id,
         name: product.name,
-        slug: product.slug,
         price: priceToAdd,
-        regularPrice: product.price,
+        basePrice: product.price,
         image: product.images[0] || '/placeholder.png',
-        stock: product.stock,
         quantity: 1,
-        sku: product.sku || '',
       })
     );
 
