@@ -16,6 +16,8 @@ import {
 import Link from 'next/link';
 import { getCachedSettings } from '@/lib/data-fetching';
 import HeroBanner from '@/components/storefront/HeroBanner';
+import { AtAGlance } from '@/components/storefront/AtAGlance';
+import { CounterSection } from '@/components/storefront/CounterSection';
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getCachedSettings();
@@ -44,7 +46,10 @@ export default async function Home() {
       {/* 1. Hero Section */}
       <HeroBanner brandName={brandName} />
 
-      {/* 2. ABS Dream (Vision & Goals) */}
+      {/* 2. EXACT At A Glance Section from taffoodproducts */}
+      <AtAGlance brandName={brandName} />
+
+      {/* 3. ABS Dream (Vision & Goals) */}
       <section className="py-20 bg-muted/30 border-b border-border">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -93,7 +98,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 3. Seba & Healthcare Benefits Section */}
+      {/* 5. Seba & Healthcare Benefits Section */}
       <section className="py-20 border-b border-border">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -180,7 +185,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 4. MLM & Business Plan Opportunity */}
+      {/* 6. MLM & Business Plan Opportunity */}
       <section className="py-20 bg-muted/30 border-b border-border">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -252,8 +257,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 5. ABS Shops & Network Section */}
-      <section className="py-20">
+      {/* ABS Shops & Network Section */}
+      <section className="py-20 border-b border-border">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
@@ -302,8 +307,9 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Animated Counter Section (Right above Footer) */}
+      <CounterSection />
+
     </div>
   );
 }
-
-

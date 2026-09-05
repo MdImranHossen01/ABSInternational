@@ -111,7 +111,7 @@ export default function FooterV1() {
     : [
       { label: 'Shop All', href: '/shop' },
       { label: 'About Us', href: '/about' },
-      { label: 'Gallery', href: '/gallery' },
+      { label: 'Our Team', href: '/team' },
       { label: 'Order Tracking', href: '/track-order' },
       { label: 'Contact Support', href: '/contact' }
     ];

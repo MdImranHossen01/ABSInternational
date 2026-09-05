@@ -54,23 +54,73 @@ export default function HeroBanner({ brandName }: HeroBannerProps) {
   ];
 
   return (
-    <section className="relative pt-6 pb-16 md:pt-10 md:pb-24 overflow-hidden border-b border-border bg-background">
-      {/* Dynamic background glow based on active index */}
+    <section className="relative pt-0 md:pt-10 pb-12 md:pb-24 overflow-hidden border-b border-border bg-background">
+      {/* Dynamic background glow */}
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-primary/5 pointer-events-none" />
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-          
-          {/* Left Column: Content */}
-          <div className="lg:col-span-7 text-left space-y-6">
+      {/* MOBILE ONLY: Top Full Width 16:9 Image Slider */}
+      <div className="block lg:hidden w-full relative aspect-[16/9] overflow-hidden bg-muted">
+        {slides.map((slide, idx) => {
+          const isActive = idx === activeIndex;
+          return (
+            <div
+              key={idx}
+              className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
+                isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+              }`}
+            >
+              {!imageErrors[idx] ? (
+                <Image
+                  src={slide.img}
+                  alt={slide.title}
+                  fill
+                  sizes="100vw"
+                  priority={idx === 0}
+                  className="object-cover"
+                  onError={() => {
+                    setImageErrors(prev => ({ ...prev, [idx]: true }));
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-tr from-primary/20 to-background text-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+                    {slide.icon}
+                  </div>
+                  <h3 className="text-sm font-bold text-foreground">{slide.title}</h3>
+                </div>
+              )}
+            </div>
+          );
+        })}
 
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent leading-none">
+        {/* Mobile slider indicator dots */}
+        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 z-20">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setActiveIndex(idx)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                idx === activeIndex ? 'w-5 bg-primary shadow' : 'w-1.5 bg-white/60'
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10 pt-6 md:pt-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          {/* Content Column */}
+          <div className="lg:col-span-7 text-left space-y-4 md:space-y-6">
+
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-tight">
               Welcome to <br className="hidden md:inline" />
-              <span className="text-primary">{brandName}</span>
+              <span className="text-primary whitespace-nowrap">{brandName}</span>
             </h1>
 
             {/* Coordinated typing text */}
-            <div className="h-16 md:h-20 flex items-center">
+            <div className="min-h-[3.5rem] md:h-20 flex items-center">
               <TextType
                 text={slides.map(s => s.title)}
                 typingSpeed={50}
@@ -79,44 +129,44 @@ export default function HeroBanner({ brandName }: HeroBannerProps) {
                 showCursor
                 cursorCharacter="|"
                 onIndexChange={(index) => setActiveIndex(index)}
-                className="text-xl md:text-3xl font-bold text-foreground"
+                className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground"
               />
             </div>
 
-            <div className="h-24 md:h-20 flex items-start overflow-hidden">
+            <div className="min-h-[4rem] md:h-20 flex items-start overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.p
                   key={activeIndex}
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed"
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed"
                 >
                   {slides[activeIndex].desc} Join our growing community to experience financial freedom, premium lifestyle benefits, and exclusive healthcare services.
                 </motion.p>
               </AnimatePresence>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <div className="grid grid-cols-2 gap-3 pt-2 md:pt-4 max-w-md">
               <Link
                 href="/register"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary/20"
+                className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-6 py-3 sm:py-4 rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary/20 text-xs sm:text-base whitespace-nowrap text-center"
               >
-                Get Started Now
-                <ArrowRight className="h-5 w-5" />
+                Get Started
+                <ArrowRight className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
               </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-card border border-border text-foreground font-semibold hover:bg-accent transition-all"
+                className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-6 py-3 sm:py-4 rounded-xl bg-card border border-border text-foreground font-semibold hover:bg-accent transition-all text-xs sm:text-base whitespace-nowrap text-center"
               >
                 Member Login
               </Link>
             </div>
           </div>
 
-          {/* Right Column: Coordinated Image/Visual Slider */}
-          <div className="lg:col-span-5 relative w-full aspect-[4/3] rounded-3xl overflow-hidden border border-border bg-card shadow-2xl">
+          {/* DESKTOP ONLY: Right Column 4:3 Visual Slider */}
+          <div className="hidden lg:block lg:col-span-5 relative w-full aspect-[4/3] rounded-3xl overflow-hidden border border-border bg-card shadow-2xl">
             {slides.map((slide, idx) => {
               const isActive = idx === activeIndex;
               return (
@@ -136,6 +186,7 @@ export default function HeroBanner({ brandName }: HeroBannerProps) {
                         src={slide.img}
                         alt={slide.title}
                         fill
+                        sizes="(max-width: 1200px) 50vw, 40vw"
                         priority={idx === 0}
                         className="object-cover rounded-2xl opacity-90 transition-all duration-500 hover:scale-105"
                         onError={() => {

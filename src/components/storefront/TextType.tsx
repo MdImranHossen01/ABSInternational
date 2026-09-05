@@ -122,7 +122,7 @@ const TextType = ({
           setCurrentTextIndex(prev => {
             const next = (prev + 1) % textArray.length;
             if (onIndexChange) {
-              onIndexChange(next);
+              queueMicrotask(() => onIndexChange(next));
             }
             return next;
           });
