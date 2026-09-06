@@ -4,7 +4,6 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
-import Image from "next/image"
 import {
   ShoppingBag,
   User as UserIcon,
@@ -54,32 +53,11 @@ export function UserSidebar() {
   return (
     <Sidebar collapsible="icon">
       {/* Logo */}
-      <SidebarHeader className="border-b px-3 py-3">
-        <Logo />
-      </SidebarHeader>
-
-      {/* User profile strip */}
-      <SidebarHeader className="border-b px-3 py-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="h-9 w-9 rounded-full bg-primary/10 border border-primary/20 overflow-hidden shrink-0 flex items-center justify-center">
-            {session?.user?.image ? (
-              <Image
-                src={session.user.image}
-                alt={session.user.name || "User"}
-                width={36}
-                height={36}
-                className="h-full w-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <UserIcon className="h-5 w-5 text-primary" />
-            )}
-          </div>
-          <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-            <p className="text-sm font-bold truncate leading-tight">{session?.user?.name ?? "User"}</p>
-            <p className="text-[11px] text-muted-foreground truncate">{session?.user?.email}</p>
-          </div>
-        </div>
+      <SidebarHeader className="border-b h-14 lg:h-[60px] px-3.5 flex items-center">
+        <Logo 
+          imageClassName="size-7 shrink-0" 
+          textClassName="text-[13px] font-black tracking-tight whitespace-nowrap leading-none truncate block" 
+        />
       </SidebarHeader>
 
       {/* Nav */}

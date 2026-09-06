@@ -285,8 +285,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props}>
-      <SidebarHeader className="border-b h-14 lg:h-[60px] px-4 flex items-center">
-        <Logo textClassName="text-sm md:text-base font-black tracking-wide whitespace-nowrap" />
+      <SidebarHeader className="border-b h-14 lg:h-[60px] px-3.5 flex items-center">
+        <Logo 
+          imageClassName="size-7 shrink-0" 
+          textClassName="text-[13px] font-black tracking-tight whitespace-nowrap leading-none truncate block" 
+        />
       </SidebarHeader>
       <SidebarContent className="gap-0">
         <NavMain items={data.navMain} pathname={pathname} role={role} />
