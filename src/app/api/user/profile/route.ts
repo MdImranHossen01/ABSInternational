@@ -8,14 +8,39 @@ export async function GET(req: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session || !session.user || !session.user.id) {
+    if (!session || !session.user || (!session.user.id && !session.user.email)) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
     await connectToDatabase();
-    const user = await User.findOne({ _id: session.user.id }).select('-password').lean();
+    let query: any = {};
+    if (session.user.id) {
+      query._id = session.user.id;
+    } else if (session.user.email) {
+      query.email = session.user.email.toLowerCase();
+    }
+
+    let user = await User.findOne(query).select('-password').lean();
+
+    // If not found by ID, try finding by email
+    if (!user && session.user.email) {
+      user = await User.findOne({ email: session.user.email.toLowerCase() }).select('-password').lean();
+    }
 
     if (!user) {
+      // If user is authenticated via OAuth / session but not in DB yet, create profile
+      if (session.user.email) {
+        const newUser = await User.create({
+          name: session.user.name || 'User',
+          email: session.user.email.toLowerCase(),
+          image: session.user.image || '',
+          role: session.user.email === 'imranshuvo101@gmail.com' ? 'super_admin' : 'user',
+          status: 'active',
+        });
+        const userObj = newUser.toObject();
+        delete userObj.password;
+        return NextResponse.json(userObj, { status: 200 });
+      }
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
@@ -30,7 +55,7 @@ export async function PUT(req: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session || !session.user || !session.user.id) {
+    if (!session || !session.user || (!session.user.id && !session.user.email)) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
@@ -40,6 +65,8 @@ export async function PUT(req: NextRequest) {
       image, 
       phone, 
       address,
+      email,
+      password,
       nidNumber,
       nidFrontImage,
       nidBackImage,
@@ -57,7 +84,17 @@ export async function PUT(req: NextRequest) {
     }
 
     await connectToDatabase();
-    const user = await User.findOne({ _id: session.user.id });
+    let query: any = {};
+    if (session.user.id) {
+      query._id = session.user.id;
+    } else if (session.user.email) {
+      query.email = session.user.email.toLowerCase();
+    }
+
+    let user = await User.findOne(query);
+    if (!user && session.user.email) {
+      user = await User.findOne({ email: session.user.email.toLowerCase() });
+    }
     
     if (!user) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
@@ -88,19 +125,39 @@ export async function PUT(req: NextRequest) {
     if (bankAccountNo !== undefined) user.bankAccountNo = bankAccountNo;
     if (bankRoutingNo !== undefined) user.bankRoutingNo = bankRoutingNo;
 
-    if (address) {
-      if (user.addresses && user.addresses.length > 0) {
-        // Update the first address (acting as default)
-        user.addresses[0].street = address.street;
-        user.addresses[0].division = address.division;
-        user.addresses[0].city = address.city;
-        user.addresses[0].state = address.state;
-        user.addresses[0].zipCode = address.zipCode;
-        user.addresses[0].country = address.country;
-      } else {
-        // Create new address
-        user.addresses = [address];
+    if (email && typeof email === 'string' && email.toLowerCase() !== (user.email || '').toLowerCase()) {
+      const existingUser = await User.findOne({ email: email.toLowerCase() });
+      if (existingUser && existingUser._id.toString() !== user._id.toString()) {
+        return NextResponse.json({ message: 'Email is already in use by another account' }, { status: 400 });
       }
+      user.email = email.toLowerCase();
+    }
+
+    if (address) {
+      const addrObj = {
+        street: address.street || '',
+        division: address.division || address.state || '',
+        city: address.city || '',
+        state: address.state || address.division || '',
+        zipCode: address.zipCode || '',
+        country: address.country || 'Bangladesh',
+        isDefault: true,
+      };
+
+      if (user.addresses && user.addresses.length > 0) {
+        user.addresses[0].street = addrObj.street;
+        user.addresses[0].division = addrObj.division;
+        user.addresses[0].city = addrObj.city;
+        user.addresses[0].state = addrObj.state;
+        user.addresses[0].zipCode = addrObj.zipCode;
+        user.addresses[0].country = addrObj.country;
+      } else {
+        user.addresses = [addrObj];
+      }
+    }
+
+    if (data.password && typeof data.password === 'string' && data.password.trim().length >= 6) {
+      user.password = data.password.trim();
     }
 
     await user.save();
@@ -109,9 +166,9 @@ export async function PUT(req: NextRequest) {
     delete userObj.password;
 
     return NextResponse.json({ message: 'Profile updated successfully', user: userObj }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating profile:', error);
-    return NextResponse.json({ message: 'Failed to update profile' }, { status: 500 });
+    return NextResponse.json({ message: error.message || 'Failed to update profile' }, { status: 500 });
   }
 }
 

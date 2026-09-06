@@ -154,17 +154,6 @@ const data = {
       ],
     },
     {
-      title: "My Account",
-      url: "#",
-      icon: Users,
-      items: [
-        {
-          title: "Admin Profile & Security",
-          url: "/admin/profile",
-        },
-      ],
-    },
-    {
       title: "Blogs",
       url: "#",
       icon: FileText,
@@ -185,12 +174,8 @@ const data = {
       icon: Settings,
       items: [
         {
-          title: "My Profile & Security",
-          url: "/admin/profile",
-        },
-        {
-          title: "Coupons",
-          url: "/admin/coupons",
+          title: "Profile",
+          url: "/admin/settings/profile",
         },
         {
           title: "General Settings",

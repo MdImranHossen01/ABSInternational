@@ -8,7 +8,7 @@ export async function GET() {
   try {
     const session = await auth();
     if (!session || !session.user || typeof session.user.email !== 'string' || session.user.email.trim() === '') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json([]);
     }
 
     await connectToDatabase();

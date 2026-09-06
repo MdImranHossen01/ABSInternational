@@ -83,30 +83,55 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { email } = await req.json();
+    const { email, name, image, phone, password } = await req.json();
 
-    if (!email || !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.[A-Za-z]{2,})+$/.test(email)) {
+    // Must have either email or phone
+    if (!email && !phone) {
+      return NextResponse.json({ message: 'Email or phone number is required' }, { status: 400 });
+    }
+
+    // Validate email format if provided
+    if (email && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.[A-Za-z]{2,})+$/.test(email)) {
       return NextResponse.json({ message: 'Invalid email address' }, { status: 400 });
     }
 
     await connectToDatabase();
 
-    // Find or Create user with this email and set role to admin
-    // If user already exists, update their role to admin
-    // If they don't exist, we create them with a placeholder name
+    const { normalizePhoneNumber } = await import('@/lib/utils');
+    const cleanPhone = phone ? normalizePhoneNumber(phone) : undefined;
+
+    const updateObj: any = { role: 'admin' };
+    if (name) updateObj.name = name;
+    if (image) updateObj.image = image;
+    if (email) updateObj.email = email.toLowerCase();
+    if (cleanPhone) updateObj.phone = cleanPhone;
+    if (password) {
+      const bcrypt = (await import('bcryptjs')).default;
+      updateObj.password = await bcrypt.hash(password, 12);
+    }
+
+    const setOnInsertObj: any = {};
+    if (!name) {
+      setOnInsertObj.name = email ? email.split('@')[0] : (cleanPhone || 'Admin');
+    }
+
+    // Build query: find by email OR phone (whichever is provided)
+    const query: any = { $or: [] };
+    if (email) query.$or.push({ email: email.toLowerCase() });
+    if (cleanPhone) query.$or.push({ phone: cleanPhone });
+
     const result = await User.findOneAndUpdate(
-      { email: email.toLowerCase() },
+      query,
       { 
-        $set: { role: 'admin' },
-        $setOnInsert: { 
-          name: email.split('@')[0], // Use email prefix as initial name
-        }
+        $set: updateObj,
+        $setOnInsert: setOnInsertObj
       },
       { upsert: true, new: true }
     );
 
+    const identifier = email || phone;
     return NextResponse.json({ 
-      message: `Successfully assigned Admin role to ${email}`,
+      message: `Successfully assigned Admin role to ${identifier}`,
       user: result
     });
   } catch (error) {

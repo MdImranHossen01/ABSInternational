@@ -50,6 +50,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ImageUpload } from '@/components/ui/image-upload';
 
 interface UserData {
   _id: string;
@@ -98,7 +99,10 @@ function UsersContent() {
   }, [debouncedSearchTerm]);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isAssignAdminOpen, setIsAssignAdminOpen] = useState(false);
-  const [adminEmail, setAdminEmail] = useState('');
+  const [adminIdentifier, setAdminIdentifier] = useState('');
+  const [adminName, setAdminName] = useState('');
+  const [adminImage, setAdminImage] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const [isAssigning, setIsAssigning] = useState(false);
 
   const { data: session } = useSession();
@@ -176,19 +180,38 @@ function UsersContent() {
 
   const handleAssignAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!adminEmail) return;
+    if (!adminIdentifier.trim()) {
+      toast.error('Please enter an email or phone number');
+      return;
+    }
+
+    const isEmail = adminIdentifier.includes('@');
+    const payload: any = {
+      name: adminName.trim() || undefined,
+      image: adminImage.trim() || undefined,
+      password: adminPassword.trim() || undefined,
+    };
+
+    if (isEmail) {
+      payload.email = adminIdentifier.trim();
+    } else {
+      payload.phone = adminIdentifier.trim();
+    }
 
     setIsAssigning(true);
     try {
       const response = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: adminEmail }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
-        toast.success(`Successfully assigned Admin role to ${adminEmail}`);
-        setAdminEmail('');
+        toast.success(`Successfully assigned Admin role to ${adminIdentifier}`);
+        setAdminIdentifier('');
+        setAdminName('');
+        setAdminImage('');
+        setAdminPassword('');
         setIsAssignAdminOpen(false);
         fetchUsers();
       } else {
@@ -552,33 +575,70 @@ function UsersContent() {
 
       {/* Assign Admin Modal */}
       <Dialog open={isAssignAdminOpen} onOpenChange={setIsAssignAdminOpen}>
-        <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
-          <div className="bg-blue-600 p-8 text-white relative overflow-hidden">
+        <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl max-h-[90vh] flex flex-col">
+          <div className="bg-blue-600 px-6 py-5 text-white relative overflow-hidden shrink-0">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-400/20 rounded-full -ml-12 -mb-12 blur-xl" />
-            
+
             <DialogHeader className="relative z-10">
-              <div className="h-12 w-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4 backdrop-blur-sm border border-white/30">
-                <ShieldCheck className="h-6 w-6 text-white" />
-              </div>
-              <DialogTitle className="text-2xl font-black tracking-tight text-white">Assign Admin Access</DialogTitle>
-              <p className="text-blue-100 text-sm font-medium mt-1">Grant administrative privileges to a user by email.</p>
+              <DialogTitle className="text-xl sm:text-2xl font-black tracking-tight text-white">Assign Admin Access</DialogTitle>
+              <p className="text-blue-100 text-xs sm:text-sm font-medium mt-1">Grant admin access using email or phone number.</p>
             </DialogHeader>
           </div>
 
-          <form onSubmit={handleAssignAdmin} className="p-8 space-y-6 bg-white">
-            <div className="space-y-2">
-              <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-              <div className="relative group">
-                <input
-                  type="email"
-                  value={adminEmail}
-                  onChange={(e) => setAdminEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  required
-                  className="w-full h-14 px-5 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none font-bold text-slate-700"
+          <form onSubmit={handleAssignAdmin} className="flex flex-col flex-1 overflow-hidden">
+            <div className="p-8 space-y-5 bg-white overflow-y-auto flex-1">
+              {/* Profile Image */}
+              <div className="flex flex-col items-center justify-center">
+                <ImageUpload 
+                  aspect="circle" 
+                  value={adminImage} 
+                  onUpload={setAdminImage} 
+                  label="Profile Photo"
                 />
               </div>
+
+              {/* Full Name */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                <input
+                  type="text"
+                  value={adminName}
+                  onChange={(e) => setAdminName(e.target.value)}
+                  placeholder="e.g. John Doe"
+                  className="w-full h-12 px-4 rounded-xl border-2 border-slate-100 bg-slate-50 focus:bg-white focus:border-blue-500 transition-all outline-none font-bold text-slate-700 text-sm"
+                />
+              </div>
+
+              {/* Email or Phone Number */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
+                  Email or Phone Number
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={adminIdentifier}
+                  onChange={(e) => setAdminIdentifier(e.target.value)}
+                  placeholder="email@example.com or 017xxxxxxxx"
+                  required
+                  className="w-full h-12 px-4 rounded-xl border-2 border-slate-100 bg-slate-50 focus:bg-white focus:border-blue-500 transition-all outline-none font-bold text-slate-700 text-sm"
+                />
+              </div>
+
+              {/* Password */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Password</label>
+                <input
+                  type="password"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full h-12 px-4 rounded-xl border-2 border-slate-100 bg-slate-50 focus:bg-white focus:border-blue-500 transition-all outline-none font-bold text-slate-700 text-sm"
+                />
+              </div>
+
+              {/* Warning Note */}
               <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-100 mt-2">
                 <div className="h-4 w-4 rounded-full bg-amber-500 flex-shrink-0 mt-0.5" />
                 <p className="text-[10px] text-amber-700 font-bold leading-normal">
@@ -586,20 +646,20 @@ function UsersContent() {
                 </p>
               </div>
             </div>
-            
-            <div className="flex gap-3 pt-2">
-              <Button 
+
+            <div className="p-6 bg-zinc-50 border-t border-zinc-100 flex gap-3 shrink-0">
+              <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsAssignAdminOpen(false)}
-                className="flex-1 h-14 rounded-2xl font-bold border-2 hover:bg-slate-50"
+                className="flex-1 h-12 rounded-xl font-bold border-2 hover:bg-slate-50 text-sm"
               >
                 CANCEL
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isAssigning}
-                className="flex-[2] h-14 rounded-2xl font-black bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-200 border-none group"
+                className="flex-[2] h-12 rounded-xl font-black bg-blue-600 hover:bg-blue-700 text-sm text-white shadow-xl shadow-blue-200 border-none group"
               >
                 {isAssigning ? (
                   <>

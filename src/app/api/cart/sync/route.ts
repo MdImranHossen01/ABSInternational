@@ -4,7 +4,12 @@ import Product from '@/models/Product';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    let body: any = {};
+    try {
+      body = await req.json();
+    } catch {
+      body = {};
+    }
     const items = body.items || body.cartItems;
     
     if (!items || !Array.isArray(items)) {

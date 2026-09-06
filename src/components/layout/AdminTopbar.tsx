@@ -67,9 +67,9 @@ export default function AdminTopbar() {
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem render={<Link href="/admin/profile" />}>
+                <DropdownMenuItem render={<Link href="/admin/settings/profile" />}>
                   <User className="mr-2 h-4 w-4" />
-                  <span>Profile & Security</span>
+                  <span>Profile</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
