@@ -55,22 +55,22 @@ export default async function AboutPage() {
     {
       icon: <Activity className="h-6 w-6 text-emerald-500" />,
       title: "Health & Herbal Wellness",
-      desc: "১০০% খাঁটি ও অর্গানিক ভেষজ ফুড সাপ্লিমেন্ট, খাঁটি সুন্দরবনের মধু, কালোজিরা তেল, এবং প্রিমিয়াম আয়ুর্বেদিক উপাদান।"
+      desc: "100% pure and organic herbal food supplements, pure Sundarbans honey, black seed oil, and premium Ayurvedic formulations."
     },
     {
       icon: <Sparkles className="h-6 w-6 text-amber-500" />,
       title: "Natural Beauty & Skincare",
-      desc: "ভেষজ ফেস সিরাম, খাঁটি চন্দন-জাফরান প্যাক, হারবাল তেল এবং প্রাকৃতিক উপাদান দ্বারা ত্বকের লাবণ্য বৃদ্ধির সামগ্রী।"
+      desc: "Herbal face serums, pure sandalwood-saffron packs, herbal hair oils, and all-natural products crafted to enhance your natural beauty."
     },
     {
       icon: <Stethoscope className="h-6 w-6 text-blue-500" />,
       title: "Digital Seba Card",
-      desc: "সদস্যদের জন্য প্রতি মাসে ফ্রি MBBS ডাক্তার কনসালটেশন, পার্টনার ল্যাব টেস্টে ৫০% ছাড় এবং জরুরি অ্যাম্বুলেন্স ডিসকাউন্ট।"
+      desc: "Monthly complimentary MBBS doctor consultations, up to 50% discount on partner lab tests, and 24/7 emergency ambulance support."
     },
     {
       icon: <TrendingUp className="h-6 w-6 text-purple-500" />,
       title: "Empowering MLM Ecosystem",
-      desc: "মাত্র ১,৫০০ টাকার জয়েনিং প্যাকেজে স্বাবলম্বী হওয়ার সুযোগ—১৫% স্পন্সর বোনাস, ১০ জেনারেশন কমিশন ও র‍্যাঙ্ক রিওয়ার্ড।"
+      desc: "Opportunity to build financial independence with a 1,500 BDT joining package—featuring 15% direct sponsor bonus, 10-generation matching commission, and executive rank rewards."
     }
   ];
 
@@ -108,17 +108,17 @@ export default async function AboutPage() {
             </span>
           </h1>
           <p className="text-muted-foreground text-base md:text-xl max-w-3xl mx-auto leading-relaxed">
-            <strong className="text-foreground">{brandName}</strong> একটি আধুনিক মাল্টি-লেভেল মার্কেটিং (MLM), ই-কমার্স ও সামাজিক সেবা প্ল্যাটফর্ম। আমরা মানসম্মত ভেষজ ও স্বাস্থ্যসেবা পণ্যের মাধ্যমে লাখো মানুষের সুস্থতা নিশ্চিত করার পাশাপাশি টেকসই আর্থিক স্বাবলম্বিতা তৈরি করছি।
+            <strong className="text-foreground">{brandName}</strong> is an innovative multi-level marketing (MLM), e-commerce, and community service platform. We are dedicated to promoting family wellness through premium herbal & healthcare products while creating sustainable avenues for financial independence.
           </p>
 
-          <div className="flex flex-wrap gap-4 justify-center pt-8">
+          <div className="flex flex-row items-center justify-center gap-3 sm:gap-4 pt-8">
             <Link href="/register">
-              <Button size="lg" className="rounded-xl px-8 py-6 font-bold text-base shadow-lg shadow-primary/25 hover:scale-105 transition-all">
-                Join As Member <ArrowRight className="ml-2 h-5 w-5" />
+              <Button size="lg" className="rounded-xl px-4 sm:px-8 py-5 sm:py-6 font-bold text-sm sm:text-base shadow-lg shadow-primary/25 hover:scale-105 transition-all whitespace-nowrap">
+                Join As Member <ArrowRight className="ml-1.5 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </Link>
             <Link href="/shop">
-              <Button size="lg" variant="outline" className="rounded-xl px-8 py-6 font-bold text-base hover:bg-card">
+              <Button size="lg" variant="outline" className="rounded-xl px-4 sm:px-8 py-5 sm:py-6 font-bold text-sm sm:text-base hover:bg-card whitespace-nowrap">
                 Browse Products
               </Button>
             </Link>
@@ -153,10 +153,10 @@ export default async function AboutPage() {
                 Empowering Communities Through Health, Wellness & Entrepreneurship
               </h2>
               <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                ABS International প্রতিষ্ঠিত হয়েছে সাধারণ মানুষের স্বাস্থ্য সুরক্ষা ও তাদের মেধা ও নেটওয়ার্ককে কাজে লাগিয়ে একটি স্বাধীন কর্মসংস্থান সৃষ্টির লক্ষ্য নিয়ে। আমাদের পণ্য সম্ভারে রয়েছে প্রাকৃতিক আয়ুর্বেদিক ওষুধ, হেলথ সাপ্লিমেন্ট, ন্যাচারাল স্কিনকেয়ার এবং দৈনন্দিন লাইফস্টাইল পণ্য।
+                ABS International was founded with the mission to safeguard community health and empower individuals through their skills and network to build independent careers. Our product catalog features certified natural Ayurvedic remedies, dietary supplements, organic skincare, and daily lifestyle essentials.
               </p>
               <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                আমাদের প্ল্যাটফর্মে একজন সদস্য মাত্র ১,৫০০ টাকার প্যাকেজ গ্রহণ করে নিজের ব্যবসা শুরু করতে পারেন। প্রতিটি প্যাকেজের ৩৪.৫% (৫১৭ টাকা) স্বয়ংক্রিয়ভাবে স্পন্সর বোনাস, ১০ জেনারেশন ফান্ড, অটো প্রফিট ম্যাট্রিক্স, রয়্যালটি ও চ্যারিটি ফান্ডে স্বচ্ছভাবে বণ্টিত হয়।
+                Members can launch their entrepreneurial journey by acquiring our 1,500 BDT starter package. A transparent 34.5% (517 BDT) from each package is systematically distributed into sponsor bonuses, 10-generation matching funds, auto-profit matrices, royalty pools, and community charity funds.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -165,7 +165,7 @@ export default async function AboutPage() {
                   <div>
                     <h4 className="font-bold text-sm text-foreground">Our Mission</h4>
                     <p className="text-xs text-muted-foreground mt-1">
-                      প্রাকৃতিক পণ্য ও স্বাস্থ্যসেবার মাধ্যমে প্রতিটি পরিবারে সুস্থতা পৌঁছে দেওয়া এবং উদ্যোক্তা তৈরি করা।
+                      To deliver wellness to every household through natural healthcare products and nurture self-reliant entrepreneurs across the nation.
                     </p>
                   </div>
                 </div>
@@ -175,7 +175,7 @@ export default async function AboutPage() {
                   <div>
                     <h4 className="font-bold text-sm text-foreground">ABS Dream (Vision)</h4>
                     <p className="text-xs text-muted-foreground mt-1">
-                      বাংলাদেশের সর্বাধিক বিশ্বস্ত ই-কমার্স ও সোশ্যাল নেটওয়ার্কিং প্ল্যাটফর্ম হিসেবে প্রতিষ্ঠা লাভ করা।
+                      To emerge as the most trusted direct-selling e-commerce and social networking ecosystem in Bangladesh.
                     </p>
                   </div>
                 </div>
@@ -244,7 +244,7 @@ export default async function AboutPage() {
               Our Core Pillars of Service
             </h2>
             <p className="text-muted-foreground text-sm md:text-base">
-              যে চারটি প্রধান ভিত্তির উপর দাঁড়িয়ে আছে ABS International-এর সাফল্য ও গ্রহণযোগ্যতা।
+              The four foundational pillars defining the success, reliability, and excellence of ABS International.
             </p>
           </div>
 
@@ -275,7 +275,7 @@ export default async function AboutPage() {
               Rank Development & Promotion Hierarchy
             </h2>
             <p className="text-muted-foreground text-sm md:text-base">
-              আপনার মেধা ও পরিশ্রমের যথাযথ মূল্যায়নে আমাদের রয়েছে স্বচ্ছ ও চমৎকার ক্যারিয়ার র‍্যাঙ্কিং রিওয়ার্ড সিস্টেম।
+              A transparent, merit-based career ranking and reward structure designed to honor your hard work and leadership.
             </p>
           </div>
 
@@ -315,7 +315,7 @@ export default async function AboutPage() {
                 Exclusive Healthcare Benefits for Every Active Member
               </h2>
               <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl">
-                ABS International কেবল ব্যবসার সুযোগই নয়, আপনার পরিবারের সুস্বাস্থ্যের নিশ্চয়তা দেয়। মেম্বারশিপ অ্যাক্টিভেশনের সাথে সাথে পাওয়া ডিজিটাল সেবা কার্ডের মাধ্যমে আপনি পাবেন মাসিক ফ্রি ডাক্তার পরামর্শ ও দেশের শীর্ষ ল্যাব সমূহে ৫০% ছাড়।
+                ABS International goes beyond business—we safeguard your family's health and wellness. Upon activating your membership, your Digital Seba Card grants you free monthly MBBS doctor consultations and up to 50% discounts across partner diagnostic labs nationwide.
               </p>
               <div className="flex flex-wrap gap-4 pt-2">
                 <div className="flex items-center gap-2 text-xs md:text-sm text-emerald-200">
@@ -358,15 +358,15 @@ export default async function AboutPage() {
           <p className="text-muted-foreground max-w-lg mx-auto text-sm md:text-base">
             Join thousands of individuals experiencing better health, exclusive healthcare benefits, and genuine financial independence.
           </p>
-          <div className="flex flex-wrap gap-4 justify-center pt-4">
+          <div className="flex flex-row items-center justify-center gap-3 sm:gap-4 pt-4">
             <Link href="/register">
-              <Button size="lg" className="rounded-xl px-8 py-6 font-bold text-base shadow-xl shadow-primary/25 hover:scale-105 transition-all">
-                Register as Premium Member <ArrowRight className="ml-2 h-5 w-5" />
+              <Button size="lg" className="rounded-xl px-4 sm:px-8 py-5 sm:py-6 font-bold text-sm sm:text-base shadow-xl shadow-primary/25 hover:scale-105 transition-all whitespace-nowrap">
+                Register as Member <ArrowRight className="ml-1.5 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </Link>
             <Link href="/contact">
-              <Button size="lg" variant="outline" className="rounded-xl px-8 py-6 font-bold text-base hover:bg-card">
-                Contact Our Support
+              <Button size="lg" variant="outline" className="rounded-xl px-4 sm:px-8 py-5 sm:py-6 font-bold text-sm sm:text-base hover:bg-card whitespace-nowrap">
+                Contact Support
               </Button>
             </Link>
           </div>

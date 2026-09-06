@@ -38,7 +38,7 @@ const loginSchema = z.object({
     },
     { message: 'Please enter a valid email or phone number' }
   ),
-  password: z.string().min(1, { message: 'Password is required' }),
+  password: z.string().optional().or(z.literal('')),
 });
 
 export default function LoginPage() {
@@ -54,7 +54,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
       const role = (session.user as any)?.role;
-      if (role === 'admin' || role === 'super_admin') {
+      if (role === 'admin' || role === 'super_admin' || role === 'manager') {
         router.replace('/admin/dashboard');
       } else {
         router.replace('/dashboard');
@@ -85,7 +85,7 @@ export default function LoginPage() {
     try {
       const response = await signIn('credentials', {
         email: values.email,
-        password: values.password,
+        password: values.password || '',
         redirect: false,
       });
 
@@ -93,7 +93,7 @@ export default function LoginPage() {
         toast.error('Invalid email/phone or password. Please try again.');
       } else {
         toast.success('Logged in successfully!');
-        window.location.href = '/dashboard';
+        window.location.replace('/dashboard');
       }
     } catch (error) {
       toast.error('Something went wrong. Please try again.');
