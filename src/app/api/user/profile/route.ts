@@ -35,7 +35,6 @@ export async function GET(req: NextRequest) {
           email: session.user.email.toLowerCase(),
           image: session.user.image || '',
           role: session.user.email === 'imranshuvo101@gmail.com' ? 'super_admin' : 'user',
-          status: 'active',
         });
         const userObj = newUser.toObject();
         delete userObj.password;
