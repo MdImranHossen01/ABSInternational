@@ -66,6 +66,13 @@ export default function AdminTopbar() {
                 </DropdownMenuLabel>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem render={<Link href="/admin/profile" />}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile & Security</span>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
               <DropdownMenuItem 
                 variant="destructive"
                 onClick={() => signOut({ callbackUrl: window.location.origin })}
