@@ -358,145 +358,260 @@ function ProductsContent() {
           </div>
         )}
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12">
-                <Checkbox
-                  checked={filteredProducts.length > 0 && filteredProducts.every(p => selectedIds.includes(p._id))}
-                  onCheckedChange={toggleSelectAll}
-                />
-              </TableHead>
-              <TableHead className="w-[70px]">Image</TableHead>
-              <TableHead>Name & Brand</TableHead>
-              <TableHead>SKU</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead>Views</TableHead>
-              <TableHead>Sales</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={10} className="h-24 text-center">
-                  <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
-                </TableCell>
+                <TableHead className="w-12">
+                  <Checkbox
+                    checked={filteredProducts.length > 0 && filteredProducts.every(p => selectedIds.includes(p._id))}
+                    onCheckedChange={toggleSelectAll}
+                  />
+                </TableHead>
+                <TableHead className="w-[70px]">Image</TableHead>
+                <TableHead>Name & Brand</TableHead>
+                <TableHead>SKU</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead>Views</TableHead>
+                <TableHead>Sales</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ) : filteredProducts.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={10} className="h-24 text-center">
-                  No products found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredProducts.map((product) => (
-                <TableRow key={product._id} className={selectedIds.includes(product._id) ? "bg-muted/50" : ""}>
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedIds.includes(product._id)}
-                      onCheckedChange={() => toggleSelect(product._id)}
-                    />
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={10} className="h-24 text-center">
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
                   </TableCell>
-                  <TableCell>
-                    <div className="h-12 w-12 overflow-hidden rounded-md border bg-muted">
-                      {product.images && product.images.length > 0 ? (
-                        <Image 
-                          src={product.images[0]} 
-                          alt={product.name} 
-                          width={48}
-                          height={48}
-                          className="h-full w-full object-cover" 
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center">
-                          <Plus className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
+                </TableRow>
+              ) : filteredProducts.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={10} className="h-24 text-center">
+                    No products found.
                   </TableCell>
-                  <TableCell className="font-medium max-w-[240px]">
-                    <div className="flex flex-col">
+                </TableRow>
+              ) : (
+                filteredProducts.map((product) => (
+                  <TableRow key={product._id} className={selectedIds.includes(product._id) ? "bg-muted/50" : ""}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.includes(product._id)}
+                        onCheckedChange={() => toggleSelect(product._id)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-12 w-12 overflow-hidden rounded-md border bg-muted">
+                        {product.images && product.images.length > 0 ? (
+                          <Image 
+                            src={product.images[0]} 
+                            alt={product.name} 
+                            width={48}
+                            height={48}
+                            className="h-full w-full object-cover" 
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center">
+                            <Plus className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium max-w-[240px]">
+                      <div className="flex flex-col">
+                        <Link 
+                          href={`/product/${product.slug}`} 
+                          target="_blank"
+                          className="hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-4 truncate font-semibold"
+                        >
+                          {product.name}
+                        </Link>
+                        {product.brand?.name && (
+                          <span className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <Sparkles className="h-3 w-3 text-primary" />
+                            {product.brand.name}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">{product.sku}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className={product.salePrice ? 'text-xs line-through text-muted-foreground' : ''}>
+                          ৳{product.price ? Math.round(product.price) : '0'}
+                        </span>
+                        {product.salePrice && (
+                          <span className="font-semibold text-primary">
+                            ৳{Math.round(product.salePrice)}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className={(product.stock ?? 0) <= 5 ? 'text-destructive font-bold' : 'font-semibold'}>
+                        {product.stock ?? 0}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-medium text-muted-foreground">{product.views ?? 0}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-bold text-primary">{product.totalSales ?? 0}</span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={product.isPublished ? 'default' : 'secondary'}>
+                        {product.isPublished ? 'Published' : 'Draft'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1.5">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenAddStock(product)}
+                          className="h-8 px-2 text-xs text-primary border-primary/30 hover:bg-primary/10"
+                          title="Add Stock / Batch"
+                        >
+                          <DatabaseZap className="h-3.5 w-3.5 mr-1" /> Add Stock
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8"
+                          onClick={() => router.push(`/admin/products/${product._id}/edit`)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 text-destructive" 
+                          onClick={() => handleDelete(product._id)}
+                        >
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Cards View */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {loading ? (
+            <div className="p-8 text-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">Loading products...</p>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">No products found.</div>
+          ) : (
+            filteredProducts.map((product) => (
+              <div key={product._id} className="p-4 space-y-3 bg-white hover:bg-slate-50/50 transition-colors">
+                <div className="flex gap-3 items-start">
+                  <div className="h-16 w-16 shrink-0 rounded-xl overflow-hidden border bg-muted relative">
+                    {product.images && product.images.length > 0 ? (
+                      <Image 
+                        src={product.images[0]} 
+                        alt={product.name} 
+                        fill
+                        className="object-cover" 
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <Plus className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-start justify-between gap-2">
                       <Link 
                         href={`/product/${product.slug}`} 
                         target="_blank"
-                        className="hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-4 truncate font-semibold"
+                        className="font-bold text-sm text-slate-900 hover:text-primary transition-colors line-clamp-2"
                       >
                         {product.name}
                       </Link>
+                      <Badge variant={product.isPublished ? 'default' : 'secondary'} className="text-[10px] px-2 py-0.5 shrink-0">
+                        {product.isPublished ? 'Live' : 'Draft'}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
+                      <span>SKU: {product.sku || 'N/A'}</span>
                       {product.brand?.name && (
-                        <span className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
-                          <Sparkles className="h-3 w-3 text-primary" />
-                          {product.brand.name}
-                        </span>
+                        <span className="text-primary font-sans font-semibold">• {product.brand.name}</span>
                       )}
                     </div>
-                  </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">{product.sku}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <span className={product.salePrice ? 'text-xs line-through text-muted-foreground' : ''}>
-                        ৳{product.price ? Math.round(product.price) : '0'}
+
+                    <div className="flex items-center gap-2">
+                      <span className="font-black text-sm text-slate-900">
+                        ৳{product.salePrice ? Math.round(product.salePrice) : Math.round(product.price || 0)}
                       </span>
                       {product.salePrice && (
-                        <span className="font-semibold text-primary">
-                          ৳{Math.round(product.salePrice)}
+                        <span className="text-xs line-through text-muted-foreground">
+                          ৳{Math.round(product.price)}
                         </span>
                       )}
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className={(product.stock ?? 0) <= 5 ? 'text-destructive font-bold' : 'font-semibold'}>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-center text-xs bg-slate-50 p-2 rounded-xl border border-slate-100">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Stock</span>
+                    <span className={(product.stock ?? 0) <= 5 ? 'text-destructive font-bold' : 'font-bold text-slate-700'}>
                       {product.stock ?? 0}
                     </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="font-medium text-muted-foreground">{product.views ?? 0}</span>
-                  </TableCell>
-                  <TableCell>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Sales</span>
                     <span className="font-bold text-primary">{product.totalSales ?? 0}</span>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={product.isPublished ? 'default' : 'secondary'}>
-                      {product.isPublished ? 'Published' : 'Draft'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1.5">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleOpenAddStock(product)}
-                        className="h-8 px-2 text-xs text-primary border-primary/30 hover:bg-primary/10"
-                        title="Add Stock / Batch"
-                      >
-                        <DatabaseZap className="h-3.5 w-3.5 mr-1" /> Add Stock
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8"
-                        onClick={() => router.push(`/admin/products/${product._id}/edit`)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 text-destructive" 
-                        onClick={() => handleDelete(product._id)}
-                      >
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Views</span>
+                    <span className="font-semibold text-slate-600">{product.views ?? 0}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleOpenAddStock(product)}
+                    className="h-8 px-2.5 text-xs text-primary border-primary/30 hover:bg-primary/10 rounded-lg gap-1"
+                  >
+                    <DatabaseZap className="h-3.5 w-3.5" /> Stock
+                  </Button>
+
+                  <div className="flex items-center gap-1.5">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="h-8 px-2.5 text-xs rounded-lg gap-1"
+                      onClick={() => router.push(`/admin/products/${product._id}/edit`)}
+                    >
+                      <Edit className="h-3.5 w-3.5" /> Edit
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      size="sm" 
+                      className="h-8 px-2.5 text-xs rounded-lg gap-1"
+                      onClick={() => handleDelete(product._id)}
+                    >
+                      <Trash className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
       
       {!loading && pagination.totalPages > 1 && (
