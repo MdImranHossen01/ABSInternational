@@ -104,12 +104,18 @@ export async function PUT(req: NextRequest) {
     if (phone !== undefined) user.phone = phone;
 
     // Handle KYC NID changes
+    if (nidFrontImage || nidBackImage) {
+      if (!nidNumber || nidNumber.trim().length < 10) {
+        return NextResponse.json({ message: 'Valid NID Number (minimum 10 digits) is required for KYC submission' }, { status: 400 });
+      }
+    }
+
     if (nidNumber !== undefined) user.nidNumber = nidNumber;
     if (nidFrontImage !== undefined) user.nidFrontImage = nidFrontImage;
     if (nidBackImage !== undefined) user.nidBackImage = nidBackImage;
     
-    // Automatically flag as Pending for admin review when NID details are submitted/changed
-    if (nidNumber || nidFrontImage || nidBackImage) {
+    // Automatically flag as Pending for admin review only when both NID number and photos are provided
+    if (nidNumber && (nidFrontImage || nidBackImage)) {
       if (user.nidStatus === 'Not Submitted' || user.nidStatus === 'Rejected') {
         user.nidStatus = 'Pending';
       }

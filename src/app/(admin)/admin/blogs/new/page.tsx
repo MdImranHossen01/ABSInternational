@@ -127,28 +127,28 @@ export default function CreateBlogPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-10 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="max-w-4xl mx-auto py-4 sm:py-10 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <Link href="/admin/blogs">
-          <Button variant="ghost" className="gap-2">
+          <Button variant="ghost" size="sm" className="gap-2 text-xs sm:text-sm">
             <ArrowLeft className="h-4 w-4" /> Back to Blogs
           </Button>
         </Link>
-        <h1 className="text-2xl font-black flex items-center gap-2">
-          <Newspaper className="h-6 w-6 text-primary" />
+        <h1 className="text-xl sm:text-2xl font-black flex items-center gap-2">
+          <Newspaper className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
           Create New Blog
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="p-4 sm:p-6">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                   <Type className="h-4 w-4" /> Content
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-bold">Blog Title *</label>
                 <Input
@@ -157,20 +157,20 @@ export default function CreateBlogPage() {
                   onChange={handleChange}
                   placeholder="Enter short, catchy title"
                   required
-                  className="h-12 text-lg font-bold"
+                  className="h-10 sm:h-12 text-base sm:text-lg font-bold"
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-bold">Slug / URL path *</label>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">alternativehsbd.com/blog/</span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <span className="text-xs text-muted-foreground whitespace-nowrap font-mono">absinternationalltd.com/blog/</span>
                   <Input
                     name="slug"
                     value={formData.slug}
                     onChange={handleChange}
                     placeholder="url-friendly-slug"
                     required
-                    className="font-mono text-xs"
+                    className="font-mono text-xs flex-1"
                   />
                 </div>
                 <div className="flex justify-end">

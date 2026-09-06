@@ -273,23 +273,28 @@ export default function MarketingSettingsPage() {
 
   return (
     <div className="flex-1 space-y-4 px-0 py-4 md:p-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Marketing & Integration Settings</h1>
-        <Button type="submit" form="marketing-settings-form" disabled={submitting}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Marketing & Integration Settings</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Manage loyalty rewards, payment gateways, couriers, and tracking pixels.</p>
+        </div>
+        <Button type="submit" form="marketing-settings-form" disabled={submitting} className="w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm">
           {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Changes
         </Button>
       </div>
 
       <Form {...form}>
-        <form id="marketing-settings-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form id="marketing-settings-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
           <Tabs defaultValue="loyalty" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 lg:w-[480px]">
-              <TabsTrigger value="loyalty">Loyalty</TabsTrigger>
-              <TabsTrigger value="payment">Payment</TabsTrigger>
-              <TabsTrigger value="courier">Courier</TabsTrigger>
-              <TabsTrigger value="marketing">Meta</TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+              <TabsList className="inline-flex w-auto min-w-full sm:min-w-0 sm:grid sm:grid-cols-4 lg:w-[480px] h-auto p-1">
+                <TabsTrigger value="loyalty" className="text-xs sm:text-sm py-1.5 sm:py-2">Loyalty</TabsTrigger>
+                <TabsTrigger value="payment" className="text-xs sm:text-sm py-1.5 sm:py-2">Payment</TabsTrigger>
+                <TabsTrigger value="courier" className="text-xs sm:text-sm py-1.5 sm:py-2">Courier</TabsTrigger>
+                <TabsTrigger value="marketing" className="text-xs sm:text-sm py-1.5 sm:py-2">Meta</TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* 1. Loyalty Tab */}
             <TabsContent value="loyalty" className="space-y-4">

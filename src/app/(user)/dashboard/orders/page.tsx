@@ -142,42 +142,46 @@ export default function MyOrdersPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">My Orders</h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <h1 className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
+          <Package className="h-5 w-5 sm:h-6 sm:w-6 text-primary" /> My Orders
+        </h1>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
           Track and manage all your orders in one place.
         </p>
       </div>
 
       {/* Filter tabs + Search */}
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-        <div className="flex gap-1 flex-wrap">
-          {FILTER_TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${activeTab === tab.key
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-muted/50 text-muted-foreground border-transparent hover:bg-muted'
-                }`}
-            >
-              {tab.label}
-              {tab.key === 'all' && (
-                <span className="ml-1.5 bg-background text-foreground text-xs rounded-full px-1.5 py-0.5 border">
-                  {orders.length}
-                </span>
-              )}
-            </button>
-          ))}
+        <div className="overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 w-full sm:w-auto">
+          <div className="flex gap-1.5 min-w-max">
+            {FILTER_TABS.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors border ${activeTab === tab.key
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-muted/50 text-muted-foreground border-transparent hover:bg-muted'
+                  }`}
+              >
+                {tab.label}
+                {tab.key === 'all' && (
+                  <span className="ml-1.5 bg-background text-foreground text-[10px] sm:text-xs rounded-full px-1.5 py-0.5 border">
+                    {orders.length}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
-            placeholder="Search by product or order ID…"
-            className="pl-9 h-9 text-sm"
+            placeholder="Search orders…"
+            className="pl-8 sm:pl-9 h-8 sm:h-9 text-xs sm:text-sm rounded-xl"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />

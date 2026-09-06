@@ -149,13 +149,13 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Welcome Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-linear-to-r from-primary to-primary/80 text-primary-foreground shadow-lg">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-linear-to-r from-primary to-primary/80 text-primary-foreground shadow-lg">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black">Welcome back, {profile?.name}!</h1>
-          <p className="text-sm opacity-90 mt-1">Manage your Multi-Level Marketing team, wallet transactions, and health benefits here.</p>
-          <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-xs font-mono bg-white/10 p-3 rounded-lg w-fit">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black">Welcome back, {profile?.name}!</h1>
+          <p className="text-xs sm:text-sm opacity-90 mt-1">Manage your Multi-Level Marketing team, wallet transactions, and health benefits here.</p>
+          <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-1 sm:gap-y-2 mt-3 sm:mt-4 text-[11px] sm:text-xs font-mono bg-white/10 p-2.5 sm:p-3 rounded-lg w-full sm:w-fit">
             <div>Member ID: <span className="font-bold">{profile?.memberId || 'N/A'}</span></div>
             <div>Sponsor ID: <span className="font-bold">{profile?.sponsorId || 'None'}</span></div>
           </div>
@@ -164,7 +164,7 @@ export default function UserDashboard() {
           <Button
             onClick={handleActivate}
             disabled={activating}
-            className="bg-white text-primary hover:bg-white/90 font-bold h-12 px-6 rounded-xl shrink-0"
+            className="bg-white text-primary hover:bg-white/90 font-bold h-10 sm:h-12 px-4 sm:px-6 text-xs sm:text-sm rounded-xl shrink-0 w-full md:w-auto"
           >
             {activating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Activate Membership (৳1,500)'}
           </Button>
@@ -174,24 +174,26 @@ export default function UserDashboard() {
       {/* KYC Alert if not approved */}
       {profile?.nidStatus !== 'Approved' && (
         <Card className="border-amber-500/20 bg-amber-500/5">
-          <CardContent className="pt-6 flex items-start gap-4">
-            <AlertCircle className="h-6 w-6 text-amber-500 shrink-0 mt-0.5" />
+          <CardContent className="p-4 sm:pt-6 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+            <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500 shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h4 className="font-bold text-amber-800">KYC Verification Required</h4>
+              <div className="flex items-center justify-between gap-2">
+                <h4 className="font-bold text-xs sm:text-sm text-amber-800">KYC Verification Required</h4>
+                <Badge variant="outline" className="border-amber-500 text-amber-700 bg-amber-500/10 capitalize text-[10px] sm:text-xs">
+                  {profile?.nidStatus || 'Not Submitted'}
+                </Badge>
+              </div>
               <p className="text-xs text-amber-700 mt-1">Please upload your National ID (NID) cards on the profile page to enable withdrawals and system access.</p>
-              <Button size="sm" variant="outline" className="mt-3 h-8 border-amber-500/30 hover:bg-amber-500/10 text-amber-800" onClick={() => router.push('/dashboard/profile')}>
+              <Button size="sm" variant="outline" className="mt-2.5 h-7 sm:h-8 text-xs border-amber-500/30 hover:bg-amber-500/10 text-amber-800" onClick={() => router.push('/dashboard/profile')}>
                 Complete Verification
               </Button>
             </div>
-            <Badge variant="outline" className="border-amber-500 text-amber-700 bg-amber-500/10 capitalize">
-              {profile?.nidStatus || 'Not Submitted'}
-            </Badge>
           </CardContent>
         </Card>
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
         <Card className="bg-white border shadow-xs">
           <CardContent className="pt-6 flex items-center justify-between">
             <div className="space-y-1">

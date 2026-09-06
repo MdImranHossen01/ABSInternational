@@ -105,105 +105,145 @@ export default function SubscribersPage() {
   );
 
   return (
-    <div className="px-0 py-4 md:p-8 space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="px-0 py-4 md:p-8 space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-3xl font-black tracking-tight flex items-center gap-2">
-            <Users className="h-8 w-8 text-primary" /> Newsletter Subscribers
+          <h1 className="text-xl sm:text-3xl font-black tracking-tight flex items-center gap-2">
+            <Users className="h-6 w-6 sm:h-8 sm:w-8 text-primary" /> Newsletter Subscribers
           </h1>
-          <p className="text-muted-foreground">Manage your store's email subscription list.</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">Manage your store's email subscription list.</p>
         </div>
-        <Button onClick={exportCSV} className="gap-2">
-          <Download className="h-4 w-4" /> Export CSV
+        <Button onClick={exportCSV} className="gap-2 h-9 sm:h-10 text-xs sm:text-sm w-full sm:w-auto">
+          <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Export CSV
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         <Card className="bg-primary/5 border-primary/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Subscribers</CardTitle>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Total Subscribers</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-black">{subscribers.length}</div>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl sm:text-3xl font-black">{subscribers.length}</div>
           </CardContent>
         </Card>
       </div>
 
       <Card>
-        <CardHeader>
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="relative w-full md:w-96">
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div className="relative w-full sm:w-80">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 placeholder="Search by email..." 
-                className="pl-10"
+                className="pl-9 h-9 sm:h-10 text-xs sm:text-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground">
               Showing {filteredSubscribers.length} of {subscribers.length}
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead>Email Address</TableHead>
-                  <TableHead>Subscribed Date</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={3} className="h-32 text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                        <span>Loading subscribers...</span>
-                      </div>
-                    </TableCell>
+        <CardContent className="p-0 sm:p-6 sm:pt-0">
+          <div className="rounded-xl border border-slate-100 sm:border-slate-200 overflow-hidden">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50">
+                    <TableHead>Email Address</TableHead>
+                    <TableHead>Subscribed Date</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ) : filteredSubscribers.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3} className="h-32 text-center text-muted-foreground font-medium">
-                      No subscribers found.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredSubscribers.map((subscriber) => (
-                    <TableRow key={subscriber._id} className="hover:bg-muted/30 transition-colors">
-                      <TableCell className="font-bold">
-                        <div className="flex items-center gap-2">
-                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                            <Mail className="h-4 w-4" />
-                          </div>
-                          {subscriber.email}
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={3} className="h-32 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                          <span>Loading subscribers...</span>
                         </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-3.5 w-3.5" />
-                          {format(new Date(subscriber.createdAt), 'MMM dd, yyyy • hh:mm a')}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                          onClick={() => handleDelete(subscriber._id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : filteredSubscribers.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={3} className="h-32 text-center text-muted-foreground font-medium">
+                        No subscribers found.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredSubscribers.map((subscriber) => (
+                      <TableRow key={subscriber._id} className="hover:bg-muted/30 transition-colors">
+                        <TableCell className="font-bold">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                              <Mail className="h-4 w-4" />
+                            </div>
+                            {subscriber.email}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground text-xs">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-3.5 w-3.5" />
+                            {format(new Date(subscriber.createdAt), 'MMM dd, yyyy • hh:mm a')}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            onClick={() => handleDelete(subscriber._id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile Cards View */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {isLoading ? (
+                <div className="p-8 text-center">
+                  <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground">Loading subscribers...</p>
+                </div>
+              ) : filteredSubscribers.length === 0 ? (
+                <div className="p-8 text-center text-xs text-muted-foreground">No subscribers found.</div>
+              ) : (
+                filteredSubscribers.map((subscriber) => (
+                  <div key={subscriber._id} className="p-4 flex items-center justify-between gap-3 bg-white hover:bg-slate-50/50 transition-colors">
+                    <div className="min-w-0 flex items-center gap-3">
+                      <div className="h-9 w-9 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                        <Mail className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-xs sm:text-sm text-slate-900 truncate">{subscriber.email}</p>
+                        <p className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
+                          <Calendar className="h-3 w-3" />
+                          {format(new Date(subscriber.createdAt), 'MMM dd, yyyy • hh:mm a')}
+                        </p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="shrink-0 text-destructive hover:bg-destructive/10 hover:text-destructive h-8 w-8"
+                      onClick={() => handleDelete(subscriber._id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>

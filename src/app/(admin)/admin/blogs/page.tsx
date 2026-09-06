@@ -104,21 +104,21 @@ function BlogsContent() {
   );
 
   return (
-    <div className="space-y-6 pt-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="space-y-4 md:space-y-6 pt-4 md:pt-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-black flex items-center gap-2">
-            <Newspaper className="h-6 w-6 text-primary" />
+          <h1 className="text-xl sm:text-2xl font-black flex items-center gap-2">
+            <Newspaper className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             Manage Blogs
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
             Create, edit, and manage your store&apos;s blog posts.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/admin/blogs/new">
-            <Button className="font-bold">
-              <Plus className="mr-2 h-4 w-4" /> Create Blog
+          <Link href="/admin/blogs/new" className="w-full sm:w-auto">
+            <Button className="font-bold w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm">
+              <Plus className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" /> Create Blog
             </Button>
           </Link>
         </div>
@@ -129,7 +129,7 @@ function BlogsContent() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search blogs..."
-            className="pl-8"
+            className="pl-8 h-9 sm:h-10 text-xs sm:text-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -137,105 +137,186 @@ function BlogsContent() {
       </div>
 
       <div className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow>
-              <TableHead className="font-bold">Thumbnail</TableHead>
-              <TableHead className="font-bold">Title</TableHead>
-              <TableHead className="font-bold">Views</TableHead>
-              <TableHead className="font-bold">Status</TableHead>
-              <TableHead className="font-bold">Date</TableHead>
-              <TableHead className="text-right font-bold">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                    <span>Loading blogs...</span>
-                  </div>
-                </TableCell>
+                <TableHead className="font-bold">Thumbnail</TableHead>
+                <TableHead className="font-bold">Title</TableHead>
+                <TableHead className="font-bold">Views</TableHead>
+                <TableHead className="font-bold">Status</TableHead>
+                <TableHead className="font-bold">Date</TableHead>
+                <TableHead className="text-right font-bold">Actions</TableHead>
               </TableRow>
-            ) : filteredBlogs.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                  No blogs found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredBlogs.map((blog) => (
-                <TableRow key={blog._id} className="hover:bg-muted/30 transition-colors">
-                  <TableCell>
-                    <div className="h-10 w-16 bg-muted rounded overflow-hidden relative">
-                      {blog.thumbnail ? (
-                        <Image
-                          src={imageErrors[blog._id] ? 'https://placehold.co/400x225?text=Invalid+Image+URL' : blog.thumbnail}
-                          alt={blog.title}
-                          fill
-                          className="object-cover"
-                          onError={() =>
-                            setImageErrors((prev) => ({ ...prev, [blog._id]: true }))
-                          }
-                          unoptimized
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center h-full text-[10px] text-muted-foreground">No Img</div>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Link 
-                      href={`/blog/${blog.slug}`} 
-                      target="_blank" 
-                      className="font-bold text-sm max-w-[300px] truncate hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-4 block"
-                    >
-                      {blog.title}
-                    </Link>
-                    <div className="text-[10px] text-muted-foreground font-mono truncate max-w-[300px]">/{blog.slug}</div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="font-bold text-primary">{blog.views ?? 0}</span>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={blog.isPublished ? 'default' : 'secondary'}>
-                      {blog.isPublished ? 'Published' : 'Draft'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-xs">
-                    {new Date(blog.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link href={`/blog/${blog.slug}`} target="_blank">
-                        <Button variant="ghost" size="icon-sm" title="View Publicly">
-                          <ExternalLink className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Link href={`/admin/blogs/edit/${blog._id}`}>
-                        <Button variant="outline" size="icon-sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Button 
-                        variant="destructive" 
-                        size="icon-sm" 
-                        onClick={() => handleDelete(blog._id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-24 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                      <span>Loading blogs...</span>
                     </div>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : filteredBlogs.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    No blogs found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredBlogs.map((blog) => (
+                  <TableRow key={blog._id} className="hover:bg-muted/30 transition-colors">
+                    <TableCell>
+                      <div className="h-10 w-16 bg-muted rounded overflow-hidden relative">
+                        {blog.thumbnail ? (
+                          <Image
+                            src={imageErrors[blog._id] ? 'https://placehold.co/400x225?text=Invalid+Image+URL' : blog.thumbnail}
+                            alt={blog.title}
+                            fill
+                            className="object-cover"
+                            onError={() =>
+                              setImageErrors((prev) => ({ ...prev, [blog._id]: true }))
+                            }
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full text-[10px] text-muted-foreground">No Img</div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Link 
+                        href={`/blog/${blog.slug}`} 
+                        target="_blank" 
+                        className="font-bold text-sm max-w-[300px] truncate hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-4 block"
+                      >
+                        {blog.title}
+                      </Link>
+                      <div className="text-[10px] text-muted-foreground font-mono truncate max-w-[300px]">/{blog.slug}</div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-bold text-primary">{blog.views ?? 0}</span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={blog.isPublished ? 'default' : 'secondary'}>
+                        {blog.isPublished ? 'Published' : 'Draft'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {new Date(blog.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link href={`/blog/${blog.slug}`} target="_blank">
+                          <Button variant="ghost" size="icon-sm" title="View Publicly">
+                            <ExternalLink className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Link href={`/admin/blogs/edit/${blog._id}`}>
+                          <Button variant="outline" size="icon-sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Button 
+                          variant="destructive" 
+                          size="icon-sm" 
+                          onClick={() => handleDelete(blog._id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Cards View */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {loading ? (
+            <div className="p-8 text-center">
+              <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto mb-2" />
+              <p className="text-xs text-muted-foreground">Loading blogs...</p>
+            </div>
+          ) : filteredBlogs.length === 0 ? (
+            <div className="p-8 text-center text-xs text-muted-foreground">No blogs found.</div>
+          ) : (
+            filteredBlogs.map((blog) => (
+              <div key={blog._id} className="p-4 space-y-3 bg-white hover:bg-slate-50/50 transition-colors">
+                <div className="flex gap-3 items-start">
+                  <div className="h-14 w-20 shrink-0 bg-muted rounded-lg overflow-hidden relative border border-slate-100">
+                    {blog.thumbnail ? (
+                      <Image
+                        src={imageErrors[blog._id] ? 'https://placehold.co/400x225?text=Invalid+Image+URL' : blog.thumbnail}
+                        alt={blog.title}
+                        fill
+                        className="object-cover"
+                        onError={() =>
+                          setImageErrors((prev) => ({ ...prev, [blog._id]: true }))
+                        }
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-[10px] text-muted-foreground font-medium">No Img</div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <Link 
+                      href={`/blog/${blog.slug}`} 
+                      target="_blank" 
+                      className="font-bold text-sm text-slate-900 hover:text-primary transition-colors line-clamp-2"
+                    >
+                      {blog.title}
+                    </Link>
+                    <div className="text-[11px] text-muted-foreground font-mono truncate">/{blog.slug}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <Badge variant={blog.isPublished ? 'default' : 'secondary'} className="text-[10px] px-2 py-0.5">
+                      {blog.isPublished ? 'Published' : 'Draft'}
+                    </Badge>
+                    <span className="text-slate-500 font-medium">{blog.views ?? 0} views</span>
+                  </div>
+                  <span className="text-slate-400 text-[11px]">
+                    {new Date(blog.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-1 border-t border-slate-100">
+                  <Link href={`/blog/${blog.slug}`} target="_blank">
+                    <Button variant="ghost" size="sm" className="h-8 text-xs gap-1">
+                      <ExternalLink className="h-3.5 w-3.5" /> View
+                    </Button>
+                  </Link>
+                  <Link href={`/admin/blogs/edit/${blog._id}`}>
+                    <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
+                      <Edit className="h-3.5 w-3.5" /> Edit
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="destructive" 
+                    size="sm" 
+                    className="h-8 text-xs gap-1"
+                    onClick={() => handleDelete(blog._id)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" /> Delete
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
       
       {!loading && pagination.totalPages > 1 && (
-        <div className="py-4">
+        <div className="py-3 sm:py-4">
           <Pagination 
             currentPage={currentPage}
             totalPages={pagination.totalPages}

@@ -55,6 +55,14 @@ const profileSchema = z.object({
     zipCode: z.string().optional(),
     country: z.string().optional(),
   }).optional()
+}).refine((data) => {
+  if (data.nidFrontImage || data.nidBackImage) {
+    return !!data.nidNumber && data.nidNumber.trim().length >= 10;
+  }
+  return true;
+}, {
+  message: 'NID Number is required (minimum 10 digits) when submitting NID photos',
+  path: ['nidNumber']
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -189,23 +197,25 @@ export function ProfileForm() {
 
   return (
     <div className="w-full max-w-4xl">
-      <Tabs defaultValue="basic" className="w-full space-y-6">
-        <TabsList className="grid grid-cols-3 max-w-md bg-muted rounded-xl">
-          <TabsTrigger value="basic" className="rounded-lg gap-2"><UserIcon className="h-4 w-4" /> Profile Info</TabsTrigger>
-          <TabsTrigger value="kyc" className="rounded-lg gap-2"><ShieldCheck className="h-4 w-4" /> KYC NID</TabsTrigger>
-          <TabsTrigger value="payment" className="rounded-lg gap-2"><Wallet className="h-4 w-4" /> Bank & MFS</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="basic" className="w-full space-y-4 sm:space-y-6">
+        <div className="overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="inline-flex w-auto min-w-full sm:min-w-0 sm:grid sm:grid-cols-3 max-w-md bg-muted rounded-xl p-1 h-auto">
+            <TabsTrigger value="basic" className="rounded-lg gap-1.5 text-xs sm:text-sm py-1.5"><UserIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Profile Info</TabsTrigger>
+            <TabsTrigger value="kyc" className="rounded-lg gap-1.5 text-xs sm:text-sm py-1.5"><ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> KYC NID</TabsTrigger>
+            <TabsTrigger value="payment" className="rounded-lg gap-1.5 text-xs sm:text-sm py-1.5"><Wallet className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Bank & MFS</TabsTrigger>
+          </TabsList>
+        </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
             
-            <TabsContent value="basic" className="space-y-6">
+            <TabsContent value="basic" className="space-y-4 sm:space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Personal Details</CardTitle>
-                  <CardDescription>Update your public account bio and shipping details.</CardDescription>
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-base sm:text-lg">Personal Details</CardTitle>
+                  <CardDescription className="text-xs">Update your public account bio and shipping details.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4 sm:space-y-6">
                   <div className="flex flex-col md:flex-row gap-6">
                     <div className="w-full md:w-1/3">
                       <FormField

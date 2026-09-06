@@ -263,24 +263,24 @@ function UsersContent() {
   };
 
   return (
-    <div className="flex flex-col gap-6 px-0 py-4 md:p-8 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-4 md:gap-6 px-0 py-4 md:p-8 animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-black tracking-tighter text-slate-900">Users Management</h1>
-          <p className="text-muted-foreground text-sm font-medium">Manage and view all registered customers and staff.</p>
+          <h1 className="text-xl sm:text-3xl font-black tracking-tighter text-slate-900">Users Management</h1>
+          <p className="text-muted-foreground text-xs sm:text-sm font-medium">Manage and view all registered customers and staff.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           {(isSuperAdmin || (session?.user as any)?.role === 'admin') && (
             <Button 
               onClick={() => setIsAssignAdminOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full px-6 h-11 shadow-lg shadow-blue-200 border-none transition-all hover:scale-105 active:scale-95"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full px-4 sm:px-6 h-9 sm:h-11 text-xs sm:text-sm shadow-lg shadow-blue-200 border-none transition-all hover:scale-105 active:scale-95"
             >
-              <ShieldCheck className="mr-2 h-4 w-4" />
+              <ShieldCheck className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Assign Admin
             </Button>
           )}
-          <div className="bg-primary/10 px-5 py-2.5 rounded-full border border-primary/20">
-            <span className="text-primary font-bold text-sm">{totalCount} Total Users</span>
+          <div className="bg-primary/10 px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full border border-primary/20">
+            <span className="text-primary font-bold text-xs sm:text-sm">{totalCount} Users</span>
           </div>
         </div>
       </div>
@@ -297,156 +297,292 @@ function UsersContent() {
       </div>
 
       <div className="rounded-2xl border shadow-sm overflow-hidden bg-white">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow>
-              <TableHead className="w-[80px]">Avatar</TableHead>
-              <TableHead className="font-bold">Name</TableHead>
-              <TableHead className="font-bold">Email</TableHead>
-              <TableHead className="font-bold">Orders</TableHead>
-              <TableHead className="font-bold">Role</TableHead>
-              <TableHead className="font-bold">Joined</TableHead>
-              <TableHead className="text-right font-bold">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableCell colSpan={7} className="h-48 text-center">
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-muted-foreground font-medium">Loading user data...</p>
-                  </div>
-                </TableCell>
+                <TableHead className="w-[80px]">Avatar</TableHead>
+                <TableHead className="font-bold">Name</TableHead>
+                <TableHead className="font-bold">Email</TableHead>
+                <TableHead className="font-bold">Orders</TableHead>
+                <TableHead className="font-bold">Role</TableHead>
+                <TableHead className="font-bold">Joined</TableHead>
+                <TableHead className="text-right font-bold">Actions</TableHead>
               </TableRow>
-            ) : users.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="h-48 text-center">
-                  <p className="text-muted-foreground">No users found.</p>
-                </TableCell>
-              </TableRow>
-            ) : (
-              users.map((user) => (
-                <TableRow key={user._id} className="hover:bg-muted/30 transition-colors">
-                  <TableCell>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-48 text-center">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      <p className="text-muted-foreground font-medium">Loading user data...</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : users.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-48 text-center">
+                    <p className="text-muted-foreground">No users found.</p>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                users.map((user) => (
+                  <TableRow key={user._id} className="hover:bg-muted/30 transition-colors">
+                    <TableCell>
+                      {user.image && user.image !== '' ? (
+                        <div className="relative h-10 w-10 rounded-full overflow-hidden border">
+                          <Image 
+                            src={user.image} 
+                            alt={user.name} 
+                            width={40}
+                            height={40}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                          <UserIcon className="h-5 w-5" />
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <button 
+                        onClick={() => openUserDetails(user)}
+                        className="font-semibold text-slate-900 hover:text-primary transition-colors text-left"
+                      >
+                        {user.name}
+                      </button>
+                    </TableCell>
+                    <TableCell className="text-slate-600">{user.email}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-700">{user.totalOrders} Orders</span>
+                        <span className="text-[10px] text-muted-foreground font-medium">৳{user.totalSpent.toLocaleString()}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={user.role === 'admin' || user.role === 'manager' ? 'default' : 'outline'}
+                        className={`
+                          capitalize px-3 py-0.5 rounded-full font-bold text-[10px] tracking-wider
+                          ${user.role === 'admin' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+                          ${user.role === 'manager' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}
+                        `}
+                      >
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-slate-500 text-sm">
+                      {new Date(user.createdAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 hover:text-primary">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuGroup>
+                            <DropdownMenuLabel className="text-[10px] font-black uppercase text-muted-foreground px-2 py-1.5">User Actions</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => openUserDetails(user)} className="cursor-pointer">
+                              <Eye className="mr-2 h-4 w-4" /> View Details
+                            </DropdownMenuItem>
+                          </DropdownMenuGroup>
+                          
+                          <DropdownMenuSeparator />
+                          
+                          <DropdownMenuGroup>
+                            <DropdownMenuLabel className="text-[10px] font-black uppercase text-muted-foreground px-2 py-1.5">Management</DropdownMenuLabel>
+                            
+                            {user.role !== 'admin' && (
+                              <DropdownMenuItem 
+                                onClick={() => handleUpdateRole(user._id, 'admin')}
+                                className="cursor-pointer text-blue-600 font-bold"
+                              >
+                                <ShieldCheck className="mr-2 h-4 w-4" /> Make Admin
+                              </DropdownMenuItem>
+                            )}
+
+                            {user.role !== 'manager' && (
+                              <DropdownMenuItem 
+                                onClick={() => handleUpdateRole(user._id, 'manager')}
+                                className="cursor-pointer text-primary font-bold"
+                              >
+                                <UserCog className="mr-2 h-4 w-4" /> Make Manager
+                              </DropdownMenuItem>
+                            )}
+
+                            {user.role !== 'user' && (
+                              <DropdownMenuItem 
+                                onClick={() => handleUpdateRole(user._id, 'user')}
+                                className="cursor-pointer text-slate-600 font-bold"
+                              >
+                                <UserCog className="mr-2 h-4 w-4" /> Make User
+                              </DropdownMenuItem>
+                            )}
+
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-destructive cursor-pointer font-medium">
+                              <ShieldAlert className="mr-2 h-4 w-4" /> Suspend User
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteUser(user._id, user.name)}
+                              className="text-destructive cursor-pointer font-bold bg-red-50 hover:bg-red-100 mt-1"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" /> Delete User
+                            </DropdownMenuItem>
+                          </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Cards View */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {loading ? (
+            <div className="p-8 text-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">Loading users...</p>
+            </div>
+          ) : users.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">No users found.</div>
+          ) : (
+            users.map((user) => (
+              <div key={user._id} className="p-4 space-y-3 bg-white hover:bg-slate-50/50 transition-colors">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     {user.image && user.image !== '' ? (
-                      <div className="relative h-10 w-10 rounded-full overflow-hidden border">
+                      <div className="relative h-11 w-11 shrink-0 rounded-full overflow-hidden border">
                         <Image 
                           src={user.image} 
                           alt={user.name} 
-                          width={40}
-                          height={40}
+                          width={44}
+                          height={44}
                           className="h-full w-full object-cover"
                         />
                       </div>
                     ) : (
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                      <div className="h-11 w-11 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                         <UserIcon className="h-5 w-5" />
                       </div>
                     )}
-                  </TableCell>
-                  <TableCell>
-                    <button 
-                      onClick={() => openUserDetails(user)}
-                      className="font-semibold text-slate-900 hover:text-primary transition-colors text-left"
-                    >
-                      {user.name}
-                    </button>
-                  </TableCell>
-                  <TableCell className="text-slate-600">{user.email}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <span className="font-bold text-slate-700">{user.totalOrders} Orders</span>
-                      <span className="text-[10px] text-muted-foreground font-medium">৳{user.totalSpent.toLocaleString()}</span>
+                    <div className="min-w-0">
+                      <button 
+                        onClick={() => openUserDetails(user)}
+                        className="font-bold text-slate-900 hover:text-primary transition-colors text-left text-sm truncate block"
+                      >
+                        {user.name}
+                      </button>
+                      <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                      {user.phone && <p className="text-[11px] text-slate-400">{user.phone}</p>}
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant={user.role === 'admin' || user.role === 'manager' ? 'default' : 'outline'}
-                      className={`
-                        capitalize px-3 py-0.5 rounded-full font-bold text-[10px] tracking-wider
-                        ${user.role === 'admin' ? 'bg-blue-600 hover:bg-blue-700' : ''}
-                        ${user.role === 'manager' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}
-                      `}
-                    >
-                      {user.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-slate-500 text-sm">
-                    {new Date(user.createdAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 hover:text-primary">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuGroup>
-                          <DropdownMenuLabel className="text-[10px] font-black uppercase text-muted-foreground px-2 py-1.5">User Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => openUserDetails(user)} className="cursor-pointer">
-                            <Eye className="mr-2 h-4 w-4" /> View Details
-                          </DropdownMenuItem>
-                        </DropdownMenuGroup>
+                  </div>
+                  <Badge 
+                    variant={user.role === 'admin' || user.role === 'manager' ? 'default' : 'outline'}
+                    className={`
+                      capitalize px-2.5 py-0.5 rounded-full font-bold text-[10px] tracking-wider shrink-0
+                      ${user.role === 'admin' ? 'bg-blue-600 text-white' : ''}
+                      ${user.role === 'manager' ? 'bg-emerald-600 text-white' : ''}
+                    `}
+                  >
+                    {user.role}
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Orders / Spent</span>
+                    <span className="font-semibold text-slate-700">{user.totalOrders} Orders • ৳{user.totalSpent.toLocaleString()}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Joined</span>
+                    <span className="font-semibold text-slate-700">
+                      {new Date(user.createdAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => openUserDetails(user)}
+                    className="h-8 rounded-lg text-xs gap-1.5"
+                  >
+                    <Eye className="h-3.5 w-3.5" /> Details
+                  </Button>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 px-2 text-xs text-slate-600">
+                        <MoreHorizontal className="h-4 w-4 mr-1" /> Actions
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuGroup>
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase text-muted-foreground px-2 py-1.5">Management</DropdownMenuLabel>
                         
-                        <DropdownMenuSeparator />
-                        
-                        <DropdownMenuGroup>
-                          <DropdownMenuLabel className="text-[10px] font-black uppercase text-muted-foreground px-2 py-1.5">Management</DropdownMenuLabel>
-                          
-                          {user.role !== 'admin' && (
-                            <DropdownMenuItem 
-                              onClick={() => handleUpdateRole(user._id, 'admin')}
-                              className="cursor-pointer text-blue-600 font-bold"
-                            >
-                              <ShieldCheck className="mr-2 h-4 w-4" /> Make Admin
-                            </DropdownMenuItem>
-                          )}
-
-                          {user.role !== 'manager' && (
-                            <DropdownMenuItem 
-                              onClick={() => handleUpdateRole(user._id, 'manager')}
-                              className="cursor-pointer text-primary font-bold"
-                            >
-                              <UserCog className="mr-2 h-4 w-4" /> Make Manager
-                            </DropdownMenuItem>
-                          )}
-
-                          {user.role !== 'user' && (
-                            <DropdownMenuItem 
-                              onClick={() => handleUpdateRole(user._id, 'user')}
-                              className="cursor-pointer text-slate-600 font-bold"
-                            >
-                              <UserCog className="mr-2 h-4 w-4" /> Make User
-                            </DropdownMenuItem>
-                          )}
-
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive cursor-pointer font-medium">
-                            <ShieldAlert className="mr-2 h-4 w-4" /> Suspend User
-                          </DropdownMenuItem>
+                        {user.role !== 'admin' && (
                           <DropdownMenuItem 
-                            onClick={() => handleDeleteUser(user._id, user.name)}
-                            className="text-destructive cursor-pointer font-bold bg-red-50 hover:bg-red-100 mt-1"
+                            onClick={() => handleUpdateRole(user._id, 'admin')}
+                            className="cursor-pointer text-blue-600 font-bold text-xs"
                           >
-                            <Trash2 className="mr-2 h-4 w-4" /> Delete User
+                            <ShieldCheck className="mr-2 h-4 w-4" /> Make Admin
                           </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+                        )}
+
+                        {user.role !== 'manager' && (
+                          <DropdownMenuItem 
+                            onClick={() => handleUpdateRole(user._id, 'manager')}
+                            className="cursor-pointer text-primary font-bold text-xs"
+                          >
+                            <UserCog className="mr-2 h-4 w-4" /> Make Manager
+                          </DropdownMenuItem>
+                        )}
+
+                        {user.role !== 'user' && (
+                          <DropdownMenuItem 
+                            onClick={() => handleUpdateRole(user._id, 'user')}
+                            className="cursor-pointer text-slate-600 font-bold text-xs"
+                          >
+                            <UserCog className="mr-2 h-4 w-4" /> Make User
+                          </DropdownMenuItem>
+                        )}
+
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteUser(user._id, user.name)}
+                          className="text-destructive cursor-pointer font-bold bg-red-50 hover:bg-red-100 mt-1 text-xs"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" /> Delete User
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
         {totalPages > 1 && (
-          <div className="py-6 border-t bg-white px-6">
+          <div className="py-4 border-t bg-white px-4 md:px-6">
             <Pagination 
               currentPage={currentPage} 
               totalPages={totalPages} 

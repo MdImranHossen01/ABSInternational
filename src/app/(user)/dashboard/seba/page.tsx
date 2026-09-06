@@ -101,72 +101,72 @@ export default function SebaPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-3xl font-black tracking-tight">Seba Benefit Hub</h1>
-        <p className="text-sm text-muted-foreground font-medium">Claim free medical consultations, ambulance dispatch, and diagnostics discount vouchers.</p>
+        <h1 className="text-xl sm:text-3xl font-black tracking-tight">Seba Benefit Hub</h1>
+        <p className="text-xs sm:text-sm text-muted-foreground font-medium">Claim free medical consultations, ambulance dispatch, and diagnostics discount vouchers.</p>
       </div>
 
       {/* Digital Seba Card Container */}
       {profile?.isSebaCardGenerated && profile?.isSubscriptionActive ? (
         <Card className="max-w-2xl bg-linear-to-r from-emerald-600 to-teal-700 text-white rounded-2xl shadow-xl overflow-hidden relative">
           <div className="absolute right-0 bottom-0 opacity-10">
-            <Activity className="h-64 w-64 translate-x-20 translate-y-20" />
+            <Activity className="h-48 w-48 sm:h-64 sm:w-64 translate-x-12 translate-y-12 sm:translate-x-20 sm:translate-y-20" />
           </div>
-          <CardHeader className="border-b border-white/10">
+          <CardHeader className="p-4 sm:p-6 border-b border-white/10">
             <div className="flex justify-between items-center">
               <div>
-                <CardTitle className="text-xl font-bold tracking-tight">ABS DIGITAL SEBA CARD</CardTitle>
-                <CardDescription className="text-emerald-100 text-xs mt-0.5">Healthcare & Social Benefit Membership</CardDescription>
+                <CardTitle className="text-base sm:text-xl font-bold tracking-tight">ABS DIGITAL SEBA CARD</CardTitle>
+                <CardDescription className="text-emerald-100 text-[11px] sm:text-xs mt-0.5">Healthcare & Social Benefit Membership</CardDescription>
               </div>
-              <Activity className="h-8 w-8 text-emerald-200" />
+              <Activity className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-200" />
             </div>
           </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+          <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-emerald-100">Holder Name</div>
-                <div className="font-bold text-lg mt-0.5">{profile?.name}</div>
+                <div className="font-bold text-sm sm:text-lg mt-0.5 truncate">{profile?.name}</div>
               </div>
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-emerald-100">Card Number</div>
-                <div className="font-mono font-bold text-lg mt-0.5">{profile?.sebaCardNo || 'ABS-SEBA-PENDING'}</div>
+                <div className="font-mono font-bold text-sm sm:text-lg mt-0.5 truncate">{profile?.sebaCardNo || 'ABS-SEBA-PENDING'}</div>
               </div>
             </div>
-            <div className="flex justify-between items-center text-xs pt-4 border-t border-white/10 text-emerald-100">
-              <div>Status: <Badge className="bg-white text-emerald-800 font-bold ml-1">ACTIVE BENEFICIARY</Badge></div>
-              <div>ABS International Health Network</div>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs pt-3 sm:pt-4 border-t border-white/10 text-emerald-100">
+              <div className="flex items-center gap-1.5">Status: <Badge className="bg-white text-emerald-800 font-bold text-[10px]">ACTIVE BENEFICIARY</Badge></div>
+              <div className="text-[11px]">ABS International Health Network</div>
             </div>
           </CardContent>
         </Card>
       ) : (
         <Card className="border-red-500/20 bg-red-500/5 max-w-2xl">
-          <CardContent className="pt-6 flex gap-4 items-start">
-            <BadgeAlert className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
+          <CardContent className="p-4 sm:pt-6 flex gap-3 sm:gap-4 items-start">
+            <BadgeAlert className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 shrink-0 mt-0.5" />
             <div>
-              <h4 className="font-bold text-red-800">Seba Card Not Generated</h4>
+              <h4 className="font-bold text-xs sm:text-sm text-red-800">Seba Card Not Generated</h4>
               <p className="text-xs text-red-700 mt-1">Seba digital health benefit cards are automatically generated only for active Premium Members.</p>
             </div>
           </CardContent>
         </Card>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
 
         {/* Booking Request Form */}
         <Card className="lg:col-span-1 border shadow-xs bg-white">
-          <CardHeader>
-            <CardTitle>Book Seba Benefit</CardTitle>
-            <CardDescription>Generate diagnostic discount or doctor consultation voucher.</CardDescription>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-base sm:text-lg">Book Seba Benefit</CardTitle>
+            <CardDescription className="text-xs">Generate diagnostic discount or doctor consultation voucher.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
             <form onSubmit={handleBooking} className="space-y-4">
               <div className="space-y-2">
-                <Label>Benefit Type</Label>
+                <Label className="text-xs sm:text-sm">Benefit Type</Label>
                 <select
                   value={bookingType}
                   onChange={(e) => setBookingType(e.target.value as any)}
-                  className="w-full h-11 rounded-lg border px-3 text-sm outline-none focus:border-primary transition-all bg-white"
+                  className="w-full h-10 sm:h-11 rounded-lg border px-3 text-xs sm:text-sm outline-none focus:border-primary transition-all bg-white"
                   disabled={!profile?.isSubscriptionActive}
                 >
                   <option value="doctor">1x Free MBBS Doctor Consultation</option>
@@ -176,12 +176,12 @@ export default function SebaPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Additional Details / Patient Name</Label>
+                <Label className="text-xs sm:text-sm">Additional Details / Patient Name</Label>
                 <textarea
                   value={bookingDetails}
                   onChange={(e) => setBookingDetails(e.target.value)}
                   placeholder="Insert patient details or special queries..."
-                  className="w-full h-24 rounded-lg border p-3 text-sm outline-none focus:border-primary resize-none"
+                  className="w-full h-20 sm:h-24 rounded-lg border p-3 text-xs sm:text-sm outline-none focus:border-primary resize-none"
                   disabled={!profile?.isSubscriptionActive}
                 />
               </div>
@@ -189,7 +189,7 @@ export default function SebaPage() {
               <Button
                 type="submit"
                 disabled={submitting || !profile?.isSubscriptionActive}
-                className="w-full h-11 font-bold rounded-lg"
+                className="w-full h-10 sm:h-11 font-bold rounded-lg text-xs sm:text-sm"
               >
                 {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Generate Benefit Voucher
@@ -200,46 +200,70 @@ export default function SebaPage() {
 
         {/* Voucher list */}
         <Card className="lg:col-span-2 border shadow-xs bg-white">
-          <CardHeader>
-            <CardTitle>Your Seba Vouchers & History</CardTitle>
-            <CardDescription>All issued medical consult vouchers and ambulance details.</CardDescription>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-base sm:text-lg">Your Seba Vouchers & History</CardTitle>
+            <CardDescription className="text-xs">All issued medical consult vouchers and ambulance details.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Benefit Type</TableHead>
-                  <TableHead>Voucher Code</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {bookings.length === 0 ? (
+          <CardContent className="p-0 sm:p-6 sm:pt-0">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-10 text-muted-foreground text-xs">
-                      No vouchers generated yet.
-                    </TableCell>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Benefit Type</TableHead>
+                    <TableHead>Voucher Code</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
-                ) : (
-                  bookings.map((booking: any) => (
-                    <TableRow key={booking._id}>
-                      <TableCell className="text-xs">{new Date(booking.bookingDate).toLocaleDateString()}</TableCell>
-                      <TableCell className="capitalize text-xs font-bold">{booking.type}</TableCell>
-                      <TableCell className="font-mono text-xs font-bold text-primary">{booking.voucherCode}</TableCell>
-                      <TableCell>
-                        <Badge variant={booking.status === 'Completed' ? 'default' : 'secondary'} className="text-[10px]">
-                          {booking.status}
-                        </Badge>
+                </TableHeader>
+                <TableBody>
+                  {bookings.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center py-10 text-muted-foreground text-xs">
+                        No vouchers generated yet.
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : (
+                    bookings.map((booking: any) => (
+                      <TableRow key={booking._id}>
+                        <TableCell className="text-xs">{new Date(booking.bookingDate).toLocaleDateString()}</TableCell>
+                        <TableCell className="capitalize text-xs font-bold">{booking.type}</TableCell>
+                        <TableCell className="font-mono text-xs font-bold text-primary">{booking.voucherCode}</TableCell>
+                        <TableCell>
+                          <Badge variant={booking.status === 'Completed' ? 'default' : 'secondary'} className="text-[10px]">
+                            {booking.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile Cards View */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {bookings.length === 0 ? (
+                <div className="p-8 text-center text-xs text-muted-foreground">No vouchers generated yet.</div>
+              ) : (
+                bookings.map((booking: any) => (
+                  <div key={booking._id} className="p-4 space-y-2 bg-white hover:bg-slate-50/50">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-xs sm:text-sm text-slate-900 capitalize">{booking.type}</span>
+                      <Badge variant={booking.status === 'Completed' ? 'default' : 'secondary'} className="text-[10px]">
+                        {booking.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between text-xs bg-slate-50 p-2 rounded-lg border border-slate-100 font-mono">
+                      <span className="text-primary font-bold">{booking.voucherCode}</span>
+                      <span className="text-slate-400 text-[11px]">{new Date(booking.bookingDate).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </CardContent>
         </Card>
-
       </div>
     </div>
   );

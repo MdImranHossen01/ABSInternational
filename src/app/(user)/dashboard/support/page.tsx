@@ -137,15 +137,17 @@ export default function SupportPage() {
         const StatusIcon = sc.icon;
         return (
             <div className="space-y-4 max-w-3xl mx-auto">
-                <div className="flex items-center gap-3">
-                    <Button variant="outline" size="sm" onClick={() => setSelectedTicket(null)} className="rounded-lg gap-2">
-                        <ChevronLeft className="h-4 w-4" /> Back
-                    </Button>
-                    <div className="flex-1">
-                        <h1 className="text-lg font-bold truncate">{selectedTicket.subject}</h1>
-                        <p className="text-xs text-muted-foreground">{categoryLabels[selectedTicket.category] ?? selectedTicket.category}</p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div className="flex items-center gap-2.5">
+                        <Button variant="outline" size="sm" onClick={() => setSelectedTicket(null)} className="rounded-lg gap-1.5 h-8 text-xs">
+                            <ChevronLeft className="h-3.5 w-3.5" /> Back
+                        </Button>
+                        <div className="min-w-0">
+                            <h1 className="text-base sm:text-lg font-bold truncate">{selectedTicket.subject}</h1>
+                            <p className="text-[11px] text-muted-foreground">{categoryLabels[selectedTicket.category] ?? selectedTicket.category}</p>
+                        </div>
                     </div>
-                    <span className={`inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full border ${sc.color}`}>
+                    <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full border self-start sm:self-auto ${sc.color}`}>
                         <StatusIcon className="h-3 w-3" />
                         {sc.label}
                     </span>
@@ -154,14 +156,14 @@ export default function SupportPage() {
                 {/* Chat window */}
                 <Card className="border shadow-xs">
                     <CardContent className="p-0">
-                        <div className="flex flex-col gap-3 p-4 h-[460px] overflow-y-auto">
+                        <div className="flex flex-col gap-3 p-3 sm:p-4 h-[400px] sm:h-[460px] overflow-y-auto">
 
                             {/* Original message */}
                             <div className="flex justify-end">
-                                <div className="max-w-[80%] bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-3 text-sm shadow-sm">
-                                    <p className="font-semibold text-xs opacity-75 mb-1">You (original)</p>
+                                <div className="max-w-[85%] sm:max-w-[80%] bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-3.5 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm shadow-sm">
+                                    <p className="font-semibold text-[10px] sm:text-xs opacity-75 mb-1">You (original)</p>
                                     <p>{selectedTicket.message}</p>
-                                    <p className="text-[10px] opacity-60 mt-1 text-right">
+                                    <p className="text-[9px] sm:text-[10px] opacity-60 mt-1 text-right">
                                         {new Date(selectedTicket.createdAt).toLocaleString()}
                                     </p>
                                 </div>
@@ -170,15 +172,15 @@ export default function SupportPage() {
                             {/* Replies */}
                             {selectedTicket.replies?.map((r: any, i: number) => (
                                 <div key={i} className={`flex ${r.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-sm ${r.sender === 'user'
+                                    <div className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm shadow-sm ${r.sender === 'user'
                                         ? 'bg-primary text-primary-foreground rounded-tr-sm'
                                         : 'bg-muted text-foreground rounded-tl-sm border'
                                         }`}>
-                                        <p className="font-semibold text-xs opacity-75 mb-1">
+                                        <p className="font-semibold text-[10px] sm:text-xs opacity-75 mb-1">
                                             {r.sender === 'admin' ? '🛡️ ABS Support' : 'You'}
                                         </p>
                                         <p>{r.message}</p>
-                                        <p className={`text-[10px] opacity-60 mt-1 ${r.sender === 'user' ? 'text-right' : 'text-left'}`}>
+                                        <p className={`text-[9px] sm:text-[10px] opacity-60 mt-1 ${r.sender === 'user' ? 'text-right' : 'text-left'}`}>
                                             {new Date(r.createdAt).toLocaleString()}
                                         </p>
                                     </div>
@@ -187,8 +189,8 @@ export default function SupportPage() {
 
                             {selectedTicket.replies?.length === 0 && (
                                 <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground py-10">
-                                    <MessageSquare className="h-10 w-10 mb-2 opacity-30" />
-                                    <p className="text-sm">No replies yet. Our team will respond shortly.</p>
+                                    <MessageSquare className="h-8 w-8 sm:h-10 sm:w-10 mb-2 opacity-30" />
+                                    <p className="text-xs sm:text-sm">No replies yet. Our team will respond shortly.</p>
                                 </div>
                             )}
 
@@ -197,16 +199,16 @@ export default function SupportPage() {
 
                         {/* Reply input */}
                         {selectedTicket.status !== 'Closed' ? (
-                            <div className="border-t p-3 flex gap-2">
+                            <div className="border-t p-2.5 sm:p-3 flex gap-2">
                                 <Input
                                     placeholder="Write your reply..."
                                     value={replyMsg}
                                     onChange={(e) => setReplyMsg(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && !replying && handleReply()}
-                                    className="rounded-full h-10"
+                                    className="rounded-full h-9 sm:h-10 text-xs sm:text-sm"
                                 />
-                                <Button onClick={handleReply} disabled={replying || !replyMsg.trim()} size="icon" className="rounded-full h-10 w-10 shrink-0">
-                                    {replying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                                <Button onClick={handleReply} disabled={replying || !replyMsg.trim()} size="icon" className="rounded-full h-9 w-9 sm:h-10 sm:w-10 shrink-0">
+                                    {replying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                                 </Button>
                             </div>
                         ) : (
@@ -222,28 +224,28 @@ export default function SupportPage() {
 
     // ── TICKET LIST + CREATE FORM ─────────────────────────────────────────────
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
             <div>
-                <h1 className="text-3xl font-black tracking-tight">Support Tickets</h1>
-                <p className="text-sm text-muted-foreground font-medium">Create support inquiries and chat directly with administrators.</p>
+                <h1 className="text-xl sm:text-3xl font-black tracking-tight">Support Tickets</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Create support inquiries and chat directly with administrators.</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
 
                 {/* Create Ticket */}
                 <Card className="lg:col-span-1 border shadow-xs bg-white">
-                    <CardHeader>
-                        <CardTitle>Create Ticket</CardTitle>
-                        <CardDescription>Open a query to get support from ABS helpdesk.</CardDescription>
+                    <CardHeader className="p-4 sm:p-6">
+                        <CardTitle className="text-base sm:text-lg">Create Ticket</CardTitle>
+                        <CardDescription className="text-xs">Open a query to get support from ABS helpdesk.</CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
                         <form onSubmit={handleSubmitTicket} className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Query Category</Label>
+                                <Label className="text-xs sm:text-sm">Query Category</Label>
                                 <select
                                     value={category}
                                     onChange={(e) => setCategory(e.target.value)}
-                                    className="w-full h-11 rounded-lg border px-3 text-sm outline-none focus:border-primary transition-all bg-white"
+                                    className="w-full h-10 sm:h-11 rounded-lg border px-3 text-xs sm:text-sm outline-none focus:border-primary transition-all bg-white"
                                 >
                                     <option value="deposit">Deposit Issues</option>
                                     <option value="withdrawal">Withdrawal Issues</option>
@@ -255,27 +257,27 @@ export default function SupportPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label>Subject</Label>
+                                <Label className="text-xs sm:text-sm">Subject</Label>
                                 <Input
                                     placeholder="Summarize your issue"
                                     value={subject}
                                     onChange={(e) => setSubject(e.target.value)}
-                                    className="h-11 rounded-lg"
+                                    className="h-10 sm:h-11 rounded-lg text-xs sm:text-sm"
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label>Detail Description</Label>
+                                <Label className="text-xs sm:text-sm">Detail Description</Label>
                                 <textarea
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
                                     placeholder="Explain your problem in detail..."
-                                    className="w-full h-32 rounded-lg border p-3 text-sm outline-none focus:border-primary resize-none"
+                                    className="w-full h-24 sm:h-32 rounded-lg border p-3 text-xs sm:text-sm outline-none focus:border-primary resize-none"
                                 />
                             </div>
 
-                            <Button type="submit" disabled={submitting} className="w-full h-11 font-bold rounded-lg gap-2">
-                                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                            <Button type="submit" disabled={submitting} className="w-full h-10 sm:h-11 font-bold rounded-lg gap-2 text-xs sm:text-sm">
+                                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                                 Submit Support Ticket
                             </Button>
                         </form>
@@ -284,15 +286,15 @@ export default function SupportPage() {
 
                 {/* Ticket List */}
                 <Card className="lg:col-span-2 border shadow-xs bg-white">
-                    <CardHeader>
-                        <CardTitle>Your Tickets</CardTitle>
-                        <CardDescription>Click on a ticket to view replies and respond.</CardDescription>
+                    <CardHeader className="p-4 sm:p-6">
+                        <CardTitle className="text-base sm:text-lg">Your Tickets</CardTitle>
+                        <CardDescription className="text-xs">Click on a ticket to view replies and respond.</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0">
                         {tickets.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-                                <HelpCircle className="h-12 w-12 mb-3 opacity-30" />
-                                <p className="text-sm font-medium">No support tickets submitted.</p>
+                            <div className="flex flex-col items-center justify-center py-12 sm:py-16 text-muted-foreground">
+                                <HelpCircle className="h-10 w-10 sm:h-12 sm:w-12 mb-3 opacity-30" />
+                                <p className="text-xs sm:text-sm font-medium">No support tickets submitted.</p>
                             </div>
                         ) : (
                             <div className="divide-y">
@@ -304,21 +306,21 @@ export default function SupportPage() {
                                         <button
                                             key={ticket._id}
                                             onClick={() => openTicket(ticket)}
-                                            className="w-full text-left px-5 py-4 hover:bg-muted/50 transition-colors flex items-center gap-4"
+                                            className="w-full text-left p-3.5 sm:px-5 sm:py-4 hover:bg-muted/50 transition-colors flex items-center gap-3 sm:gap-4"
                                         >
-                                            <div className={`p-2 rounded-full ${sc.color} border`}>
-                                                <StatusIcon className="h-4 w-4" />
+                                            <div className={`p-2 rounded-full ${sc.color} border shrink-0`}>
+                                                <StatusIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-semibold truncate">{ticket.subject}</p>
-                                                <p className="text-xs text-muted-foreground mt-0.5">
+                                                <p className="text-xs sm:text-sm font-semibold truncate">{ticket.subject}</p>
+                                                <p className="text-[11px] text-muted-foreground mt-0.5">
                                                     {categoryLabels[ticket.category] ?? ticket.category} · {new Date(ticket.createdAt).toLocaleDateString()}
                                                 </p>
                                             </div>
                                             <div className="flex flex-col items-end gap-1 shrink-0">
-                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${sc.color}`}>{sc.label}</span>
+                                                <span className={`text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full border ${sc.color}`}>{sc.label}</span>
                                                 {unreadAdmin > 0 && (
-                                                    <span className="text-[10px] bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-bold">
+                                                    <span className="text-[9px] sm:text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-bold">
                                                         {unreadAdmin} reply
                                                     </span>
                                                 )}

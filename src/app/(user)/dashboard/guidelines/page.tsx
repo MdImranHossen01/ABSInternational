@@ -12,27 +12,27 @@ export default function GuidelinesPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-3xl font-black tracking-tight">Guidelines & Policy Documents</h1>
-        <p className="text-sm text-muted-foreground font-medium">Download PDF manuals for MLM commissions, health network listings, and platform rules.</p>
+        <h1 className="text-xl sm:text-3xl font-black tracking-tight">Guidelines & Policy Documents</h1>
+        <p className="text-xs sm:text-sm text-muted-foreground font-medium">Download PDF manuals for MLM commissions, health network listings, and platform rules.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
         {manuals.map((manual, idx) => (
           <Card key={idx} className="bg-white border hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start gap-4">
-                <CardTitle className="text-base font-bold text-slate-800 leading-snug">{manual.title}</CardTitle>
-                <div className="p-2 bg-primary/5 rounded-lg text-primary shrink-0"><FileText className="h-5 w-5" /></div>
+            <CardHeader className="p-4 sm:p-6 pb-2">
+              <div className="flex justify-between items-start gap-3">
+                <CardTitle className="text-sm sm:text-base font-bold text-slate-800 leading-snug">{manual.title}</CardTitle>
+                <div className="p-2 bg-primary/5 rounded-lg text-primary shrink-0"><FileText className="h-4 w-4 sm:h-5 sm:w-5" /></div>
               </div>
-              <CardDescription>File size: {manual.size}</CardDescription>
+              <CardDescription className="text-xs">File size: {manual.size}</CardDescription>
             </CardHeader>
-            <CardContent className="pt-4 flex gap-2">
-              <Button size="sm" variant="outline" className="flex-1 rounded-lg text-xs font-bold gap-1" onClick={() => window.open(manual.file, '_blank')}>
+            <CardContent className="p-4 sm:p-6 pt-2 sm:pt-4 flex gap-2">
+              <Button size="sm" variant="outline" className="flex-1 rounded-lg text-xs font-bold gap-1 h-8 sm:h-9" onClick={() => window.open(manual.file, '_blank')}>
                 <Eye className="h-3.5 w-3.5" /> View PDF
               </Button>
-              <Button size="sm" asChild className="flex-1 rounded-lg text-xs font-bold gap-1">
+              <Button size="sm" asChild className="flex-1 rounded-lg text-xs font-bold gap-1 h-8 sm:h-9">
                 <a href={manual.file} download>
                   <Download className="h-3.5 w-3.5" /> Download
                 </a>

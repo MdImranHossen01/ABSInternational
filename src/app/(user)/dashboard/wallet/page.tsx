@@ -306,32 +306,32 @@ export default function WalletPage() {
       </div>
 
       {/* Balance Summary Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
         <Card className="border border-emerald-500/10 bg-emerald-500/[0.02]">
-          <CardContent className="pt-6 flex justify-between items-center">
+          <CardContent className="p-4 sm:pt-6 flex justify-between items-center">
             <div>
-              <p className="text-xs uppercase text-emerald-800 tracking-wider font-bold">Deposit Wallet</p>
-              <div className="text-3xl font-black text-emerald-950 mt-1">৳{data?.balances?.depositWallet || 0}</div>
+              <p className="text-[11px] sm:text-xs uppercase text-emerald-800 tracking-wider font-bold">Deposit Wallet</p>
+              <div className="text-2xl sm:text-3xl font-black text-emerald-950 mt-1">৳{data?.balances?.depositWallet || 0}</div>
             </div>
-            <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-600"><Wallet className="h-6 w-6" /></div>
+            <div className="p-2.5 sm:p-3 bg-emerald-500/10 rounded-xl text-emerald-600"><Wallet className="h-5 w-5 sm:h-6 sm:w-6" /></div>
           </CardContent>
         </Card>
         <Card className="border border-blue-500/10 bg-blue-500/[0.02]">
-          <CardContent className="pt-6 flex justify-between items-center">
+          <CardContent className="p-4 sm:pt-6 flex justify-between items-center">
             <div>
-              <p className="text-xs uppercase text-blue-800 tracking-wider font-bold">Bonus Wallet</p>
-              <div className="text-3xl font-black text-blue-950 mt-1">৳{data?.balances?.bonusWallet || 0}</div>
+              <p className="text-[11px] sm:text-xs uppercase text-blue-800 tracking-wider font-bold">Bonus Wallet</p>
+              <div className="text-2xl sm:text-3xl font-black text-blue-950 mt-1">৳{data?.balances?.bonusWallet || 0}</div>
             </div>
-            <div className="p-3 bg-blue-500/10 rounded-xl text-blue-600"><History className="h-6 w-6" /></div>
+            <div className="p-2.5 sm:p-3 bg-blue-500/10 rounded-xl text-blue-600"><History className="h-5 w-5 sm:h-6 sm:w-6" /></div>
           </CardContent>
         </Card>
         <Card className="border border-purple-500/10 bg-purple-500/[0.02]">
-          <CardContent className="pt-6 flex justify-between items-center">
+          <CardContent className="p-4 sm:pt-6 flex justify-between items-center">
             <div>
-              <p className="text-xs uppercase text-purple-800 tracking-wider font-bold">Withdrawal Wallet</p>
-              <div className="text-3xl font-black text-purple-950 mt-1">৳{data?.balances?.withdrawalWallet || 0}</div>
+              <p className="text-[11px] sm:text-xs uppercase text-purple-800 tracking-wider font-bold">Withdrawal Wallet</p>
+              <div className="text-2xl sm:text-3xl font-black text-purple-950 mt-1">৳{data?.balances?.withdrawalWallet || 0}</div>
             </div>
-            <div className="p-3 bg-purple-500/10 rounded-xl text-purple-600"><ArrowDownCircle className="h-6 w-6" /></div>
+            <div className="p-2.5 sm:p-3 bg-purple-500/10 rounded-xl text-purple-600"><ArrowDownCircle className="h-5 w-5 sm:h-6 sm:w-6" /></div>
           </CardContent>
         </Card>
       </div>
@@ -339,10 +339,10 @@ export default function WalletPage() {
       {/* ── Auto Profit Matrix ────────────────────────────────────────────── */}
       {data?.autoProfit && (
         <Card className="border border-violet-500/20 bg-violet-500/[0.02]">
-          <CardHeader className="pb-3">
+          <CardHeader className="p-4 sm:p-6 pb-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <CardTitle className="text-base font-bold">Auto Profit Matrix</CardTitle>
+                <CardTitle className="text-sm sm:text-base font-bold">Auto Profit Matrix</CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   প্রতিটি downline activation-এ ৫২ BDT আপনার personal pool-এ জমা হয়।
                   Pool নির্দিষ্ট tier threshold পৌঁছালে স্বয়ংক্রিয়ভাবে payout হয়।
@@ -350,11 +350,11 @@ export default function WalletPage() {
               </div>
               <div className="text-right shrink-0">
                 <p className="text-xs text-muted-foreground">Completed Tiers</p>
-                <p className="text-2xl font-black text-violet-700">{data.autoProfit.completedTier} / 10</p>
+                <p className="text-xl sm:text-2xl font-black text-violet-700">{data.autoProfit.completedTier} / 10</p>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4">
             {/* Current pool & progress */}
             {!data.autoProfit.isComplete ? (
               <div className="space-y-1.5">
@@ -368,16 +368,15 @@ export default function WalletPage() {
                     style={{ width: `${data.autoProfit.tierProgress}%` }}
                   />
                 </div>
-                <p className="text-[11px] text-muted-foreground text-right">{data.autoProfit.tierProgress.toFixed(1)}% complete</p>
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-sm font-bold text-violet-700 bg-violet-50 rounded-xl px-4 py-3 border border-violet-200">
-                🎉 সব ১০টি tier সম্পূর্ণ হয়েছে! Total payout: ৳{[240, 720, 2160, 7776, 46656, 233280, 1399680, 5038848, 30233088, 120932352].reduce((a, b) => a + b, 0).toLocaleString()} BDT
+              <div className="p-3 bg-violet-100 rounded-xl text-center text-xs font-bold text-violet-800">
+                🎉 All 10 Auto Profit Tiers Completed! Total pool distributed to Bonus Wallet.
               </div>
             )}
 
-            {/* Tier grid */}
-            <div className="grid grid-cols-5 gap-2">
+            {/* 10 Tier badges */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {(data.autoProfit.allTiers || []).map((amt: number, idx: number) => {
                 const done = idx < data.autoProfit.completedTier;
                 const active = idx === data.autoProfit.completedTier;
@@ -410,54 +409,82 @@ export default function WalletPage() {
         </Card>
       )}
 
-      <Tabs defaultValue="statement" className="w-full space-y-6">
-        <TabsList className="grid grid-cols-6 bg-muted rounded-xl p-1 w-full max-w-3xl overflow-x-auto">
-          <TabsTrigger value="statement" className="rounded-lg gap-1.5"><History className="h-4 w-4" /> Statement</TabsTrigger>
-          <TabsTrigger value="deposit" className="rounded-lg gap-1.5"><ArrowUpCircle className="h-4 w-4" /> Deposit</TabsTrigger>
-          <TabsTrigger value="withdraw" className="rounded-lg gap-1.5"><ArrowDownCircle className="h-4 w-4" /> Withdraw</TabsTrigger>
-          <TabsTrigger value="convert" className="rounded-lg gap-1.5 text-blue-600"><RefreshCw className="h-4 w-4" /> Convert</TabsTrigger>
-          <TabsTrigger value="transfer" className="rounded-lg gap-1.5"><Send className="h-4 w-4" /> Transfer</TabsTrigger>
-          <TabsTrigger value="pin" className="rounded-lg gap-1.5"><Key className="h-4 w-4" /> Secure PIN</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="statement" className="w-full space-y-4 sm:space-y-6">
+        <div className="overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="inline-flex w-auto min-w-full sm:min-w-0 sm:grid sm:grid-cols-6 bg-muted rounded-xl p-1 max-w-3xl">
+            <TabsTrigger value="statement" className="rounded-lg gap-1.5 text-xs sm:text-sm py-1.5"><History className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Statement</TabsTrigger>
+            <TabsTrigger value="deposit" className="rounded-lg gap-1.5 text-xs sm:text-sm py-1.5"><ArrowUpCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Deposit</TabsTrigger>
+            <TabsTrigger value="withdraw" className="rounded-lg gap-1.5 text-xs sm:text-sm py-1.5"><ArrowDownCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Withdraw</TabsTrigger>
+            <TabsTrigger value="convert" className="rounded-lg gap-1.5 text-blue-600 text-xs sm:text-sm py-1.5"><RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Convert</TabsTrigger>
+            <TabsTrigger value="transfer" className="rounded-lg gap-1.5 text-xs sm:text-sm py-1.5"><Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Transfer</TabsTrigger>
+            <TabsTrigger value="pin" className="rounded-lg gap-1.5 text-xs sm:text-sm py-1.5"><Key className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> PIN</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Ledger Statement */}
         <TabsContent value="statement">
           <Card>
-            <CardHeader>
-              <CardTitle>Unified Transaction Ledger</CardTitle>
-              <CardDescription>Track all deposits, withdrawals, transfers, and bonus statements.</CardDescription>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Unified Transaction Ledger</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Track all deposits, withdrawals, transfers, and bonus statements.</CardDescription>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data?.transactions?.length === 0 ? (
+            <CardContent className="p-0 sm:p-6 sm:pt-0">
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
-                        No transactions recorded yet.
-                      </TableCell>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
-                  ) : (
-                    data?.transactions?.map((tx: any) => (
-                      <TableRow key={tx._id}>
-                        <TableCell className="text-xs">{new Date(tx.createdAt).toLocaleDateString()}</TableCell>
-                        <TableCell>{getTypeBadge(tx.type)}</TableCell>
-                        <TableCell className="text-xs max-w-sm break-words font-medium">{tx.description}</TableCell>
-                        <TableCell className="font-bold">৳{tx.amount}</TableCell>
-                        <TableCell>{getStatusBadge(tx.status)}</TableCell>
+                  </TableHeader>
+                  <TableBody>
+                    {data?.transactions?.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
+                          No transactions recorded yet.
+                        </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+                    ) : (
+                      data?.transactions?.map((tx: any) => (
+                        <TableRow key={tx._id}>
+                          <TableCell className="text-xs">{new Date(tx.createdAt).toLocaleDateString()}</TableCell>
+                          <TableCell>{getTypeBadge(tx.type)}</TableCell>
+                          <TableCell className="text-xs max-w-sm break-words font-medium">{tx.description}</TableCell>
+                          <TableCell className="font-bold">৳{tx.amount}</TableCell>
+                          <TableCell>{getStatusBadge(tx.status)}</TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden divide-y divide-slate-100">
+                {data?.transactions?.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-muted-foreground">No transactions recorded yet.</div>
+                ) : (
+                  data?.transactions?.map((tx: any) => (
+                    <div key={tx._id} className="p-4 space-y-2 bg-white hover:bg-slate-50/50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {getTypeBadge(tx.type)}
+                          <span className="text-xs text-slate-400">{new Date(tx.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <span className="font-black text-sm text-slate-900">৳{tx.amount}</span>
+                      </div>
+                      <p className="text-xs text-slate-700 font-medium">{tx.description}</p>
+                      <div className="flex justify-end pt-1">
+                        {getStatusBadge(tx.status)}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -360,25 +360,30 @@ export default function SettingsPage() {
 
   return (
     <div className="flex-1 space-y-4 px-0 py-4 md:p-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Global Settings</h1>
-        <Button type="submit" form="settings-form" disabled={submitting}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Global Settings</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Manage your store's branding, contacts, social media, and visual theme.</p>
+        </div>
+        <Button type="submit" form="settings-form" disabled={submitting} className="w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm">
           {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Changes
         </Button>
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="contact">Contact</TabsTrigger>
-          <TabsTrigger value="social">Social</TabsTrigger>
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="inline-flex w-auto min-w-full sm:min-w-0 sm:grid sm:grid-cols-5 lg:w-[600px] h-auto p-1">
+            <TabsTrigger value="general" className="text-xs sm:text-sm py-1.5 sm:py-2">General</TabsTrigger>
+            <TabsTrigger value="contact" className="text-xs sm:text-sm py-1.5 sm:py-2">Contact</TabsTrigger>
+            <TabsTrigger value="social" className="text-xs sm:text-sm py-1.5 sm:py-2">Social</TabsTrigger>
+            <TabsTrigger value="appearance" className="text-xs sm:text-sm py-1.5 sm:py-2">Appearance</TabsTrigger>
+            <TabsTrigger value="security" className="text-xs sm:text-sm py-1.5 sm:py-2">Security</TabsTrigger>
+          </TabsList>
+        </div>
 
         <Form {...form}>
-          <form id="settings-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-4">
+          <form id="settings-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8 mt-4">
             <TabsContent value="general" className="space-y-4">
               <Card>
                 <CardHeader>
