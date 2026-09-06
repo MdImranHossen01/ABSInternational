@@ -37,8 +37,8 @@ export function Logo({ className, imageClassName, textClassName, showText = true
       </div>
       {showText && (
         <span className={cn(
-          "text-xl md:text-2xl uppercase text-foreground transition-colors group-hover:text-primary font-black tracking-tighter font-logo",
-          textClassName
+          "uppercase text-foreground transition-colors group-hover:text-primary font-black tracking-tight font-logo",
+          textClassName || "text-xl md:text-2xl tracking-tighter"
         )}>
           {finalBrandName}
         </span>

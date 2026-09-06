@@ -285,10 +285,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props}>
-      <SidebarHeader className="border-b h-14 lg:h-[60px] px-3.5 flex items-center">
+      <SidebarHeader className="border-b h-14 lg:h-[60px] px-3 flex items-center overflow-hidden">
         <Logo 
-          imageClassName="size-7 shrink-0" 
-          textClassName="text-[13px] font-black tracking-tight whitespace-nowrap leading-none truncate block" 
+          imageClassName="size-6 shrink-0" 
+          textClassName="text-sm font-black tracking-tight whitespace-nowrap leading-none" 
         />
       </SidebarHeader>
       <SidebarContent className="gap-0">
