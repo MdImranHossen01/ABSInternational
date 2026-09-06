@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session || !session.user || !session.user.email) {
+    if (!session || !session.user || (!session.user.id && !session.user.email)) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
@@ -30,7 +30,13 @@ export async function POST(req: NextRequest) {
 
     await connectToDatabase();
 
-    const user = await User.findOne({ email: session.user.email }).select('+password');
+    let user: any = null;
+    if (session.user.id) {
+      user = await User.findById(session.user.id).select('+password');
+    }
+    if (!user && session.user.email) {
+      user = await User.findOne({ email: session.user.email.toLowerCase() }).select('+password');
+    }
 
     if (!user) {
       return NextResponse.json({ message: 'User not found.' }, { status: 404 });

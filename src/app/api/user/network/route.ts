@@ -13,7 +13,18 @@ export async function GET(req: NextRequest) {
 
     await connectToDatabase();
 
-    const loggedInUser = await User.findById((session.user as any).id);
+    let query: any = {};
+    if (session.user.id) {
+      query._id = session.user.id;
+    } else if (session.user.email) {
+      query.email = session.user.email.toLowerCase();
+    }
+
+    let loggedInUser = await User.findOne(query);
+    if (!loggedInUser && session.user.email) {
+      loggedInUser = await User.findOne({ email: session.user.email.toLowerCase() });
+    }
+
     if (!loggedInUser) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }

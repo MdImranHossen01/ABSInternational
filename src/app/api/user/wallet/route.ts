@@ -15,14 +15,27 @@ export async function GET(req: NextRequest) {
 
     await connectToDatabase();
     
-    const [user, transactions] = await Promise.all([
-      User.findById((session.user as any).id).select(
+    let userQuery: any = {};
+    if (session.user.id) {
+      userQuery._id = session.user.id;
+    } else if (session.user.email) {
+      userQuery.email = session.user.email.toLowerCase();
+    }
+
+    let user = await User.findOne(userQuery).select(
+      'depositWallet bonusWallet withdrawalWallet walletBalance autoProfitPool autoProfitTier'
+    );
+    if (!user && session.user.email) {
+      user = await User.findOne({ email: session.user.email.toLowerCase() }).select(
         'depositWallet bonusWallet withdrawalWallet walletBalance autoProfitPool autoProfitTier'
-      ),
-      WalletTransaction.find({ userId: (session.user as any).id })
-        .sort({ createdAt: -1 })
-        .limit(50)
-    ]);
+      );
+    }
+
+    const userId = user?._id || (session.user as any).id;
+
+    const transactions = await WalletTransaction.find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(50);
 
     const currentTier   = user?.autoProfitTier ?? 0;
     const pool          = user?.autoProfitPool ?? 0;
