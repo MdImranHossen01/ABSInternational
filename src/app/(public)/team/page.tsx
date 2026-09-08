@@ -1,15 +1,15 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
-  Users, 
-  Award, 
-  Sparkles, 
-  Mail, 
-  Phone, 
-  ArrowRight, 
-  ShieldCheck, 
-  Crown, 
+import {
+  Users,
+  Award,
+  Sparkles,
+  Mail,
+  Phone,
+  ArrowRight,
+  ShieldCheck,
+  Crown,
   Target,
   Briefcase
 } from 'lucide-react';
@@ -23,13 +23,22 @@ export const metadata: Metadata = {
 export default function TeamPage() {
   const leadership = [
     {
-      name: "Engr. Mahmudul Hasan",
+      name: "Md. Nazim Uddin",
+      role: "Chairman",
+      badge: "Honorable Chairman",
+      bio: "Guiding the strategic vision and ethical governance of ABS International to build a transparent and sustainable community empowerment platform.",
+      image: "/assets/images/Executive/Md.-Nazim-Uddin-Chairman.webp",
+      email: "chairman@absinternationalltd.com",
+      phone: "+880 1728-268550"
+    },
+    {
+      name: "Md. Shamim Islam",
       role: "Managing Director & CEO",
-      badge: "Founder & Chief Executive",
+      badge: "Managing Director",
       bio: "Leading ABS International into Bangladesh's foremost welfare platform through visionary corporate leadership and over 10+ years of network ecosystem management.",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&auto=format&fit=crop&q=80",
-      email: "ceo@absinternational.com",
-      phone: "+880 1700-000001"
+      image: "/assets/images/Executive/Md.-Shamim-Islam-Managing-Director.webp",
+      email: "md@absinternationalltd.com",
+      phone: "+880 1881-060734"
     },
     {
       name: "Dr. Farhana Yasmin (MBBS, MPH)",
@@ -38,7 +47,7 @@ export default function TeamPage() {
       bio: "Public health specialist and seasoned clinician overseeing the ABS Digital Seba Card healthcare program, telemedicine partnerships, and strict herbal product QA.",
       image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&auto=format&fit=crop&q=80",
       email: "health@absinternational.com",
-      phone: "+880 1700-000002"
+      phone: "+880 1700-000003"
     },
     {
       name: "Sharif Ahmed Chowdhury",
@@ -47,15 +56,6 @@ export default function TeamPage() {
       bio: "Directing nationwide fulfillment hubs, courier integrations, and swift product logistics across all regional ABS distribution centers.",
       image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&auto=format&fit=crop&q=80",
       email: "operations@absinternational.com",
-      phone: "+880 1700-000003"
-    },
-    {
-      name: "Tanvir Rahman",
-      role: "Chief Marketing & Growth Officer (CMO)",
-      badge: "Network & Training Head",
-      bio: "Fostering nationwide entrepreneurship through extensive leadership masterclasses, active member training, and sustainable business growth strategies.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80",
-      email: "marketing@absinternational.com",
       phone: "+880 1700-000004"
     }
   ];
@@ -116,9 +116,6 @@ export default function TeamPage() {
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-background py-20 md:py-28 border-b border-border">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(16,185,129,0.15),rgba(255,255,255,0))]" />
         <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold bg-primary/15 text-primary mb-6 shadow-sm border border-primary/20">
-            <Users className="h-4 w-4" /> The Visionary Team Behind ABS International
-          </div>
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-foreground mb-6 leading-tight">
             Meet Our <span className="bg-gradient-to-r from-primary via-emerald-600 to-teal-500 bg-clip-text text-transparent">Executive Leaders</span> & Experts
           </h1>
@@ -132,9 +129,7 @@ export default function TeamPage() {
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center space-y-4 mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary font-semibold text-xs uppercase tracking-wider">
-              <Briefcase className="h-4 w-4" /> Board of Directors & Executives
-            </div>
+
             <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">
               Executive Leadership
             </h2>
@@ -145,8 +140,8 @@ export default function TeamPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {leadership.map((member, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className="group relative bg-card rounded-3xl border border-border overflow-hidden shadow-lg hover:shadow-2xl hover:border-primary/40 transition-all duration-300 flex flex-col"
               >
                 {/* Photo container */}
@@ -159,7 +154,7 @@ export default function TeamPage() {
                     className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
-                  
+
                   <div className="absolute top-3 right-3">
                     <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-primary/90 text-primary-foreground backdrop-blur-md shadow-md">
                       {member.badge}
@@ -209,7 +204,7 @@ export default function TeamPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {managementTeam.map((member, idx) => (
-              <div 
+              <div
                 key={idx}
                 className="p-6 rounded-2xl bg-background border border-border shadow-sm flex flex-col items-center text-center space-y-4 hover:-translate-y-1.5 transition-all duration-300"
               >

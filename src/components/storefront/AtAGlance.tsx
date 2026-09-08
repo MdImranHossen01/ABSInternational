@@ -9,7 +9,7 @@ const items = [
   {
     title: "Chairman's Message",
     desc: "We believe that sustainable success is built on unwavering trust, absolute transparency, and genuine community empowerment.",
-    image: "/assets/images/glance/glance-chairman.webp",
+    image: "/assets/images/Executive/Md.-Nazim-Uddin-Chairman.webp",
     position: "object-top",
   },
   {
@@ -47,7 +47,7 @@ export function AtAGlance({ brandName = 'ABS International' }: AtAGlanceProps) {
             >
               {/* Image Circle Area (Exact 65% height absolute top with rounded-b-[2.5rem]) */}
               <div className="absolute top-0 left-0 w-full h-[65%] flex items-center justify-center p-6 bg-background rounded-b-[2.5rem] transition-colors duration-300">
-                <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-primary/10 shadow-inner">
+                <div className="relative aspect-square h-full max-w-full rounded-full overflow-hidden border-4 border-primary/10 shadow-inner">
                   <Image
                     src={item.image}
                     alt={item.title}

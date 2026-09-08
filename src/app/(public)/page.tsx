@@ -144,37 +144,100 @@ export default async function Home() {
               </div>
             </div>
 
-            <div className="bg-card border border-border p-8 md:p-12 rounded-3xl relative overflow-hidden shadow-xl">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-              <div className="border border-primary/20 bg-background/50 rounded-2xl p-6 relative z-10">
-                <div className="flex justify-between items-start mb-10">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">ABS Healthcare Net</p>
-                    <h3 className="font-bold text-lg text-primary tracking-wide">DIGITAL SEBA CARD</h3>
+            <div className="bg-card border border-border p-6 sm:p-10 rounded-3xl relative overflow-hidden shadow-2xl flex flex-col items-center">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+              {/* Realistic Physical Card Mockup with 3D perspective */}
+              <div className="w-full max-w-md relative z-10 transition-transform duration-500 hover:scale-[1.02] hover:-rotate-1">
+                {/* Physical Card Body */}
+                <div className="relative aspect-[1.586/1] w-full rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl overflow-hidden text-white border border-white/20 bg-gradient-to-br from-slate-950 via-emerald-950 to-primary flex flex-col justify-between select-none">
+                  {/* Glassmorphic & Light Flare Effects */}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.2),transparent_50%)] pointer-events-none" />
+                  <div className="absolute -right-16 -bottom-16 w-56 h-56 rounded-full bg-primary/30 blur-2xl pointer-events-none" />
+                  
+                  {/* Subtle Geometric Background Pattern */}
+                  <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+                  {/* Card Header: Brand & Contactless Icon */}
+                  <div className="relative flex justify-between items-start z-10">
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-8 w-8 rounded-full bg-white/10 backdrop-blur-md p-1.5 border border-white/20 flex items-center justify-center shadow-md">
+                        <Heart className="h-full w-full text-emerald-300 fill-emerald-300" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] sm:text-xs font-bold tracking-widest text-emerald-300 uppercase leading-tight font-mono">ABS HEALTHCARE</p>
+                        <h4 className="text-xs sm:text-sm font-extrabold tracking-wide text-white uppercase drop-shadow-sm font-logo">SEBA PLATINUM CARD</h4>
+                      </div>
+                    </div>
+
+                    {/* Contactless / NFC Waves Symbol */}
+                    <div className="flex items-center gap-1.5 opacity-90">
+                      <svg className="w-5 h-5 text-emerald-200 rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M2 10a10 10 0 0 1 20 0" />
+                        <path d="M6 14a6 6 0 0 1 12 0" />
+                        <path d="M10 18a2 2 0 0 1 4 0" />
+                      </svg>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-400/20 border border-emerald-400/40 text-emerald-200">VIP</span>
+                    </div>
                   </div>
-                  <div className="bg-primary/10 text-primary p-2 rounded-lg">
-                    <Heart className="h-5 w-5 fill-current" />
+
+                  {/* Card Mid: Realistic Golden EMV Chip & QR Code */}
+                  <div className="relative flex items-center justify-between z-10 my-1">
+                    {/* Metallic Golden EMV Smart Chip */}
+                    <div className="w-11 h-9 sm:w-13 sm:h-10 rounded-md bg-gradient-to-br from-amber-200 via-amber-400 to-yellow-600 p-0.5 shadow-md border border-amber-300/60 relative overflow-hidden flex items-center justify-center">
+                      <div className="w-full h-full border border-amber-800/40 rounded-[3px] flex flex-col justify-around py-0.5 px-1">
+                        <div className="w-full h-[1px] bg-amber-800/30" />
+                        <div className="flex justify-between">
+                          <div className="w-2 h-2 rounded-full border border-amber-800/40" />
+                          <div className="w-2 h-2 rounded-full border border-amber-800/40" />
+                        </div>
+                        <div className="w-full h-[1px] bg-amber-800/30" />
+                      </div>
+                    </div>
+
+                    {/* Security Hologram badge */}
+                    <div className="flex items-center gap-1 text-[9px] font-mono tracking-widest text-emerald-200/90 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-md border border-white/10">
+                      <ShieldCheck className="h-3.5 w-3.5 text-emerald-300" />
+                      <span>HEALTHCARE 24/7</span>
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-4 mb-8">
-                  <div className="h-3 w-3/4 bg-muted rounded animate-pulse" />
-                  <div className="h-3 w-1/2 bg-muted rounded animate-pulse" />
-                </div>
-                <div className="flex justify-between items-end border-t border-border pt-4 text-xs text-muted-foreground">
-                  <div>
-                    <p className="font-bold text-foreground">MEMBER ID</p>
-                    <p>ABS-XXXX-XXXX</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-foreground">STATUS</p>
-                    <p className="text-green-500 font-semibold">ACTIVE</p>
+
+                  {/* Card Footer: Embossed Card Number, Holder Info & Status */}
+                  <div className="relative z-10 space-y-2">
+                    {/* Embossed VIP Member ID */}
+                    <div className="font-mono text-sm sm:text-base tracking-[0.25em] text-white/95 font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                      8801 • 9420 • 7831 • 2026
+                    </div>
+
+                    <div className="flex justify-between items-end pt-1 border-t border-white/10 text-white">
+                      <div>
+                        <p className="text-[8px] sm:text-[9px] uppercase tracking-wider text-emerald-200/80 font-mono">Card Holder</p>
+                        <p className="text-[11px] sm:text-xs font-bold tracking-wide uppercase text-white font-mono">PREMIUM MEMBER</p>
+                      </div>
+
+                      <div className="text-center">
+                        <p className="text-[8px] sm:text-[9px] uppercase tracking-wider text-emerald-200/80 font-mono">Valid Thru</p>
+                        <p className="text-[11px] sm:text-xs font-bold tracking-wider text-white font-mono">12/29</p>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-[8px] sm:text-[9px] uppercase tracking-wider text-emerald-200/80 font-mono">Status</p>
+                        <div className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-emerald-400">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          ACTIVE
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="mt-8 text-center">
+
+              {/* Call to action button under physical card */}
+              <div className="mt-8 text-center relative z-10">
                 <Link 
                   href="/register" 
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+                  className="inline-flex items-center justify-center gap-2 text-sm font-bold bg-primary text-primary-foreground px-6 py-2.5 rounded-xl shadow-lg shadow-primary/25 hover:bg-primary/90 hover:scale-105 transition-all"
                 >
                   Activate Your Seba Card
                   <ArrowRight className="h-4 w-4" />

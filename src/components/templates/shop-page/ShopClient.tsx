@@ -363,7 +363,7 @@ export default function ShopClient({
           )}
         </div>
 
-        <div className="max-h-[380px] overflow-y-auto space-y-1.5 pr-1 text-sm">
+        <div className="max-h-[380px] overflow-y-auto no-scrollbar space-y-1.5 pr-1 text-sm">
           {mainCategories.map((mainCat) => {
             const subs = getSubcategories(mainCat._id);
             const hasSubs = subs.length > 0;
@@ -478,72 +478,6 @@ export default function ShopClient({
         </div>
       </div>
 
-      {/* Quick Status Filters */}
-      <div className="border-t pt-5">
-        <h3 className="text-sm font-bold uppercase tracking-wider mb-3 text-foreground">Filter by Status</h3>
-        <div className="space-y-2.5">
-          <div className="flex items-center space-x-2.5">
-            <Checkbox
-              id="filter-sale"
-              checked={showOnlySale || sortBy === 'sale'}
-              onCheckedChange={(checked) => {
-                setShowOnlySale(!!checked);
-                if (checked) setSortBy('sale');
-                else if (sortBy === 'sale') setSortBy('all');
-              }}
-            />
-            <Label htmlFor="filter-sale" className="text-xs font-medium cursor-pointer flex items-center gap-1.5">
-              <span>Flash Sale Offers</span>
-            </Label>
-          </div>
-
-          <div className="flex items-center space-x-2.5">
-            <Checkbox
-              id="filter-new"
-              checked={showOnlyNew || sortBy === 'new'}
-              onCheckedChange={(checked) => {
-                setShowOnlyNew(!!checked);
-                if (checked) setSortBy('new');
-                else if (sortBy === 'new') setSortBy('all');
-              }}
-            />
-            <Label htmlFor="filter-new" className="text-xs font-medium cursor-pointer">
-              New Arrivals
-            </Label>
-          </div>
-
-          <div className="flex items-center space-x-2.5">
-            <Checkbox
-              id="filter-featured"
-              checked={showOnlyFeatured || sortBy === 'featured'}
-              onCheckedChange={(checked) => {
-                setShowOnlyFeatured(!!checked);
-                if (checked) setSortBy('featured');
-                else if (sortBy === 'featured') setSortBy('all');
-              }}
-            />
-            <Label htmlFor="filter-featured" className="text-xs font-medium cursor-pointer">
-              Featured Collections
-            </Label>
-          </div>
-
-          <div className="flex items-center space-x-2.5">
-            <Checkbox
-              id="filter-trending"
-              checked={showOnlyTrending || sortBy === 'trending'}
-              onCheckedChange={(checked) => {
-                setShowOnlyTrending(!!checked);
-                if (checked) setSortBy('trending');
-                else if (sortBy === 'trending') setSortBy('all');
-              }}
-            />
-            <Label htmlFor="filter-trending" className="text-xs font-medium cursor-pointer">
-              Trending Products
-            </Label>
-          </div>
-        </div>
-      </div>
-
       {/* Price Range Filter */}
       <div className="border-t pt-5">
         <div className="flex items-center justify-between mb-3">
@@ -596,7 +530,7 @@ export default function ShopClient({
     <div className="container mx-auto px-4 md:px-0 py-8 md:py-12">
       <div className="flex flex-col gap-8 md:flex-row">
         {/* Desktop Sidebar */}
-        <aside className="hidden w-64 shrink-0 md:block sticky top-24 self-start h-fit max-h-[calc(100vh-7rem)] overflow-y-auto pr-2">
+        <aside className="hidden w-64 shrink-0 md:block sticky top-24 self-start h-fit max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar pr-2">
           {renderSidebar()}
         </aside>
 
@@ -621,7 +555,7 @@ export default function ShopClient({
                     <Filter className="h-4 w-4" /> Filters
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="p-6 overflow-y-auto">
+                <SheetContent side="left" className="p-6 overflow-y-auto no-scrollbar">
                   <SheetHeader className="mb-4 text-left">
                     <SheetTitle className="text-lg font-bold">Filter Products</SheetTitle>
                   </SheetHeader>
