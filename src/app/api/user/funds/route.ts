@@ -39,6 +39,8 @@ export async function GET(req: NextRequest) {
         incentiveFund: 0,
         rankDevelopmentFund: 0,
         royaltyFund: 0,
+        tourFund: 0,
+        communityFund: 0,
         charityFund: 0,
         totalActivations: 0,
       } as any;
@@ -93,6 +95,8 @@ export async function GET(req: NextRequest) {
         incentiveFund: fundPool?.incentiveFund || 0,
         rankDevelopmentFund: fundPool?.rankDevelopmentFund || 0,
         royaltyFund: fundPool?.royaltyFund || 0,
+        tourFund: fundPool?.tourFund || 0,
+        communityFund: fundPool?.communityFund || 0,
         charityFund: fundPool?.charityFund || 0,
         autoProfit: fundPool?.autoProfit || 0,
         totalActivations: fundPool?.totalActivations || 0,

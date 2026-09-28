@@ -582,7 +582,7 @@ function OrdersContent() {
   }
 
   return (
-    <div className="flex-1 space-y-4 px-0 py-4 md:p-8">
+    <div className="flex-1 space-y-4 py-4 md:py-6">
       <div className="flex items-center justify-between gap-4">
         <div className="flex-shrink-0">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight whitespace-nowrap">Order Management</h2>

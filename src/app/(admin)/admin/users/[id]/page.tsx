@@ -221,7 +221,7 @@ export default function AdminUserProfilePage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto animate-in fade-in duration-300">
+    <div className="flex flex-col gap-6 py-4 w-full animate-in fade-in duration-300">
       {/* Top Breadcrumb & Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">

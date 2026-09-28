@@ -32,7 +32,6 @@ import {
   Search,
   Crown,
   CheckCircle2,
-  Users as UsersIcon,
   Sparkles,
   Trophy,
   Shield,
@@ -295,15 +294,6 @@ export function UsersManagementView({
     }
   };
 
-  const navDirectories = [
-    { label: 'All Users', href: '/admin/users', icon: UsersIcon, key: 'all' },
-    { label: 'Founding Leaders (মূল ৬ জন)', href: '/admin/users/leaders', icon: Crown, key: 'leaders' },
-    { label: 'Active Members (একটিভ)', href: '/admin/users/active', icon: CheckCircle2, key: 'active' },
-    { label: 'Free Members (ফ্রি)', href: '/admin/users/free', icon: UserIcon, key: 'free' },
-    { label: 'Rank Leaders (পদবীধারী)', href: '/admin/users/ranks', icon: Trophy, key: 'ranks' },
-    { label: 'Admins & Staff', href: '/admin/users/admins', icon: Shield, key: 'admins' },
-  ];
-
   const pageHeadings: Record<string, { title: string; desc: string }> = {
     all: {
       title: 'All Registered Users',
@@ -337,7 +327,7 @@ export function UsersManagementView({
   };
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6 px-0 py-4 md:p-6 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-4 md:gap-6 py-4 md:py-6 w-full animate-in fade-in duration-500">
       {/* Page Title & Stats */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -362,30 +352,6 @@ export function UsersManagementView({
             <span className="text-primary font-bold text-xs sm:text-sm">{totalCount} Accounts</span>
           </div>
         </div>
-      </div>
-
-      {/* Directory Navigation Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b no-scrollbar">
-        {navDirectories.map((dir) => {
-          const Icon = dir.icon;
-          const isActive = type === dir.key;
-          return (
-            <Link key={dir.key} href={dir.href}>
-              <Button
-                variant={isActive ? 'default' : 'ghost'}
-                size="sm"
-                className={`text-xs font-bold rounded-lg shrink-0 h-9 gap-1.5 ${
-                  isActive
-                    ? 'bg-primary text-white shadow-xs'
-                    : 'text-slate-600 hover:text-primary hover:bg-primary/5'
-                }`}
-              >
-                <Icon className="h-3.5 w-3.5" />
-                <span>{dir.label}</span>
-              </Button>
-            </Link>
-          );
-        })}
       </div>
 
       {/* Search Input */}

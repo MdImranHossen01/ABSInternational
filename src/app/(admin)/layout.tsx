@@ -48,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <AppSidebar />
       <SidebarInset>
         <AdminTopbar />
-        <main className="flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+        <main className="flex-1 items-start gap-4 px-[2px] md:px-4 py-4 md:gap-8">
           {children}
         </main>
       </SidebarInset>

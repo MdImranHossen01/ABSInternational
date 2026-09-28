@@ -53,7 +53,7 @@ export default function LowStockPage() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4 p-4 md:p-8 max-w-7xl mx-auto w-full">
+    <div className="flex flex-col gap-4 py-4 md:py-6 w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>

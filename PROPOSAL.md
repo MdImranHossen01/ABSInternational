@@ -176,52 +176,67 @@
 
 ## 3. Financial Breakdown & MLM Calculation Logic
 
-### A. 1500 TK Package Fund Split (34.5% = 517 TK Distribution)
+### A. 1500 TK Package Fund Split (55% = 825 TK Distribution)
 
-- **Sponsor Bonus:**
+- **1. Refer Bonus (Direct Referral):**
   - Percentage: 15%
   - Amount: 225 BDT
-  - Description: Awarded to the direct referrer of the new joining member.
+  - Description: Awarded directly to the sponsor / direct referrer of the new joining member.
 
-- **Generation Bonus:**
+- **2. Generation Bonus (Up to 10 Generations):**
   - Percentage: 7%
   - Amount: 105 BDT
-  - Description: Distributed across 10 generations of downline network.
+  - Description: Distributed across 10 generations of the upline network.
 
-- **Auto Profit:**
+- **3. Auto Club (Qualification Bonus):**
   - Percentage: 3.5%
-  - Amount: 52 BDT
-  - Description: Stored in the Auto-Profit matrix pool.
+  - Amount: 52.5 BDT
+  - Description: Stored in the Auto Club / Auto-Profit matrix pool.
 
-- **Global Profit:**
+- **4. Incentive Fund (Extra Incentive):**
+  - Percentage: 2%
+  - Amount: 30 BDT
+  - Description: Stored for high-performer incentives (smartphones, motorbikes, etc.).
+
+- **5. Rank Development Fund (Leadership Support):**
+  - Percentage: 2.5%
+  - Amount: 37.5 BDT
+  - Description: Dedicated strictly to financing cash rewards upon achieving new manager and leadership ranks.
+
+- **6. Global Fund (International Growth):**
   - Percentage: 2%
   - Amount: 30 BDT
   - Description: Shared equally among all active platform members.
 
-- **Incentive Fund:**
+- **7. Royalty Fund (Long Term Reward):**
   - Percentage: 2%
   - Amount: 30 BDT
-  - Description: Stored for rank rewards.
+  - Description: Reserved for Diamond, Crown, and Director lifetime royalty payouts.
 
-- **Rank Development Fund:**
-  - Percentage: 2%
-  - Amount: 30 BDT
-  - Description: Reserved for rank promotion bonuses.
+- **8. Tour Fund (Travel & Exploration):**
+  - Percentage: 5%
+  - Amount: 75 BDT
+  - Description: Reserved for domestic retreats, annual conventions, and international incentive tours.
 
-- **Royalty Fund:**
-  - Percentage: 2%
-  - Amount: 30 BDT
-  - Description: Reserved for Diamond, Crown, and Director royalty payouts.
+- **9. Community Fund (Social Responsibility):**
+  - Percentage: 15%
+  - Amount: 225 BDT
+  - Description: Dedicated to community development, regional member service hubs, and social welfare programs.
 
-- **Charity Fund:**
+- **10. Charity Fund (Helping Humanity):**
   - Percentage: 1%
   - Amount: 15 BDT
-  - Description: Reserved for distribution to orphans and the underprivileged.
+  - Description: Reserved for orphans, destitute families, and emergency medical relief (CSR).
 
-- **Total Distributed:**
-  - Percentage: **34.5%**
-  - Amount: **517 BDT**
+- **Total Allocation:**
+  - Percentage: **55%**
+  - Amount: **825 BDT**
   - Description: Total system distribution from each 1,500 BDT package.
+
+- **Company Net Revenue:**
+  - Percentage: **45%**
+  - Amount: **675 BDT**
+  - Description: Company operational gross profit retained per package activation.
 
 ---
 

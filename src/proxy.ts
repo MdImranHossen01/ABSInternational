@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth from "next-auth"
 import authConfig from "./auth.config"
 import { NextResponse } from "next/server"
@@ -47,7 +48,7 @@ export const proxy = auth(async (req) => {
         "/admin/blogs",
         "/admin/support"
       ];
-      const isPathAllowed = allowedPaths.some(path => 
+      const isPathAllowed = allowedPaths.some(path =>
         nextUrl.pathname === path || nextUrl.pathname.startsWith(path + "/")
       );
       if (!isPathAllowed) {

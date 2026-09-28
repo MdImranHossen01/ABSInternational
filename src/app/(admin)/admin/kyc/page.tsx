@@ -112,7 +112,7 @@ export default function AdminKycPage() {
   };
 
   return (
-    <div className="space-y-4 md:space-y-6 mt-2 md:mt-4 max-w-7xl mx-auto px-1 sm:px-4">
+    <div className="space-y-4 md:space-y-6 mt-2 md:mt-4 w-full">
       <div>
         <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-slate-900">KYC Verification</h1>
         <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-0.5">

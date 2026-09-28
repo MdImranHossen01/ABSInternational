@@ -5,16 +5,19 @@ import WalletTransaction from '@/models/WalletTransaction';
 import MlmFundPool from '@/models/MlmFundPool';
 import { auth } from '@/auth';
 
-// ─── Distribution Constants (out of 1500 BDT) ────────────────────────────────
+// ─── Distribution Constants (out of 1500 BDT — 55% Allocation) ────────────────
 const PACKAGE_PRICE     = 1500;
-const SPONSOR_BONUS     = 225;   // 15%
-const GEN_POOL_TOTAL    = 105;   // 7%
-const AUTO_PROFIT       = 52;    // 3.5%  → Auto-Profit matrix pool
-const GLOBAL_PROFIT     = 30;    // 2%    → Equally shared to all active members (cron/admin triggers)
-const INCENTIVE_FUND    = 30;    // 2%    → Rank reward pool
-const RANK_DEV_FUND     = 30;    // 2%    → Rank promotion bonus pool
-const ROYALTY_FUND      = 30;    // 2%    → Diamond / Crown / Director royalties
-const CHARITY_FUND      = 15;    // 1%    → Orphans & underprivileged
+const SPONSOR_BONUS     = 225;   // 1. Refer Bonus (15%)
+const GEN_POOL_TOTAL    = 105;   // 2. Generation Bonus (7%)
+const AUTO_PROFIT       = 52.5;  // 3. Auto Club (3.5%)
+const INCENTIVE_FUND    = 30;    // 4. Incentive Fund (2%)
+const RANK_DEV_FUND     = 37.5;  // 5. Rank Development Fund (2.5%)
+const GLOBAL_PROFIT     = 30;    // 6. Global Fund (2%)
+const ROYALTY_FUND      = 30;    // 7. Royalty Fund (2%)
+const TOUR_FUND         = 75;    // 8. Tour Fund (5%)
+const COMMUNITY_FUND    = 225;   // 9. Community Fund (15%)
+const CHARITY_FUND      = 15;    // 10. Charity Fund (1%)
+// Total Allocation: 55% (825 BDT). Company Net Revenue: 45% (675 BDT)
 
 // Generation bonus split (100% of GEN_POOL_TOTAL)
 const GEN_PERCENTAGES = [0.40, 0.20, 0.10, 0.06, 0.06, 0.05, 0.05, 0.03, 0.03, 0.02];
@@ -317,19 +320,22 @@ export async function POST(req: NextRequest) {
     if (!fundPool) {
       fundPool = await MlmFundPool.create({
         autoProfit: 0, globalProfit: 0, incentiveFund: 0,
-        rankDevelopmentFund: 0, royaltyFund: 0, charityFund: 0,
+        rankDevelopmentFund: 0, royaltyFund: 0, tourFund: 0,
+        communityFund: 0, charityFund: 0,
         totalActivations: 0,
       });
     }
 
-    fundPool.autoProfit         += AUTO_PROFIT;    // 3.5% = 52 BDT → matrix pool
-    fundPool.globalProfit       += GLOBAL_PROFIT + unallocatedBonus; // 2% = 30 BDT + any unallocated bonuses (382 BDT if no sponsor)
-    fundPool.incentiveFund      += INCENTIVE_FUND; // 2%   = 30 BDT → rank reward pool
-    fundPool.rankDevelopmentFund += RANK_DEV_FUND; // 2%   = 30 BDT → rank promotion bonus pool
-    fundPool.royaltyFund        += ROYALTY_FUND;   // 2%   = 30 BDT → Diamond/Crown/Director royalties
-    fundPool.charityFund        += CHARITY_FUND;   // 1%   = 15 BDT → charity
-    fundPool.totalActivations   += 1;
-    fundPool.lastUpdated         = new Date();
+    fundPool.autoProfit          += AUTO_PROFIT;      // 3.5% = 52.5 BDT → Auto Club pool
+    fundPool.globalProfit        += GLOBAL_PROFIT + unallocatedBonus; // 2% = 30 BDT + any unallocated
+    fundPool.incentiveFund       += INCENTIVE_FUND;   // 2%   = 30 BDT → rank reward pool
+    fundPool.rankDevelopmentFund += RANK_DEV_FUND;   // 2.5% = 37.5 BDT → rank promotion bonus pool
+    fundPool.royaltyFund         += ROYALTY_FUND;     // 2%   = 30 BDT → Diamond/Crown/Director royalties
+    fundPool.tourFund             = (fundPool.tourFund || 0) + TOUR_FUND;           // 5%   = 75 BDT → Tour Fund
+    fundPool.communityFund        = (fundPool.communityFund || 0) + COMMUNITY_FUND; // 15%  = 225 BDT → Community Fund
+    fundPool.charityFund         += CHARITY_FUND;     // 1%   = 15 BDT → charity
+    fundPool.totalActivations    += 1;
+    fundPool.lastUpdated          = new Date();
     await fundPool.save();
 
     // ── Step 5: Rank Promotion Check ─────────────────────────────────────────

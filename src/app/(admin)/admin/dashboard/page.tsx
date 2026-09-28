@@ -25,7 +25,9 @@ import {
   Heart,
   Share2,
   Building2,
-  AlertTriangle
+  AlertTriangle,
+  Plane,
+  Users2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -240,7 +242,7 @@ export default function AdminDashboard() {
   const { stats } = data || {};
 
   return (
-    <div className="flex-1 space-y-6 px-0 py-4 md:p-8">
+    <div className="flex-1 space-y-6 py-4 md:py-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Dashboard Overview</h2>
@@ -344,11 +346,11 @@ export default function AdminDashboard() {
             <div className="text-2xl font-bold text-emerald-700">
               {fundLoading
                 ? '...'
-                : `৳${((fundPool?.totalActivations ?? 0) * 983).toLocaleString()}`
+                : `৳${((fundPool?.totalActivations ?? 0) * 675).toLocaleString()}`
               }
             </div>
             <p className="text-xs text-muted-foreground">
-              {fundLoading ? '' : `${fundPool?.totalActivations ?? 0} activation${(fundPool?.totalActivations ?? 0) !== 1 ? 's' : ''} × ৳983`}
+              {fundLoading ? '' : `${fundPool?.totalActivations ?? 0} activation${(fundPool?.totalActivations ?? 0) !== 1 ? 's' : ''} × ৳675 (45%)`}
             </p>
           </CardContent>
         </Card>
@@ -356,51 +358,67 @@ export default function AdminDashboard() {
 
       {/* ── MLM Fund Pool Widget ─────────────────────────────────────────── */}
       <div>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
           <div>
-            <h3 className="text-lg font-bold">MLM Fund Pools</h3>
-            <p className="text-xs text-muted-foreground">Accumulated from each 1,500 BDT activation package</p>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-bold">MLM Fund Pools (ফান্ড বরাদ্দ)</h3>
+              <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                55% Total Allocation (৳825/act)
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Direct Referral 15% (৳225) + Generation 7% (৳105) paid to wallets · 33% (৳495) held in 8 strategic pools
+            </p>
           </div>
           <Button
             size="sm"
             onClick={handleDistributeGlobalProfit}
             disabled={distributing || !fundPool?.globalProfit}
-            className="gap-2 text-xs font-bold"
+            className="gap-2 text-xs font-bold shrink-0"
           >
             {distributing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Share2 className="h-3 w-3" />}
             Distribute Global Profit
           </Button>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
           {[
-            { key: 'autoProfit',          label: 'Auto Profit',         pct: '3.5%', color: 'bg-violet-50 border-violet-200 text-violet-700', icon: Zap },
-            { key: 'globalProfit',        label: 'Global Profit',       pct: '2%',   color: 'bg-blue-50 border-blue-200 text-blue-700',     icon: Globe },
-            { key: 'incentiveFund',       label: 'Incentive Fund',      pct: '2%',   color: 'bg-orange-50 border-orange-200 text-orange-700', icon: Trophy },
-            { key: 'rankDevelopmentFund', label: 'Rank Dev Fund',       pct: '2%',   color: 'bg-green-50 border-green-200 text-green-700',   icon: TrendingUp },
-            { key: 'royaltyFund',         label: 'Royalty Fund',        pct: '2%',   color: 'bg-yellow-50 border-yellow-200 text-yellow-700', icon: Crown },
-            { key: 'charityFund',         label: 'Charity Fund',        pct: '1%',   color: 'bg-pink-50 border-pink-200 text-pink-700',      icon: Heart },
-          ].map(({ key, label, pct, color, icon: Icon }) => (
-            <Card key={key} className={`border ${color.split(' ')[1]} overflow-hidden`}>
-              <CardContent className={`p-4 ${color.split(' ')[0]}`}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className={`text-[10px] font-bold uppercase tracking-wide ${color.split(' ')[2]}`}>{pct}</span>
-                  <Icon className={`h-4 w-4 ${color.split(' ')[2]}`} />
+            { key: 'autoProfit',          label: 'Auto Club',       pct: '3.5%',  amount: '৳52.5', color: 'bg-violet-50 border-violet-200 text-violet-700', icon: Zap },
+            { key: 'incentiveFund',       label: 'Incentive Fund',  pct: '2%',    amount: '৳30',   color: 'bg-orange-50 border-orange-200 text-orange-700', icon: Trophy },
+            { key: 'rankDevelopmentFund', label: 'Rank Dev Fund',   pct: '2.5%',  amount: '৳37.5', color: 'bg-emerald-50 border-emerald-200 text-emerald-700', icon: TrendingUp },
+            { key: 'globalProfit',        label: 'Global Fund',     pct: '2%',    amount: '৳30',   color: 'bg-blue-50 border-blue-200 text-blue-700',     icon: Globe },
+            { key: 'royaltyFund',         label: 'Royalty Fund',    pct: '2%',    amount: '৳30',   color: 'bg-yellow-50 border-yellow-200 text-yellow-700', icon: Crown },
+            { key: 'tourFund',            label: 'Tour Fund',       pct: '5%',    amount: '৳75',   color: 'bg-cyan-50 border-cyan-200 text-cyan-700',       icon: Plane },
+            { key: 'communityFund',       label: 'Community Fund',  pct: '15%',   amount: '৳225',  color: 'bg-indigo-50 border-indigo-200 text-indigo-700', icon: Users2 },
+            { key: 'charityFund',         label: 'Charity Fund',    pct: '1%',    amount: '৳15',   color: 'bg-pink-50 border-pink-200 text-pink-700',      icon: Heart },
+          ].map(({ key, label, pct, amount, color, icon: Icon }) => (
+            <Card key={key} className={`border ${color.split(' ')[1]} overflow-hidden shadow-xs hover:shadow-sm transition-all`}>
+              <CardContent className={`p-3 ${color.split(' ')[0]}`}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className={`text-[10px] font-black tracking-wide ${color.split(' ')[2]}`}>{pct}</span>
+                  <Icon className={`h-3.5 w-3.5 ${color.split(' ')[2]}`} />
                 </div>
-                <div className={`text-xl font-black ${color.split(' ')[2]}`}>
+                <div className={`text-lg sm:text-xl font-black ${color.split(' ')[2]}`}>
                   {fundLoading ? '...' : `৳${(fundPool?.[key] ?? 0).toLocaleString()}`}
                 </div>
-                <p className="text-[11px] font-medium text-muted-foreground mt-1">{label}</p>
+                <p className="text-[11px] font-bold text-slate-700 mt-1 truncate">{label}</p>
+                <p className="text-[9px] text-muted-foreground font-medium">{amount}/act</p>
               </CardContent>
             </Card>
           ))}
         </div>
         {fundPool?.totalActivations !== undefined && (
-          <p className="text-[11px] text-muted-foreground mt-2">
-            Total activations: <strong>{fundPool.totalActivations}</strong>
-            {' · '}
-            Per activation: ৳517 distributed (34.5%) + <strong className="text-emerald-600">৳983 company (65.5%)</strong>
-            {fundPool.lastUpdated && ` · Last updated: ${new Date(fundPool.lastUpdated).toLocaleString()}`}
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-muted-foreground mt-2.5 gap-1 bg-slate-50 border border-slate-200/80 rounded-lg px-3 py-2">
+            <p>
+              Total activations: <strong>{fundPool.totalActivations}</strong>
+              {' · '}
+              Per activation: <strong>৳825 distributed (55%)</strong> + <strong className="text-emerald-600">৳675 company net (45%)</strong>
+            </p>
+            {fundPool.lastUpdated && (
+              <p className="text-[10px] text-slate-500">
+                Last updated: {new Date(fundPool.lastUpdated).toLocaleString()}
+              </p>
+            )}
+          </div>
         )}
       </div>
 

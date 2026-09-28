@@ -15,7 +15,9 @@ import {
   Gift,
   ArrowRight,
   Layers,
-  History
+  History,
+  Plane,
+  Users2
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -294,12 +296,12 @@ export default function UserFundsPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <Badge className="bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 border-cyan-200">
-                    2% Pool
+                    2.5% Pool
                   </Badge>
                   <Sparkles className="h-5 w-5 text-cyan-600" />
                 </div>
                 <CardTitle className="text-base font-bold mt-2">Rank Development Fund</CardTitle>
-                <CardDescription>2% (৳30) per activation</CardDescription>
+                <CardDescription>2.5% (৳37.5) per activation</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="text-3xl font-black text-cyan-900 dark:text-cyan-300">
@@ -339,7 +341,57 @@ export default function UserFundsPage() {
               </CardContent>
             </Card>
 
-            {/* 15. Charity Fund */}
+            {/* 15. Tour Fund */}
+            <Card className="border border-sky-500/20 bg-linear-to-b from-sky-500/[0.03] to-transparent">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <Badge className="bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border-sky-200">
+                    5% Pool
+                  </Badge>
+                  <Plane className="h-5 w-5 text-sky-600" />
+                </div>
+                <CardTitle className="text-base font-bold mt-2">Tour Fund (ট্যুর ফান্ড)</CardTitle>
+                <CardDescription>5% (৳75) per activation</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="text-3xl font-black text-sky-900 dark:text-sky-300">
+                  ৳{(globalFunds.tourFund || 0).toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  কোয়ালিফাইং লিডারদের দেশীয় ও আন্তর্জাতিক ট্যুর, রিসোর্ট রিট্রিট ও ট্রাভেল ইনসেন্টিভ ফান্ড।
+                </p>
+                <div className="pt-2 text-[11px] text-sky-700 dark:text-sky-400 font-semibold">
+                  Used For: Domestic & International Tours
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 16. Community Fund */}
+            <Card className="border border-purple-500/20 bg-linear-to-b from-purple-500/[0.03] to-transparent">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 border-purple-200">
+                    15% Pool
+                  </Badge>
+                  <Users2 className="h-5 w-5 text-purple-600" />
+                </div>
+                <CardTitle className="text-base font-bold mt-2">Community Fund (কমিউনিটি ফান্ড)</CardTitle>
+                <CardDescription>15% (৳225) per activation</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="text-3xl font-black text-purple-900 dark:text-purple-300">
+                  ৳{(globalFunds.communityFund || 0).toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  সামাজিক উন্নয়ন, আঞ্চলিক সার্ভিস হাব তৈরি এবং মাঠ পর্যায়ের মেম্বারদের কল্যাণ ফান্ড।
+                </p>
+                <div className="pt-2 text-[11px] text-purple-700 dark:text-purple-400 font-semibold">
+                  Used For: Regional Centers & Community Welfare
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 17. Charity Fund */}
             <Card className="border border-rose-500/20 bg-linear-to-b from-rose-500/[0.03] to-transparent">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">

@@ -22,7 +22,8 @@ export async function GET(req: NextRequest) {
     if (!fundPool) {
       return NextResponse.json({
         autoProfit: 0, globalProfit: 0, incentiveFund: 0,
-        rankDevelopmentFund: 0, royaltyFund: 0, charityFund: 0,
+        rankDevelopmentFund: 0, royaltyFund: 0, tourFund: 0,
+        communityFund: 0, charityFund: 0,
         totalActivations: 0
       });
     }

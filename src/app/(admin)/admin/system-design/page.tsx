@@ -150,7 +150,7 @@ export default function SuperConfigPage() {
   const ui = settings?.uiTemplates || {};
 
   return (
-    <div className="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom duration-700">
+    <div className="py-4 md:py-6 w-full space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom duration-700">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b pb-8">
         <div className="space-y-1">

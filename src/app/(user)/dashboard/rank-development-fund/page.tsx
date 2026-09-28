@@ -52,7 +52,7 @@ export default function RankDevelopmentFundPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-black">Rank Development Fund</h1>
             <p className="text-xs sm:text-sm opacity-90 mt-1 max-w-xl">
-              2% (৳30 BDT) per activation dedicated strictly to financing instant cash rewards upon achieving new manager and leadership ranks.
+              2.5% (৳37.5 BDT) per activation dedicated strictly to financing leadership support and instant cash rewards upon achieving new manager and leadership ranks.
             </p>
           </div>
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl text-right shrink-0 border border-white/15">
