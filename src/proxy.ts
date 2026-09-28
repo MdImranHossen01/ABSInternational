@@ -62,11 +62,8 @@ export const proxy = auth(async (req) => {
     }
   }
 
-  // 3. Redirect /dashboard route to /admin/dashboard for admins, and to /login for non-logged-in users
+  // 3. Protection for /dashboard route: redirect non-logged-in users to /login
   if (nextUrl.pathname === "/dashboard" || nextUrl.pathname.startsWith("/dashboard/")) {
-    if (role === "admin" || role === "super_admin" || role === "manager") {
-      return NextResponse.redirect(new URL("/admin/dashboard", nextUrl));
-    }
     if (!isLoggedIn) {
       return NextResponse.redirect(new URL("/login", nextUrl));
     }
