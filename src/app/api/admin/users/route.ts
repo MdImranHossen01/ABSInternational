@@ -18,14 +18,36 @@ export async function GET(req: NextRequest) {
     const limit = Math.max(1, parseInt(searchParams.get('limit') || '20'));
     const search = searchParams.get('search') || '';
 
+    const type = searchParams.get('type') || 'all';
+
     await connectToDatabase();
 
-    const matchQuery: any = { role: { $ne: 'super_admin' as const } };
+    const matchQuery: any = {};
+
+    if (type === 'admins') {
+      matchQuery.role = { $in: ['admin', 'super_admin', 'manager'] };
+    } else if (type === 'leaders') {
+      matchQuery.sponsorId = 'ABS-COMPANY';
+    } else if (type === 'active') {
+      matchQuery.isSubscriptionActive = true;
+      matchQuery.role = { $nin: ['admin', 'super_admin'] };
+    } else if (type === 'free') {
+      matchQuery.isSubscriptionActive = false;
+      matchQuery.role = { $nin: ['admin', 'super_admin'] };
+    } else if (type === 'ranks') {
+      matchQuery.rank = { $nin: ['user', null, ''] };
+    } else {
+      // 'all'
+      matchQuery.role = { $ne: 'super_admin' as const };
+    }
+
     if (search) {
       matchQuery.$or = [
         { name: { $regex: search, $options: 'i' } },
         { email: { $regex: search, $options: 'i' } },
-        { phone: { $regex: search, $options: 'i' } }
+        { phone: { $regex: search, $options: 'i' } },
+        { memberId: { $regex: search, $options: 'i' } },
+        { sponsorId: { $regex: search, $options: 'i' } },
       ];
     }
     const totalCount = await User.countDocuments(matchQuery);
@@ -54,6 +76,16 @@ export async function GET(req: NextRequest) {
           phone: 1,
           addresses: 1,
           lastActive: 1,
+          memberId: 1,
+          sponsorId: 1,
+          rank: 1,
+          isSubscriptionActive: 1,
+          depositWallet: 1,
+          bonusWallet: 1,
+          withdrawalWallet: 1,
+          personalSales: 1,
+          teamSales: 1,
+          teamCount: 1,
           totalOrders: { $size: '$userOrders' },
           totalSpent: { $sum: '$userOrders.totalAmount' },
           lastOrderDate: { $max: '$userOrders.createdAt' }

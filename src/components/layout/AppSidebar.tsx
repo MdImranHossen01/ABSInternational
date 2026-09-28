@@ -155,6 +155,26 @@ const data = {
           title: "All Users",
           url: "/admin/users",
         },
+        {
+          title: "Founding Leaders",
+          url: "/admin/users/leaders",
+        },
+        {
+          title: "Active Members",
+          url: "/admin/users/active",
+        },
+        {
+          title: "Free Members",
+          url: "/admin/users/free",
+        },
+        {
+          title: "Rank Leaders",
+          url: "/admin/users/ranks",
+        },
+        {
+          title: "Admins & Staff",
+          url: "/admin/users/admins",
+        },
       ],
     },
     {

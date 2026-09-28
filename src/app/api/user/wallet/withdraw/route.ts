@@ -18,6 +18,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Missing required withdrawal details.' }, { status: 400 });
     }
 
+    if (typeof amount !== 'number' || !Number.isFinite(amount) || amount < 500) {
+      return NextResponse.json({ message: 'Minimum withdrawal amount is ৳500.' }, { status: 400 });
+    }
+
     await connectToDatabase();
     const user = await User.findById((session.user as any).id).select('+transactionPin');
     if (!user) {

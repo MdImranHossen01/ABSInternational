@@ -14,8 +14,9 @@ export async function POST(req: NextRequest) {
 
     const { amount, sourceWallet, targetMemberId, pin } = await req.json();
 
-    if (!amount || amount <= 0 || !sourceWallet || !targetMemberId || !pin) {
-      return NextResponse.json({ message: 'Missing transfer parameters.' }, { status: 400 });
+    const numAmount = Number(amount);
+    if (!Number.isFinite(numAmount) || numAmount < 50 || !sourceWallet || !targetMemberId || !pin) {
+      return NextResponse.json({ message: 'Minimum transfer amount is ৳50 and all fields are required.' }, { status: 400 });
     }
 
     if (sourceWallet !== 'depositWallet' && sourceWallet !== 'bonusWallet') {
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
     }
 
     const senderBalance = sourceWallet === 'depositWallet' ? sender.depositWallet : sender.bonusWallet;
-    if (senderBalance < amount) {
+    if (senderBalance < numAmount) {
       return NextResponse.json({ message: 'Insufficient funds in selected wallet.' }, { status: 400 });
     }
 
@@ -56,11 +57,11 @@ export async function POST(req: NextRequest) {
 
     // Execute atomic-like transfers
     if (sourceWallet === 'depositWallet') {
-      sender.depositWallet -= amount;
+      sender.depositWallet -= numAmount;
     } else {
-      sender.bonusWallet -= amount;
+      sender.bonusWallet -= numAmount;
     }
-    recipient.depositWallet += amount;
+    recipient.depositWallet += numAmount;
 
     await sender.save();
     await recipient.save();
@@ -69,22 +70,22 @@ export async function POST(req: NextRequest) {
     await WalletTransaction.create([
       {
         userId: sender._id,
-        amount,
+        amount: numAmount,
         type: 'transfer_out',
         status: 'completed',
-        description: `Transferred ৳${amount} from ${sourceWallet === 'depositWallet' ? 'Deposit' : 'Bonus'} Wallet to member ${targetMemberId}`,
+        description: `Transferred ৳${numAmount} from ${sourceWallet === 'depositWallet' ? 'Deposit' : 'Bonus'} Wallet to member ${targetMemberId}`,
       },
       {
         userId: recipient._id,
-        amount,
+        amount: numAmount,
         type: 'transfer_in',
         status: 'completed',
-        description: `Received ৳${amount} from member ${sender.memberId} (${sender.name})`,
+        description: `Received ৳${numAmount} from member ${sender.memberId} (${sender.name})`,
       }
     ]);
 
     return NextResponse.json({
-      message: `Successfully transferred ৳${amount} to ${recipient.name}!`,
+      message: `Successfully transferred ৳${numAmount} to ${recipient.name}!`,
       depositWallet: sender.depositWallet,
       bonusWallet: sender.bonusWallet
     });

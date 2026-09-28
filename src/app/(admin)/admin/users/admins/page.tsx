@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { UsersManagementView } from '@/components/admin/UsersManagementView';
 import { Loader2 } from 'lucide-react';
 
-export default function AdminUsersPage() {
+export default function AdminStaffPage() {
   return (
     <Suspense
       fallback={
@@ -13,7 +13,7 @@ export default function AdminUsersPage() {
         </div>
       }
     >
-      <UsersManagementView type="all" />
+      <UsersManagementView type="admins" />
     </Suspense>
   );
 }

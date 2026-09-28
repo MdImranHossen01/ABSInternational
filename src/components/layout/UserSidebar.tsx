@@ -5,17 +5,38 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
 import {
-  ShoppingBag,
+  LayoutDashboard,
   User as UserIcon,
-  Settings,
-  LogOut,
-  Heart,
+  Network,
   Users,
-  Wallet,
-  Activity,
+  TrendingUp,
+  Coins,
+  Award,
+  Trophy,
+  Sparkles,
+  Layers,
+  Globe,
+  Gift,
+  Star,
+  Crown,
+  HeartHandshake,
   BookOpen,
+  Tag,
+  Package,
+  ArrowUpCircle,
+  History,
+  ArrowDownCircle,
+  Clock,
+  Send,
+  FileText,
+  Landmark,
+  CheckCircle2,
+  Gem,
+  Camera,
+  Bell,
+  Lock,
   HelpCircle,
-  ClipboardList,
+  LogOut,
 } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 import {
@@ -31,19 +52,41 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { Separator } from "@/components/ui/separator"
 
-const navItems = [
-  { title: "Overview",          href: "/dashboard",           icon: ShoppingBag,   exact: true },
-  { title: "My Orders",         href: "/dashboard/orders",    icon: ClipboardList, exact: false },
-  { title: "Wallet & Ledgers",  href: "/dashboard/wallet",    icon: Wallet,        exact: false },
-  { title: "Downline Team",     href: "/dashboard/network",   icon: Users,         exact: false },
-  { title: "Seba Services",     href: "/dashboard/seba",      icon: Activity,      exact: false },
-  { title: "Wishlist",          href: "/dashboard/wishlist",  icon: Heart,         exact: false },
-  { title: "KYC & Profile",     href: "/dashboard/profile",   icon: UserIcon,      exact: false },
-  { title: "Security Settings", href: "/dashboard/settings",  icon: Settings,      exact: false },
-  { title: "Guidelines",        href: "/dashboard/guidelines",icon: BookOpen,      exact: false },
-  { title: "Support Tickets",   href: "/dashboard/support",   icon: HelpCircle,    exact: false },
+// Sequential items matching client's notebook order
+const serialNavItems = [
+  { title: "Dashboard",             href: "/dashboard",                 icon: LayoutDashboard, exact: true },
+  { title: "My Profile",            href: "/dashboard/profile",         icon: UserIcon,        exact: false },
+  { title: "My Tree",               href: "/dashboard/tree",            icon: Network,         exact: false },
+  { title: "Team Performance",      href: "/dashboard/team-performance",icon: Users,           exact: false },
+  { title: "Total Income",          href: "/dashboard/total-income",    icon: TrendingUp,      exact: false },
+  { title: "Total Bonus",           href: "/dashboard/total-bonus",     icon: Coins,           exact: false },
+  { title: "My Rank",               href: "/dashboard/my-rank",         icon: Award,           exact: false },
+  { title: "Rank Achievement",      href: "/dashboard/rank-achievement",icon: Trophy,          exact: false },
+  { title: "Sponsor Bonus",         href: "/dashboard/sponsor-bonus",   icon: Sparkles,        exact: false },
+  { title: "Generation Bonus",     href: "/dashboard/generation-bonus",icon: Layers,          exact: false },
+  { title: "Global Profit",        href: "/dashboard/global-profit",   icon: Globe,           exact: false },
+  { title: "Incentive Fund",       href: "/dashboard/incentive-fund",  icon: Gift,            exact: false },
+  { title: "Rank Dev Fund",        href: "/dashboard/rank-development-fund", icon: Star,     exact: false },
+  { title: "Royalty Fund",         href: "/dashboard/royalty-fund",    icon: Crown,           exact: false },
+  { title: "Charity Fund",         href: "/dashboard/charity-fund",    icon: HeartHandshake,  exact: false },
+  { title: "Product Story",        href: "/dashboard/product-story",   icon: BookOpen,        exact: false },
+  { title: "Product Categories",   href: "/dashboard/product-categories", icon: Tag,          exact: false },
+  { title: "Packages (Basic/VIP)", href: "/dashboard/packages",        icon: Package,         exact: false },
+  { title: "Deposit",              href: "/dashboard/deposit",         icon: ArrowUpCircle,   exact: false },
+  { title: "Deposit History",      href: "/dashboard/deposit-history", icon: History,         exact: false },
+  { title: "Withdraw",             href: "/dashboard/withdraw",        icon: ArrowDownCircle, exact: false },
+  { title: "Withdraw History",     href: "/dashboard/withdraw-history",icon: Clock,           exact: false },
+  { title: "Transfer",             href: "/dashboard/transfer",        icon: Send,            exact: false },
+  { title: "Transaction Statement",href: "/dashboard/transaction-statement", icon: FileText, exact: false },
+  { title: "Rank System",          href: "/dashboard/rank-system",     icon: Landmark,        exact: false },
+  { title: "Rank Progress",        href: "/dashboard/rank-progress",   icon: CheckCircle2,    exact: false },
+  { title: "Rank Reward",          href: "/dashboard/rank-reward",     icon: Gem,             exact: false },
+  { title: "Achievement Photo",    href: "/dashboard/achievement-photo", icon: Camera,        exact: false },
+  { title: "Reward History",       href: "/dashboard/reward-history",  icon: History,         exact: false },
+  { title: "Notifications",        href: "/dashboard/notifications",   icon: Bell,            exact: false },
+  { title: "Change Password",      href: "/dashboard/change-password", icon: Lock,            exact: false },
+  { title: "Support Ticket",       href: "/dashboard/support",         icon: HelpCircle,      exact: false },
 ]
 
 export function UserSidebar() {
@@ -51,8 +94,8 @@ export function UserSidebar() {
   const { data: session } = useSession()
 
   return (
-    <Sidebar collapsible="icon">
-      {/* Logo */}
+    <Sidebar collapsible="icon" className="border-r">
+      {/* Header Logo */}
       <SidebarHeader className="border-b h-14 lg:h-[60px] px-3 flex items-center overflow-hidden">
         <Logo 
           imageClassName="size-6 shrink-0" 
@@ -60,25 +103,29 @@ export function UserSidebar() {
         />
       </SidebarHeader>
 
-      {/* Nav */}
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>My Dashboard</SidebarGroupLabel>
+      {/* Sequential Nav Items */}
+      <SidebarContent className="py-2">
+        <SidebarGroup className="py-0">
+          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/90 px-3 pb-1">
+            Member Portal
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => {
+            <SidebarMenu className="gap-0.5">
+              {serialNavItems.map((item) => {
                 const isActive = item.exact
                   ? pathname === item.href
-                  : pathname.startsWith(item.href)
+                  : pathname === item.href || pathname.startsWith(item.href + "/")
+
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
                       render={<Link href={item.href} />}
                       isActive={isActive}
                       tooltip={item.title}
+                      className="text-xs font-semibold h-8.5 px-3 rounded-lg transition-colors hover:bg-muted/60"
                     >
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" />
+                      <span className="truncate">{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )
@@ -88,17 +135,17 @@ export function UserSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Sign out footer */}
-      <SidebarFooter className="border-t">
+      {/* Logout */}
+      <SidebarFooter className="border-t p-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              tooltip="Sign Out"
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              tooltip="Logout"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive text-xs font-bold h-9 rounded-lg"
               onClick={() => signOut({ callbackUrl: window.location.origin })}
             >
-              <LogOut />
-              <span>Sign Out</span>
+              <LogOut className="h-4 w-4" />
+              <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

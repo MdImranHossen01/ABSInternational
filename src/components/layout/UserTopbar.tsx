@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, signOut } from 'next-auth/react';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, Bell, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,7 @@ import {
 
 export default function UserTopbar() {
   const { data: session } = useSession();
+  const isAdmin = (session?.user as any)?.role === 'admin' || (session?.user as any)?.role === 'super_admin';
 
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 justify-between sticky top-0 z-30">
@@ -33,7 +34,28 @@ export default function UserTopbar() {
       {/* Desktop spacer */}
       <div className="hidden md:flex flex-1" />
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        {isAdmin && (
+          <Link href="/admin/dashboard">
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-amber-500/40 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 dark:text-amber-300 font-bold h-8 text-xs flex items-center gap-1.5 shadow-xs"
+              title="Return to Admin Management Panel"
+            >
+              <ShieldCheck className="h-3.5 w-3.5 text-amber-600" />
+              <span className="hidden sm:inline">Admin Panel</span>
+            </Button>
+          </Link>
+        )}
+
+        <Link href="/dashboard/notifications">
+          <Button variant="ghost" size="icon" className="relative rounded-full" title="Notifications">
+            <Bell className="h-5 w-5" />
+            <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary" />
+          </Button>
+        </Link>
+
         <ModeToggle />
 
         {session?.user ? (
@@ -73,6 +95,14 @@ export default function UserTopbar() {
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin/dashboard" className="text-amber-700 dark:text-amber-300 font-semibold">
+                    <ShieldCheck className="mr-2 h-4 w-4 text-amber-600" />
+                    <span>Admin Panel</span>
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 variant="destructive"

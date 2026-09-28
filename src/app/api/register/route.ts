@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
+import { sendWelcomeRegistrationEmail } from '@/lib/mail';
 
 
 export async function POST(req: NextRequest) {
@@ -94,6 +95,14 @@ export async function POST(req: NextRequest) {
         }
       }
     }
+
+    // Send welcome email with credentials & reference code
+    sendWelcomeRegistrationEmail({
+      email: normalizedEmail,
+      name,
+      memberId: user.memberId,
+      sponsorId,
+    }).catch(err => console.error('Background welcome email error:', err));
 
     return NextResponse.json(
       { message: 'User registered successfully!', userId: user._id, memberId: user.memberId },

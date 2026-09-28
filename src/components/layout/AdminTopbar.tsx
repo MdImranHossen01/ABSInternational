@@ -4,6 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { 
   User, 
   LogOut,
+  UserCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -32,7 +33,19 @@ export default function AdminTopbar() {
         </div>
       </div>
       <div className="hidden md:flex flex-1" />
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        <Link href="/dashboard">
+          <Button
+            size="sm"
+            variant="outline"
+            className="border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 font-bold h-8 text-xs flex items-center gap-1.5 shadow-xs"
+            title="Switch to Personal Member Portal"
+          >
+            <UserCheck className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">My Member Portal</span>
+          </Button>
+        </Link>
+
         <ModeToggle />
         
         {session?.user ? (
@@ -70,6 +83,10 @@ export default function AdminTopbar() {
                 <DropdownMenuItem render={<Link href="/admin/settings/profile" />}>
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem render={<Link href="/dashboard" />}>
+                  <UserCheck className="mr-2 h-4 w-4 text-primary" />
+                  <span>My Member Portal</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
