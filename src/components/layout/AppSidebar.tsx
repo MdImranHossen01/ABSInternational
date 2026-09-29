@@ -7,16 +7,13 @@ import {
   ChevronRight,
   LayoutDashboard,
   ShoppingBag,
-  Tag,
   FileText,
   Users,
   Image as ImageIcon,
   Settings,
-  Megaphone,
-  Store,
+
   Mail,
-  CreditCard,
-  LifeBuoy,
+
   X,
 } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
@@ -319,9 +316,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="border-b h-14 lg:h-[60px] px-3 flex flex-row items-center justify-between overflow-hidden">
         <Link href="/" onClick={closeMobileSidebar} className="flex items-center">
-          <Logo 
-            imageClassName="size-6 shrink-0" 
-            textClassName="text-sm font-black tracking-tight whitespace-nowrap leading-none" 
+          <Logo
+            imageClassName="size-6 shrink-0"
+            textClassName="text-sm font-black tracking-tight whitespace-nowrap leading-none"
           />
         </Link>
         <button
