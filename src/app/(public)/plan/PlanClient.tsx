@@ -174,6 +174,467 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
     { name: '10. Charity & Social Welfare', pct: '1.0%', bdt: '৳15.00', desc: 'Emergency relief, medical assistance, and social charity' },
   ];
 
+  const renderOverviewContent = () => (
+    <div className="space-y-8">
+      {/* Packages Comparison */}
+      <div>
+        <div className="text-center max-w-2xl mx-auto mb-6 md:mb-8">
+          <h2 className="text-2xl sm:text-3xl font-black">Membership Package Options</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+            Choose between standard shopping or unlock all affiliate and multi-generation earnings with our Premium membership.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {/* General Member Card */}
+          <Card className="rounded-2xl border border-border shadow-xs hover:border-border/80 transition-all flex flex-col justify-between">
+            <div>
+              <CardHeader className="pb-4">
+                <Badge variant="secondary" className="w-fit mb-2">Free Account</Badge>
+                <CardTitle className="text-2xl font-black">General Member</CardTitle>
+                <CardDescription>Ideal for everyday shoppers and retail customers</CardDescription>
+                <div className="text-3xl font-black text-foreground mt-4">৳0 <span className="text-xs font-normal text-muted-foreground">/ Lifetime</span></div>
+              </CardHeader>
+              <CardContent className="space-y-3 pt-2">
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Free registration with basic profile
+                </div>
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Browse &amp; purchase original products
+                </div>
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Order tracking and invoice history
+                </div>
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm text-muted-foreground opacity-60">
+                  <span className="h-4 w-4 rounded-full border border-muted-foreground flex items-center justify-center text-[10px] shrink-0">✕</span> No MLM Commission Rights
+                </div>
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm text-muted-foreground opacity-60">
+                  <span className="h-4 w-4 rounded-full border border-muted-foreground flex items-center justify-center text-[10px] shrink-0">✕</span> No Seba Health Card Privileges
+                </div>
+              </CardContent>
+            </div>
+            <div className="p-6 pt-0">
+              <Link href="/register" className="block w-full">
+                <Button variant="outline" className="w-full rounded-xl font-bold">Register Free</Button>
+              </Link>
+            </div>
+          </Card>
+
+          {/* Premium Member Card */}
+          <Card className="rounded-2xl border-2 border-primary shadow-xl bg-gradient-to-b from-primary/5 via-card to-card flex flex-col justify-between relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-black uppercase px-3 py-1 rounded-bl-xl tracking-wider">
+              Recommended
+            </div>
+            <div>
+              <CardHeader className="pb-4">
+                <Badge className="w-fit mb-2 bg-primary/20 text-primary hover:bg-primary/25 border-primary/30">Active MLM Tier</Badge>
+                <CardTitle className="text-2xl font-black text-foreground">Premium Member</CardTitle>
+                <CardDescription>Full access to multi-tier earnings and healthcare benefits</CardDescription>
+                <div className="text-3xl font-black text-primary mt-4">৳1,500 <span className="text-xs font-normal text-muted-foreground">/ One-Time</span></div>
+              </CardHeader>
+              <CardContent className="space-y-3 pt-2">
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
+                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> High-Value Herbal Products Included
+                </div>
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
+                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> 15% (৳225) Direct Sponsor Commission
+                </div>
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
+                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> Full 10-Generation Downline Matrix Eligibility
+                </div>
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
+                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> Digital Seba Card (Hospital &amp; Doctor Discounts)
+                </div>
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
+                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> Auto-Profit Matrix Tier Participation (10 Tiers)
+                </div>
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
+                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> Rank Advancement &amp; Executive Milestone Gifts
+                </div>
+              </CardContent>
+            </div>
+            <div className="p-6 pt-0">
+              <Link href="/register" className="block w-full">
+                <Button className="w-full rounded-xl font-bold shadow-md shadow-primary/25">Activate Package Now</Button>
+              </Link>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* 55% Transparent Allocation Breakdown */}
+      <Card className="rounded-2xl border border-border shadow-xs overflow-hidden">
+        <CardHeader className="bg-muted/40 border-b border-border/50 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <CardTitle className="text-lg sm:text-xl font-black">1,500 BDT Package Fund Distribution (55% Allocation)</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
+                Transparent split: ৳825 (55%) distributed to members &amp; welfare funds, ৳675 (45%) allocated for product cost &amp; operational infrastructure.
+              </CardDescription>
+            </div>
+            <Badge variant="outline" className="w-fit font-mono font-bold text-primary border-primary/40 bg-primary/5">
+              Total Pool: ৳825.00
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs sm:text-sm">
+              <thead className="bg-muted/30 text-muted-foreground uppercase text-[11px] font-bold border-b border-border/40">
+                <tr>
+                  <th className="py-3 px-4">Fund Name</th>
+                  <th className="py-3 px-4">Percentage</th>
+                  <th className="py-3 px-4">Amount</th>
+                  <th className="py-3 px-4 hidden md:table-cell">Purpose &amp; Description</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {fundDistribution.map((fund, idx) => (
+                  <tr key={idx} className="hover:bg-muted/20 transition-colors">
+                    <td className="py-3 px-4 font-bold text-foreground">{fund.name}</td>
+                    <td className="py-3 px-4 font-mono font-semibold text-primary">{fund.pct}</td>
+                    <td className="py-3 px-4 font-mono font-bold text-emerald-600">{fund.bdt}</td>
+                    <td className="py-3 px-4 text-muted-foreground hidden md:table-cell">{fund.desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderGenerationContent = () => (
+    <div className="space-y-6">
+      <div className="text-center max-w-2xl mx-auto mb-6 md:mb-8">
+        <h2 className="text-2xl sm:text-3xl font-black">10-Generation Downline Matrix</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+          A 7% pool (৳105 BDT per activation) is split across 10 upline generations. With our 6-hand placement structure, spillover helps your team grow exponentially.
+        </p>
+      </div>
+
+      {/* Matrix Feature Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card className="rounded-2xl p-5 border border-border shadow-xs">
+          <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold mb-3">
+            <Network className="h-5 w-5" />
+          </div>
+          <div className="text-base font-bold">6-Hand Placement</div>
+          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+            Each leader can sponsor direct hands from Hand 1 to Hand 6. Excess members spill over to downlines, creating massive teamwork.
+          </p>
+        </Card>
+
+        <Card className="rounded-2xl p-5 border border-border shadow-xs">
+          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold mb-3">
+            <DollarSign className="h-5 w-5" />
+          </div>
+          <div className="text-base font-bold">Instant Payouts</div>
+          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+            The exact generation commission is instantly deposited into your Bonus Wallet the moment any downline member activates.
+          </p>
+        </Card>
+
+        <Card className="rounded-2xl p-5 border border-border shadow-xs">
+          <div className="h-10 w-10 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center font-bold mb-3">
+            <Layers className="h-5 w-5" />
+          </div>
+          <div className="text-base font-bold">10-Level Depth</div>
+          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+            Earn from your direct partners (Gen 1) down to the 10th generation level without tricky flushing or unachievable hurdles.
+          </p>
+        </Card>
+      </div>
+
+      {/* 10 Generation Table */}
+      <Card className="rounded-2xl border border-border shadow-xs overflow-hidden">
+        <CardHeader className="bg-muted/40 border-b border-border/50 pb-4">
+          <CardTitle className="text-base sm:text-lg font-black">Generational Commission Split &amp; Duplication Model</CardTitle>
+          <CardDescription className="text-xs">
+            Theoretical earning potential assuming a standard 6 × 6 duplication matrix across all 10 generation tiers.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs sm:text-sm">
+              <thead className="bg-muted/30 text-muted-foreground uppercase text-[11px] font-bold border-b border-border/40">
+                <tr>
+                  <th className="py-3 px-4">Tier Level</th>
+                  <th className="py-3 px-4">Pool Share</th>
+                  <th className="py-3 px-4">Payout / Activation</th>
+                  <th className="py-3 px-4">Team Count (6x6)</th>
+                  <th className="py-3 px-4 text-right">Potential Tier Earnings</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40 font-mono">
+                {generationData.map((gen) => (
+                  <tr key={gen.level} className="hover:bg-muted/20 transition-colors">
+                    <td className="py-3 px-4 font-sans font-bold text-foreground">
+                      Generation {gen.level} {gen.level === 1 && <span className="text-[10px] text-primary ml-1 font-normal">(Direct)</span>}
+                    </td>
+                    <td className="py-3 px-4 font-bold text-primary">{gen.percent}</td>
+                    <td className="py-3 px-4 font-bold text-emerald-600">{gen.amount}</td>
+                    <td className="py-3 px-4 text-muted-foreground">{gen.teamExample} members</td>
+                    <td className="py-3 px-4 font-bold text-right text-foreground">{gen.earningsExample}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderProfileContent = () => (
+    <div className="space-y-6">
+      <div className="text-center max-w-2xl mx-auto mb-6 md:mb-8">
+        <h2 className="text-2xl sm:text-3xl font-black">Profile, Security &amp; 3-Wallet Architecture</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+          Manage your funds securely with transparent ledger tracking, verified identity safeguards, and member healthcare privileges.
+        </p>
+      </div>
+
+      {/* 3 Wallets Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Deposit Wallet */}
+        <Card className="rounded-2xl border border-border shadow-xs hover:border-primary/50 transition-all">
+          <CardHeader>
+            <div className="h-12 w-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-2">
+              <Wallet className="h-6 w-6" />
+            </div>
+            <CardTitle className="text-xl font-bold">Deposit Wallet</CardTitle>
+            <CardDescription className="text-xs">Your self-funded transaction balance</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2.5 text-xs text-muted-foreground">
+            <div className="flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
+              <span>Load funds using bKash, Nagad, Rocket, or Direct Bank Transfer.</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
+              <span>Use to activate your ৳1,500 Premium Membership or purchase store goods.</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
+              <span>Instant automatic verification via transaction ID (TrxID).</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Bonus Wallet */}
+        <Card className="rounded-2xl border-2 border-emerald-500/30 shadow-md bg-emerald-50/10 dark:bg-emerald-950/10">
+          <CardHeader>
+            <div className="h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-2">
+              <DollarSign className="h-6 w-6" />
+            </div>
+            <CardTitle className="text-xl font-bold">Bonus Wallet</CardTitle>
+            <CardDescription className="text-xs">Accumulated earnings &amp; rewards</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2.5 text-xs text-muted-foreground">
+            <div className="flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+              <span>Direct Sponsor Bonuses (৳225/referral) deposited immediately.</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+              <span>10-Generation downline matching commissions automatically credited.</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+              <span>Auto Profit Club matrix tier payouts and rank promotion cash bonuses.</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Withdrawal Wallet */}
+        <Card className="rounded-2xl border border-border shadow-xs hover:border-primary/50 transition-all">
+          <CardHeader>
+            <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-2">
+              <CreditCard className="h-6 w-6" />
+            </div>
+            <CardTitle className="text-xl font-bold">Withdrawal Gateway</CardTitle>
+            <CardDescription className="text-xs">Cash out your earnings anytime</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2.5 text-xs text-muted-foreground">
+            <div className="flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+              <span>Request payouts directly to your personal bKash, Nagad, Rocket or Bank.</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+              <span>Fast payout processing with complete audit trail and status alerts.</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+              <span>Requires verified KYC for account safety and anti-fraud protection.</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Profile Privileges & Seba Card */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 md:mt-8">
+        {/* Digital Seba Card */}
+        <Card className="rounded-2xl border border-border p-6 shadow-xs bg-gradient-to-br from-card to-muted/20">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-3 bg-red-500/10 text-red-600 rounded-xl">
+              <Stethoscope className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold">Digital Seba Health Card</h3>
+              <p className="text-xs text-muted-foreground">Medical healthcare protection for active members</p>
+            </div>
+          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            Every active member qualifies for the ABS Digital Seba Card. Cardholders receive free monthly online MBBS consultations, up to 50% discount on blood and diagnostic tests at partner pathology labs, and emergency helpline coverage.
+          </p>
+        </Card>
+
+        {/* KYC & Identity Protection */}
+        <Card className="rounded-2xl border border-border p-6 shadow-xs bg-gradient-to-br from-card to-muted/20">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-3 bg-primary/10 text-primary rounded-xl">
+              <UserCheck className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold">KYC &amp; NID Verification</h3>
+              <p className="text-xs text-muted-foreground">Institutional-grade identity verification</p>
+            </div>
+          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            To safeguard member earnings and comply with financial standards, members submit National ID (NID) photos. Once approved by administration, members enjoy instant, seamless withdrawals and permanent team ownership.
+          </p>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const renderRewardContent = () => (
+    <div className="space-y-6">
+      <div className="text-center max-w-2xl mx-auto mb-6 md:mb-8">
+        <h2 className="text-2xl sm:text-3xl font-black">Reward System &amp; Auto Profit Club</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+          Experience non-stop incentives. From our 10-Tier automated pool to international tours and luxury gifts, ABS International celebrates your every milestone.
+        </p>
+      </div>
+
+      {/* Auto Profit Matrix */}
+      <Card className="rounded-2xl border border-border shadow-xs overflow-hidden">
+        <CardHeader className="bg-muted/40 border-b border-border/50 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <CardTitle className="text-lg font-black flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-amber-500" /> 10-Tier Auto Profit Club Matrix
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Every activation in ABS International contributes ৳52.50 into the Auto Profit pool, cycling members through 10 reward tiers.
+              </CardDescription>
+            </div>
+            <Badge className="w-fit bg-amber-500/10 text-amber-600 border-amber-500/30 font-bold font-mono">
+              ৳52.50 / Member Contribution
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            {autoProfitTiers.map((tier) => (
+              <div key={tier.tier} className="p-4 rounded-xl border border-border/60 bg-muted/20 text-center hover:border-primary/40 transition-colors">
+                <Badge variant="secondary" className="text-[10px] mb-2">{tier.badge}</Badge>
+                <div className="text-base sm:text-lg font-black text-foreground font-mono">{tier.payout}</div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">Tier Payout</div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Milestone Lifestyle Rewards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        <Card className="p-5 rounded-2xl border border-border shadow-xs text-center flex flex-col items-center">
+          <div className="h-12 w-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-3">
+            <Smartphone className="h-6 w-6" />
+          </div>
+          <h4 className="font-bold text-sm">Smart Gadgets</h4>
+          <p className="text-xs text-muted-foreground mt-1">Branded Android smartphones awarded to qualified Gold Managers.</p>
+        </Card>
+
+        <Card className="p-5 rounded-2xl border border-border shadow-xs text-center flex flex-col items-center">
+          <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-3">
+            <Plane className="h-6 w-6" />
+          </div>
+          <h4 className="font-bold text-sm">Luxury Travel Tours</h4>
+          <p className="text-xs text-muted-foreground mt-1">Fully paid Cox’s Bazar and international executive tours for Diamond &amp; Crown ranks.</p>
+        </Card>
+
+        <Card className="p-5 rounded-2xl border border-border shadow-xs text-center flex flex-col items-center">
+          <div className="h-12 w-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center mb-3">
+            <Car className="h-6 w-6" />
+          </div>
+          <h4 className="font-bold text-sm">Motorbike &amp; Luxury Car</h4>
+          <p className="text-xs text-muted-foreground mt-1">Brand new motorbikes and executive private cars for top leadership milestones.</p>
+        </Card>
+
+        <Card className="p-5 rounded-2xl border border-border shadow-xs text-center flex flex-col items-center">
+          <div className="h-12 w-12 rounded-2xl bg-purple-500/10 text-purple-600 flex items-center justify-center mb-3">
+            <Home className="h-6 w-6" />
+          </div>
+          <h4 className="font-bold text-sm">1 Crore Asset Flat</h4>
+          <p className="text-xs text-muted-foreground mt-1">1 Crore BDT Flat asset award and lifetime profit equity for Company Directors.</p>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const renderRankContent = () => (
+    <div className="space-y-6">
+      <div className="text-center max-w-2xl mx-auto mb-6 md:mb-8">
+        <h2 className="text-2xl sm:text-3xl font-black">9 Leadership Rank Progression</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+          Climb our structured leadership hierarchy by qualifying direct leaders in your 6-hand network. Each promotion unlocks immediate cash bonuses and executive honors.
+        </p>
+      </div>
+
+      {/* Ranks Cards List */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {ranks.map((rank, i) => (
+          <Card key={rank.id} className="rounded-2xl border border-border shadow-xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
+            <div>
+              <div className="p-5 border-b border-border/50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-muted/60">{rank.icon}</div>
+                  <div>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Level {i + 1}</span>
+                    <h3 className="text-base font-black text-foreground">{rank.title}</h3>
+                  </div>
+                </div>
+                <Badge variant="outline" className={`text-[10px] font-bold ${rank.badgeColor}`}>
+                  {rank.cashBonus !== '৳0' ? rank.cashBonus : 'Entry'}
+                </Badge>
+              </div>
+
+              <div className="p-5 space-y-3 text-xs">
+                <div>
+                  <span className="text-muted-foreground block text-[11px] font-semibold uppercase">Qualification Criteria:</span>
+                  <span className="font-bold text-foreground mt-0.5 block">{rank.req}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block text-[11px] font-semibold uppercase">Required Active Directs:</span>
+                  <span className="font-mono font-bold text-primary mt-0.5 block">{rank.downlines}</span>
+                </div>
+                <div className="pt-2 border-t border-border/40">
+                  <span className="text-muted-foreground block text-[11px] font-semibold uppercase">Award &amp; Privileges:</span>
+                  <span className="text-foreground font-medium mt-0.5 block">{rank.reward}</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
 
@@ -235,513 +696,94 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
         </div>
       </section>
 
-      {/* ─── Navigation Tabs ────────────────────────────────────────── */}
+      {/* ─── Plan Content: Desktop Tabs & Mobile Sequential Sections ── */}
       <section className="container mx-auto px-4 mt-6 md:mt-8 max-w-6xl">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 w-full h-auto p-1.5 bg-muted/80 dark:bg-muted/40 rounded-2xl border border-border/50">
-            <TabsTrigger
-              value="overview"
-              className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
-            >
-              <PieChart className="h-4 w-4 shrink-0" />
-              <span>Member Plan</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="generation"
-              className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
-            >
-              <Network className="h-4 w-4 shrink-0" />
-              <span>Generation</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="profile"
-              className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
-            >
-              <Wallet className="h-4 w-4 shrink-0" />
-              <span>Wallets &amp; KYC</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="reward"
-              className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
-            >
-              <Gift className="h-4 w-4 shrink-0" />
-              <span>Rewards</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="rank"
-              className="col-span-2 sm:col-span-1 rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
-            >
-              <Trophy className="h-4 w-4 shrink-0" />
-              <span>9 Ranks</span>
-            </TabsTrigger>
-          </TabsList>
+        {/* DESKTOP ONLY: Interactive Tabs */}
+        <div className="hidden md:block">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-5 gap-1.5 w-full !h-auto p-1.5 bg-muted/80 dark:bg-muted/40 rounded-2xl border border-border/50">
+              <TabsTrigger
+                value="overview"
+                className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
+              >
+                <PieChart className="h-4 w-4 shrink-0" />
+                <span>Member Plan</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="generation"
+                className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
+              >
+                <Network className="h-4 w-4 shrink-0" />
+                <span>Generation</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="profile"
+                className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
+              >
+                <Wallet className="h-4 w-4 shrink-0" />
+                <span>Wallets &amp; KYC</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="reward"
+                className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
+              >
+                <Gift className="h-4 w-4 shrink-0" />
+                <span>Rewards</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="rank"
+                className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
+              >
+                <Trophy className="h-4 w-4 shrink-0" />
+                <span>9 Ranks</span>
+              </TabsTrigger>
+            </TabsList>
 
-          {/* ══════════════════════════════════════════════════════════════
-              TAB 1: MEMBER PLAN & PACKAGES OVERVIEW
-             ══════════════════════════════════════════════════════════════ */}
-          <TabsContent value="overview" className="mt-8 space-y-10">
-            {/* Packages Comparison */}
-            <div>
-              <div className="text-center max-w-2xl mx-auto mb-8">
-                <h2 className="text-2xl sm:text-3xl font-black">Membership Package Options</h2>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-2">
-                  Choose between standard shopping or unlock all affiliate and multi-generation earnings with our Premium membership.
-                </p>
-              </div>
+            <TabsContent value="overview" className="mt-8 space-y-10">
+              {renderOverviewContent()}
+            </TabsContent>
+            <TabsContent value="generation" className="mt-8 space-y-8">
+              {renderGenerationContent()}
+            </TabsContent>
+            <TabsContent value="profile" className="mt-8 space-y-8">
+              {renderProfileContent()}
+            </TabsContent>
+            <TabsContent value="reward" className="mt-8 space-y-8">
+              {renderRewardContent()}
+            </TabsContent>
+            <TabsContent value="rank" className="mt-8 space-y-8">
+              {renderRankContent()}
+            </TabsContent>
+          </Tabs>
+        </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                {/* General Member Card */}
-                <Card className="rounded-2xl border border-border shadow-xs hover:border-border/80 transition-all flex flex-col justify-between">
-                  <div>
-                    <CardHeader className="pb-4">
-                      <Badge variant="secondary" className="w-fit mb-2">Free Account</Badge>
-                      <CardTitle className="text-2xl font-black">General Member</CardTitle>
-                      <CardDescription>Ideal for everyday shoppers and retail customers</CardDescription>
-                      <div className="text-3xl font-black text-foreground mt-4">৳0 <span className="text-xs font-normal text-muted-foreground">/ Lifetime</span></div>
-                    </CardHeader>
-                    <CardContent className="space-y-3 pt-2">
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Free registration with basic profile
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Browse &amp; purchase original products
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Order tracking and invoice history
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm text-muted-foreground opacity-60">
-                        <span className="h-4 w-4 rounded-full border border-muted-foreground flex items-center justify-center text-[10px] shrink-0">✕</span> No MLM Commission Rights
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm text-muted-foreground opacity-60">
-                        <span className="h-4 w-4 rounded-full border border-muted-foreground flex items-center justify-center text-[10px] shrink-0">✕</span> No Seba Health Card Privileges
-                      </div>
-                    </CardContent>
-                  </div>
-                  <div className="p-6 pt-0">
-                    <Link href="/register" className="block w-full">
-                      <Button variant="outline" className="w-full rounded-xl font-bold">Register Free</Button>
-                    </Link>
-                  </div>
-                </Card>
+        {/* MOBILE ONLY: Sequential Sections (One after another - No tabs) */}
+        <div className="block md:hidden space-y-10">
+          {/* Section 1: Member Plan */}
+          <section id="mobile-overview">
+            {renderOverviewContent()}
+          </section>
 
-                {/* Premium Member Card */}
-                <Card className="rounded-2xl border-2 border-primary shadow-xl bg-gradient-to-b from-primary/5 via-card to-card flex flex-col justify-between relative overflow-hidden">
-                  <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-black uppercase px-3 py-1 rounded-bl-xl tracking-wider">
-                    Recommended
-                  </div>
-                  <div>
-                    <CardHeader className="pb-4">
-                      <Badge className="w-fit mb-2 bg-primary/20 text-primary hover:bg-primary/25 border-primary/30">Active MLM Tier</Badge>
-                      <CardTitle className="text-2xl font-black text-foreground">Premium Member</CardTitle>
-                      <CardDescription>Full access to multi-tier earnings and healthcare benefits</CardDescription>
-                      <div className="text-3xl font-black text-primary mt-4">৳1,500 <span className="text-xs font-normal text-muted-foreground">/ One-Time</span></div>
-                    </CardHeader>
-                    <CardContent className="space-y-3 pt-2">
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> High-Value Herbal Products Included
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> 15% (৳225) Direct Sponsor Commission
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> Full 10-Generation Downline Matrix Eligibility
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> Digital Seba Card (Hospital &amp; Doctor Discounts)
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> Auto-Profit Matrix Tier Participation (10 Tiers)
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-foreground">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> Rank Advancement &amp; Executive Milestone Gifts
-                      </div>
-                    </CardContent>
-                  </div>
-                  <div className="p-6 pt-0">
-                    <Link href="/register" className="block w-full">
-                      <Button className="w-full rounded-xl font-bold shadow-md shadow-primary/25">Activate Package Now</Button>
-                    </Link>
-                  </div>
-                </Card>
-              </div>
-            </div>
+          {/* Section 2: Generation */}
+          <section id="mobile-generation" className="border-t border-border/60 pt-8">
+            {renderGenerationContent()}
+          </section>
 
-            {/* 55% Transparent Allocation Breakdown */}
-            <Card className="rounded-2xl border border-border shadow-xs overflow-hidden">
-              <CardHeader className="bg-muted/40 border-b border-border/50 pb-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div>
-                    <CardTitle className="text-lg sm:text-xl font-black">1,500 BDT Package Fund Distribution (55% Allocation)</CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">
-                      Transparent split: ৳825 (55%) distributed to members &amp; welfare funds, ৳675 (45%) allocated for product cost &amp; operational infrastructure.
-                    </CardDescription>
-                  </div>
-                  <Badge variant="outline" className="w-fit font-mono font-bold text-primary border-primary/40 bg-primary/5">
-                    Total Pool: ৳825.00
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm">
-                    <thead className="bg-muted/30 text-muted-foreground uppercase text-[11px] font-bold border-b border-border/40">
-                      <tr>
-                        <th className="py-3 px-4">Fund Name</th>
-                        <th className="py-3 px-4">Percentage</th>
-                        <th className="py-3 px-4">Amount</th>
-                        <th className="py-3 px-4 hidden md:table-cell">Purpose &amp; Description</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/40">
-                      {fundDistribution.map((fund, idx) => (
-                        <tr key={idx} className="hover:bg-muted/20 transition-colors">
-                          <td className="py-3 px-4 font-bold text-foreground">{fund.name}</td>
-                          <td className="py-3 px-4 font-mono font-semibold text-primary">{fund.pct}</td>
-                          <td className="py-3 px-4 font-mono font-bold text-emerald-600">{fund.bdt}</td>
-                          <td className="py-3 px-4 text-muted-foreground hidden md:table-cell">{fund.desc}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          {/* Section 3: Wallets & KYC */}
+          <section id="mobile-profile" className="border-t border-border/60 pt-8">
+            {renderProfileContent()}
+          </section>
 
-          {/* ══════════════════════════════════════════════════════════════
-              TAB 2: GENERATION SYSTEM (10-GENERATION MLM MATRIX)
-             ══════════════════════════════════════════════════════════════ */}
-          <TabsContent value="generation" className="mt-8 space-y-8">
-            <div className="text-center max-w-2xl mx-auto">
-              <h2 className="text-2xl sm:text-3xl font-black">10-Generation Downline Matrix</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-2">
-                A 7% pool (৳105 BDT per activation) is split across 10 upline generations. With our 6-hand placement structure, spillover helps your team grow exponentially.
-              </p>
-            </div>
+          {/* Section 4: Rewards */}
+          <section id="mobile-reward" className="border-t border-border/60 pt-8">
+            {renderRewardContent()}
+          </section>
 
-            {/* Matrix Feature Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Card className="rounded-2xl p-5 border border-border shadow-xs">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold mb-3">
-                  <Network className="h-5 w-5" />
-                </div>
-                <div className="text-base font-bold">6-Hand Placement</div>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Each leader can sponsor direct hands from Hand 1 to Hand 6. Excess members spill over to downlines, creating massive teamwork.
-                </p>
-              </Card>
-
-              <Card className="rounded-2xl p-5 border border-border shadow-xs">
-                <div className="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold mb-3">
-                  <DollarSign className="h-5 w-5" />
-                </div>
-                <div className="text-base font-bold">Instant Payouts</div>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  The exact generation commission is instantly deposited into your Bonus Wallet the moment any downline member activates.
-                </p>
-              </Card>
-
-              <Card className="rounded-2xl p-5 border border-border shadow-xs">
-                <div className="h-10 w-10 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center font-bold mb-3">
-                  <Layers className="h-5 w-5" />
-                </div>
-                <div className="text-base font-bold">10-Level Depth</div>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Earn from your direct partners (Gen 1) down to the 10th generation level without tricky flushing or unachievable hurdles.
-                </p>
-              </Card>
-            </div>
-
-            {/* 10 Generation Table */}
-            <Card className="rounded-2xl border border-border shadow-xs overflow-hidden">
-              <CardHeader className="bg-muted/40 border-b border-border/50 pb-4">
-                <CardTitle className="text-base sm:text-lg font-black">Generational Commission Split &amp; Duplication Model</CardTitle>
-                <CardDescription className="text-xs">
-                  Theoretical earning potential assuming a standard 6 × 6 duplication matrix across all 10 generation tiers.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm">
-                    <thead className="bg-muted/30 text-muted-foreground uppercase text-[11px] font-bold border-b border-border/40">
-                      <tr>
-                        <th className="py-3 px-4">Tier Level</th>
-                        <th className="py-3 px-4">Pool Share</th>
-                        <th className="py-3 px-4">Payout / Activation</th>
-                        <th className="py-3 px-4">Team Count (6x6)</th>
-                        <th className="py-3 px-4 text-right">Potential Tier Earnings</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/40 font-mono">
-                      {generationData.map((gen) => (
-                        <tr key={gen.level} className="hover:bg-muted/20 transition-colors">
-                          <td className="py-3 px-4 font-sans font-bold text-foreground">
-                            Generation {gen.level} {gen.level === 1 && <span className="text-[10px] text-primary ml-1 font-normal">(Direct)</span>}
-                          </td>
-                          <td className="py-3 px-4 font-bold text-primary">{gen.percent}</td>
-                          <td className="py-3 px-4 font-bold text-emerald-600">{gen.amount}</td>
-                          <td className="py-3 px-4 text-muted-foreground">{gen.teamExample} members</td>
-                          <td className="py-3 px-4 font-bold text-right text-foreground">{gen.earningsExample}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* ══════════════════════════════════════════════════════════════
-              TAB 3: PROFILE & WALLET SYSTEM
-             ══════════════════════════════════════════════════════════════ */}
-          <TabsContent value="profile" className="mt-8 space-y-8">
-            <div className="text-center max-w-2xl mx-auto">
-              <h2 className="text-2xl sm:text-3xl font-black">Profile, Security &amp; 3-Wallet Architecture</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-2">
-                Manage your funds securely with transparent ledger tracking, verified identity safeguards, and member healthcare privileges.
-              </p>
-            </div>
-
-            {/* 3 Wallets Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Deposit Wallet */}
-              <Card className="rounded-2xl border border-border shadow-xs hover:border-primary/50 transition-all">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-2">
-                    <Wallet className="h-6 w-6" />
-                  </div>
-                  <CardTitle className="text-xl font-bold">Deposit Wallet</CardTitle>
-                  <CardDescription className="text-xs">Your self-funded transaction balance</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2.5 text-xs text-muted-foreground">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
-                    <span>Load funds using bKash, Nagad, Rocket, or Direct Bank Transfer.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
-                    <span>Use to activate your ৳1,500 Premium Membership or purchase store goods.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
-                    <span>Instant automatic verification via transaction ID (TrxID).</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Bonus Wallet */}
-              <Card className="rounded-2xl border-2 border-emerald-500/30 shadow-md bg-emerald-50/10 dark:bg-emerald-950/10">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-2">
-                    <DollarSign className="h-6 w-6" />
-                  </div>
-                  <CardTitle className="text-xl font-bold">Bonus Wallet</CardTitle>
-                  <CardDescription className="text-xs">Accumulated earnings &amp; rewards</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2.5 text-xs text-muted-foreground">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
-                    <span>Direct Sponsor Bonuses (৳225/referral) deposited immediately.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
-                    <span>10-Generation downline matching commissions automatically credited.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
-                    <span>Auto Profit Club matrix tier payouts and rank promotion cash bonuses.</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Withdrawal Wallet */}
-              <Card className="rounded-2xl border border-border shadow-xs hover:border-primary/50 transition-all">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-2">
-                    <CreditCard className="h-6 w-6" />
-                  </div>
-                  <CardTitle className="text-xl font-bold">Withdrawal Gateway</CardTitle>
-                  <CardDescription className="text-xs">Cash out your earnings anytime</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2.5 text-xs text-muted-foreground">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                    <span>Request payouts directly to your personal bKash, Nagad, Rocket or Bank.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                    <span>Fast payout processing with complete audit trail and status alerts.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                    <span>Requires verified KYC for account safety and anti-fraud protection.</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Profile Privileges & Seba Card */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-              {/* Digital Seba Card */}
-              <Card className="rounded-2xl border border-border p-6 shadow-xs bg-gradient-to-br from-card to-muted/20">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-3 bg-red-500/10 text-red-600 rounded-xl">
-                    <Stethoscope className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold">Digital Seba Health Card</h3>
-                    <p className="text-xs text-muted-foreground">Medical healthcare protection for active members</p>
-                  </div>
-                </div>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                  Every active member qualifies for the ABS Digital Seba Card. Cardholders receive free monthly online MBBS consultations, up to 50% discount on blood and diagnostic tests at partner pathology labs, and emergency helpline coverage.
-                </p>
-              </Card>
-
-              {/* KYC & Identity Protection */}
-              <Card className="rounded-2xl border border-border p-6 shadow-xs bg-gradient-to-br from-card to-muted/20">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-3 bg-primary/10 text-primary rounded-xl">
-                    <UserCheck className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold">KYC &amp; NID Verification</h3>
-                    <p className="text-xs text-muted-foreground">Institutional-grade identity verification</p>
-                  </div>
-                </div>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                  To safeguard member earnings and comply with financial standards, members submit National ID (NID) photos. Once approved by administration, members enjoy instant, seamless withdrawals and permanent team ownership.
-                </p>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* ══════════════════════════════════════════════════════════════
-              TAB 4: REWARD SYSTEM & AUTO PROFIT MATRIX
-             ══════════════════════════════════════════════════════════════ */}
-          <TabsContent value="reward" className="mt-8 space-y-8">
-            <div className="text-center max-w-2xl mx-auto">
-              <h2 className="text-2xl sm:text-3xl font-black">Reward System &amp; Auto Profit Club</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-2">
-                Experience non-stop incentives. From our 10-Tier automated pool to international tours and luxury gifts, ABS International celebrates your every milestone.
-              </p>
-            </div>
-
-            {/* Auto Profit Matrix */}
-            <Card className="rounded-2xl border border-border shadow-xs overflow-hidden">
-              <CardHeader className="bg-muted/40 border-b border-border/50 pb-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div>
-                    <CardTitle className="text-lg font-black flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-amber-500" /> 10-Tier Auto Profit Club Matrix
-                    </CardTitle>
-                    <CardDescription className="text-xs">
-                      Every activation in ABS International contributes ৳52.50 into the Auto Profit pool, cycling members through 10 reward tiers.
-                    </CardDescription>
-                  </div>
-                  <Badge className="w-fit bg-amber-500/10 text-amber-600 border-amber-500/30 font-bold font-mono">
-                    ৳52.50 / Member Contribution
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                  {autoProfitTiers.map((tier) => (
-                    <div key={tier.tier} className="p-4 rounded-xl border border-border/60 bg-muted/20 text-center hover:border-primary/40 transition-colors">
-                      <Badge variant="secondary" className="text-[10px] mb-2">{tier.badge}</Badge>
-                      <div className="text-base sm:text-lg font-black text-foreground font-mono">{tier.payout}</div>
-                      <div className="text-[10px] text-muted-foreground mt-0.5">Tier Payout</div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Milestone Lifestyle Rewards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="p-5 rounded-2xl border border-border shadow-xs text-center flex flex-col items-center">
-                <div className="h-12 w-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-3">
-                  <Smartphone className="h-6 w-6" />
-                </div>
-                <h4 className="font-bold text-sm">Smart Gadgets</h4>
-                <p className="text-xs text-muted-foreground mt-1">Branded Android smartphones awarded to qualified Gold Managers.</p>
-              </Card>
-
-              <Card className="p-5 rounded-2xl border border-border shadow-xs text-center flex flex-col items-center">
-                <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-3">
-                  <Plane className="h-6 w-6" />
-                </div>
-                <h4 className="font-bold text-sm">Luxury Travel Tours</h4>
-                <p className="text-xs text-muted-foreground mt-1">Fully paid Cox’s Bazar and international executive tours for Diamond &amp; Crown ranks.</p>
-              </Card>
-
-              <Card className="p-5 rounded-2xl border border-border shadow-xs text-center flex flex-col items-center">
-                <div className="h-12 w-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center mb-3">
-                  <Car className="h-6 w-6" />
-                </div>
-                <h4 className="font-bold text-sm">Motorbike &amp; Luxury Car</h4>
-                <p className="text-xs text-muted-foreground mt-1">Brand new motorbikes and executive private cars for top leadership milestones.</p>
-              </Card>
-
-              <Card className="p-5 rounded-2xl border border-border shadow-xs text-center flex flex-col items-center">
-                <div className="h-12 w-12 rounded-2xl bg-purple-500/10 text-purple-600 flex items-center justify-center mb-3">
-                  <Home className="h-6 w-6" />
-                </div>
-                <h4 className="font-bold text-sm">1 Crore Asset Flat</h4>
-                <p className="text-xs text-muted-foreground mt-1">1 Crore BDT Flat asset award and lifetime profit equity for Company Directors.</p>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* ══════════════════════════════════════════════════════════════
-              TAB 5: LEADERSHIP RANK SYSTEM
-             ══════════════════════════════════════════════════════════════ */}
-          <TabsContent value="rank" className="mt-8 space-y-8">
-            <div className="text-center max-w-2xl mx-auto">
-              <h2 className="text-2xl sm:text-3xl font-black">9 Leadership Rank Progression</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-2">
-                Climb our structured leadership hierarchy by qualifying direct leaders in your 6-hand network. Each promotion unlocks immediate cash bonuses and executive honors.
-              </p>
-            </div>
-
-            {/* Ranks Cards List */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {ranks.map((rank, i) => (
-                <Card key={rank.id} className="rounded-2xl border border-border shadow-xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
-                  <div>
-                    <div className="p-5 border-b border-border/50 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-muted/60">{rank.icon}</div>
-                        <div>
-                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Level {i + 1}</span>
-                          <h3 className="text-base font-black text-foreground">{rank.title}</h3>
-                        </div>
-                      </div>
-                      <Badge variant="outline" className={`text-[10px] font-bold ${rank.badgeColor}`}>
-                        {rank.cashBonus !== '৳0' ? rank.cashBonus : 'Entry'}
-                      </Badge>
-                    </div>
-
-                    <div className="p-5 space-y-3 text-xs">
-                      <div>
-                        <span className="text-muted-foreground block text-[11px] font-semibold uppercase">Qualification Criteria:</span>
-                        <span className="font-bold text-foreground mt-0.5 block">{rank.req}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground block text-[11px] font-semibold uppercase">Required Active Directs:</span>
-                        <span className="font-mono font-bold text-primary mt-0.5 block">{rank.downlines}</span>
-                      </div>
-                      <div className="pt-2 border-t border-border/40">
-                        <span className="text-muted-foreground block text-[11px] font-semibold uppercase">Award &amp; Privileges:</span>
-                        <span className="text-foreground font-medium mt-0.5 block">{rank.reward}</span>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+          {/* Section 5: 9 Leadership Ranks */}
+          <section id="mobile-rank" className="border-t border-border/60 pt-8">
+            {renderRankContent()}
+          </section>
+        </div>
       </section>
 
       {/* ─── Frequently Asked Questions ────────────────────────────────── */}
