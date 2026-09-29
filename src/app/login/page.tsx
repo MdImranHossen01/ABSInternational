@@ -1,54 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
-
-import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { Logo } from '@/components/ui/logo';
-
-const loginSchema = z.object({
-  email: z.string().min(1, { message: 'Email or phone number is required' }).refine(
-    (val) => {
-      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
-      const isPhone = /^[0-9]{11,}$/.test(val);
-      return isEmail || isPhone;
-    },
-    { message: 'Please enter a valid email or phone number' }
-  ),
-  password: z.string().optional().or(z.literal('')),
-});
+import { CosmicAuthBackground } from '@/components/layout/CosmicAuthBackground';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
   const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Redirect if already authenticated based on role
   useEffect(() => {
@@ -62,209 +32,167 @@ export default function LoginPage() {
     }
   }, [status, session, router]);
 
-  async function loginWithGoogle() {
-    setIsGoogleLoading(true);
-    try {
-      await signIn('google', { callbackUrl: '/login' });
-    } catch (error) {
-      setIsGoogleLoading(false);
-      toast.error('Failed to log in with Google.');
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!identifier.trim()) {
+      toast.error('Please enter your email, username, or phone number.');
+      return;
     }
-  }
 
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
+    if (!password) {
+      toast.error('Please enter your password.');
+      return;
+    }
 
-  async function onSubmit(values: z.infer<typeof loginSchema>) {
     setIsLoading(true);
     try {
       const response = await signIn('credentials', {
-        email: values.email,
-        password: values.password || '',
+        email: identifier.trim(),
+        password: password,
         redirect: false,
       });
 
       if (response?.error) {
-        toast.error('Invalid email/phone or password. Please try again.');
+        toast.error('Invalid credentials. Please check your username/email and password.');
       } else {
-        toast.success('Logged in successfully!');
-        window.location.replace('/dashboard');
+        toast.success('Signed in successfully!');
+        const callbackUrl = searchParams.get('callbackUrl');
+        if (callbackUrl && !callbackUrl.includes('/login')) {
+          window.location.replace(callbackUrl);
+        } else {
+          window.location.replace('/dashboard');
+        }
       }
-    } catch (error) {
-      toast.error('Something went wrong. Please try again.');
+    } catch (error: any) {
+      toast.error(error.message || 'Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <main className="relative min-h-screen">
-      {/* Login Form centered */}
-      <div className="flex flex-col p-6 md:p-10 bg-background min-h-screen items-center justify-center w-full">
-        <div className="flex justify-center mb-8">
-          <Logo />
+    <div className="min-h-screen relative flex flex-col text-slate-100 overflow-x-hidden">
+      {/* Background Graphic Elements */}
+      <CosmicAuthBackground />
+
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col items-center px-4 pt-10 pb-24 md:pt-14 md:pb-32">
+        {/* Brand Logo Centered */}
+        <div className="flex justify-center mb-4 md:mb-8">
+          <Logo
+            className="gap-3 md:gap-4"
+            imageClassName="size-12 sm:size-14 md:size-16"
+            textClassName="text-xl sm:text-2xl md:text-3xl font-black text-amber-400 tracking-wider whitespace-nowrap"
+            sizes="(max-width: 768px) 48px, 64px"
+          />
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-1 items-center justify-center"
-        >
-          <div className="w-full max-w-sm space-y-8">
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
-              <p className="text-sm text-muted-foreground">
-                Enter your credentials to access your account
-              </p>
-            </div>
+        {/* Page Title: Metallic Gold LOGIN with generous top & bottom gaps */}
+        <div className="text-center mt-10 mb-14 md:mt-16 md:mb-24 lg:mt-20 lg:mb-28">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-[0.18em] uppercase bg-gradient-to-b from-[#ffea9f] via-[#dfb248] to-[#9e7623] bg-clip-text text-transparent drop-shadow-[0_4px_25px_rgba(223,178,72,0.35)]">
+            LOGIN
+          </h1>
+        </div>
 
-            <div className="grid gap-4">
-              <Button
-                variant="outline"
-                className="w-full h-11 transition-all hover:bg-muted/50 hover:border-primary/50 group"
-                onClick={loginWithGoogle}
-                disabled={isGoogleLoading || isLoading}
-              >
-                {isGoogleLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <svg
-                    className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 488 512"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
-                    ></path>
-                  </svg>
-                )}
-                Continue with Google
-              </Button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-muted" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-4 text-muted-foreground">
-                    email or phone
-                  </span>
-                </div>
+        {/* Gold Bordered Container Card */}
+        <div className="w-full max-w-xl bg-[#12141a]/95 backdrop-blur-md border-2 border-[#dfb248] rounded-2xl p-6 sm:p-8 md:p-10 shadow-[0_0_35px_rgba(223,178,72,0.12)]">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
+            {/* Field 1: Your Email Or Username */}
+            <div>
+              <label className="block text-xs md:text-sm font-bold text-[#dfb248] uppercase tracking-wider mb-2">
+                Your Email Or Username
+              </label>
+              <div className="relative flex items-center bg-[#07080c] border border-neutral-800 rounded-xl px-4 py-3.5 focus-within:border-[#dfb248] transition-all">
+                <Mail className="size-5 text-[#dfb248] mr-3 shrink-0" />
+                <input
+                  type="text"
+                  required
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder="Email Or Username"
+                  className="w-full bg-transparent text-white placeholder:text-neutral-500 text-sm md:text-base outline-none font-medium"
+                />
               </div>
-
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email or Phone Number</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="email@example.com or 017xxxxxxxx"
-                            type="text"
-                            {...field}
-                            disabled={isLoading || isGoogleLoading}
-                            className="h-11 focus-visible:ring-primary/20"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center justify-between">
-                          <FormLabel>Password</FormLabel>
-                          <Link
-                            href="/forgot-password"
-                            className="text-sm font-medium text-foreground/80 hover:text-primary hover:underline underline-offset-4 transition-colors"
-                          >
-                            Forgot password?
-                          </Link>
-                        </div>
-                        <FormControl>
-                          <div className="relative">
-                            <Input
-                              placeholder="••••••••"
-                              type={showPassword ? "text" : "password"}
-                              {...field}
-                              disabled={isLoading || isGoogleLoading}
-                              className="h-11 focus-visible:ring-primary/20 pr-10"
-                            />
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-0 top-0 h-11 w-11 text-muted-foreground hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-r-lg outline-none flex items-center justify-center"
-                                    disabled={isLoading || isGoogleLoading}
-                                    aria-label={showPassword ? "Hide password" : "Show password"}
-                                  >
-                                    {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
-                                  </button>
-                                </TooltipTrigger>
-                                <TooltipContent side="top">
-                                  <p>{showPassword ? "Hide password" : "Show password"}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    className="w-full h-11 text-base font-semibold transition-all hover:scale-[1.01] active:scale-[0.99]"
-                    disabled={isLoading || isGoogleLoading}
-                  >
-                    {isLoading ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <span className="flex items-center justify-center">
-                        Sign In <ArrowRight className="ml-2 h-4 w-4" />
-                      </span>
-                    )}
-                  </Button>
-                </form>
-              </Form>
             </div>
 
-            <div className="text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{' '}
-              <Link href="/register" className="font-bold text-foreground/90 hover:text-primary hover:underline underline-offset-4 transition-colors">
-                Create an account
-              </Link>
+            {/* Field 2: Your Password & Forget Password */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs md:text-sm font-bold text-[#dfb248] uppercase tracking-wider">
+                  Your Password
+                </label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs md:text-sm font-bold text-[#dfb248] hover:text-amber-200 transition-colors uppercase tracking-wide"
+                >
+                  Forget Password?
+                </Link>
+              </div>
+              <div className="relative flex items-center bg-[#07080c] border border-neutral-800 rounded-xl px-4 py-3.5 focus-within:border-[#dfb248] transition-all">
+                <Lock className="size-5 text-[#dfb248] mr-3 shrink-0" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className="w-full bg-transparent text-white placeholder:text-neutral-500 text-sm md:text-base outline-none pr-8"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 text-neutral-400 hover:text-amber-400 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
             </div>
-          </div>
-        </motion.div>
 
-        <div className="mt-auto pt-6 text-center text-xs text-muted-foreground">
-          By clicking continue, you agree to our{' '}
-          <Link href="/terms" className="underline underline-offset-4 hover:text-primary">
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link href="/privacy" className="underline underline-offset-4 hover:text-primary">
-            Privacy Policy
-          </Link>.
+            {/* Row 3: Remember Me & New User Register */}
+            <div className="flex items-center justify-between pt-1">
+              <label className="flex items-center gap-2 cursor-pointer select-none text-xs md:text-sm font-bold text-[#dfb248] tracking-wider uppercase">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="size-4 rounded border-neutral-700 text-[#dfb248] focus:ring-[#dfb248] bg-[#07080c] accent-[#dfb248]"
+                />
+                REMEMBER ME
+              </label>
+
+              <div className="text-xs md:text-sm font-bold tracking-wider uppercase text-neutral-400">
+                NEW USER?{' '}
+                <Link
+                  href="/register"
+                  className="text-[#dfb248] hover:text-amber-200 font-extrabold underline-offset-4 hover:underline transition-colors"
+                >
+                  REGISTER
+                </Link>
+              </div>
+            </div>
+
+            {/* Submit Button: Full-Width Golden Metallic SIGN IN */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-4 rounded-full font-black text-sm md:text-base uppercase tracking-widest text-black bg-gradient-to-r from-[#dfb248] via-[#fae69e] to-[#c29633] hover:brightness-110 active:scale-[0.99] transition-all shadow-[0_4px_25px_rgba(223,178,72,0.35)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    SIGNING IN...
+                  </>
+                ) : (
+                  'SIGN IN'
+                )}
+              </button>
+            </div>
+          </form>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

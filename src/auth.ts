@@ -21,13 +21,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         const inputIdentifier = (typeof credentials?.email === 'string' ? credentials.email : '').trim();
         if (!inputIdentifier) {
-          throw new Error('Please provide email or phone number.');
+          throw new Error('Please provide email, username, or phone number.');
         }
 
         const isEmail = inputIdentifier.includes('@');
-        const query = isEmail 
-          ? { email: inputIdentifier.toLowerCase() } 
-          : { phone: normalizePhoneNumber(inputIdentifier) };
+        let query: any;
+        if (isEmail) {
+          query = { email: inputIdentifier.toLowerCase() };
+        } else {
+          const normalizedPhone = normalizePhoneNumber(inputIdentifier);
+          query = {
+            $or: [
+              { username: inputIdentifier.toLowerCase() },
+              { memberId: inputIdentifier.toUpperCase() },
+              { phone: normalizedPhone },
+              { phone: inputIdentifier }
+            ]
+          };
+        }
 
         await connectToDatabase();
         const user = await User.findOne(query).select('+password');

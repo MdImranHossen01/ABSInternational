@@ -510,56 +510,6 @@ export default function Navbar() {
           </ul>
         </div>
       </nav>
-
-      {/* ── Floating Right Side Center Widget (Cart & Wishlist) ── */}
-      <div className="fixed right-3 sm:right-4 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2.5 items-center">
-        {/* Floating Cart Button */}
-        <CartDrawer>
-          <button
-            type="button"
-            className="flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/30 hover:scale-110 active:scale-95 transition-all cursor-pointer relative group border-2 border-white/20 dark:border-slate-800"
-            aria-label="Shopping Cart"
-          >
-            <div className="relative">
-              <ShoppingCart className="h-5 w-5 stroke-[2] transition-transform group-hover:scale-110" />
-              {mounted && cartCount > 0 && (
-                <span className="absolute -top-2.5 -right-2.5 h-4 min-w-4 px-1 bg-amber-400 text-slate-950 text-[9px] font-black rounded-full flex items-center justify-center shadow-md animate-in zoom-in">
-                  {cartCount}
-                </span>
-              )}
-            </div>
-            {mounted && totalAmount > 0 && (
-              <span className="text-[10px] font-black leading-none mt-1 tracking-tight">
-                ৳{totalAmount.toLocaleString()}
-              </span>
-            )}
-            <span className="sr-only">Cart</span>
-          </button>
-        </CartDrawer>
-
-        {/* Floating Wishlist Button */}
-        <Link
-          href="/dashboard/wishlist"
-          className="flex items-center justify-center p-2.5 sm:p-3 rounded-2xl bg-background/95 backdrop-blur-md text-foreground border border-border/80 shadow-lg hover:shadow-xl hover:text-rose-500 hover:border-rose-300 dark:hover:border-rose-800 hover:scale-110 active:scale-95 transition-all relative group"
-          aria-label="Wishlist"
-          onClick={(e) => {
-            if (status !== 'authenticated') {
-              e.preventDefault();
-              toast.error('Please login to view your wishlist');
-            }
-          }}
-        >
-          <div className="relative">
-            <Heart className="h-5 w-5 stroke-[2] transition-transform group-hover:scale-110 group-hover:fill-rose-500 group-hover:text-rose-500" />
-            {wishlistItems.length > 0 && (
-              <span className="absolute -top-2.5 -right-2.5 h-4 min-w-4 px-1 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm animate-in zoom-in">
-                {wishlistItems.length}
-              </span>
-            )}
-          </div>
-          <span className="sr-only">Wishlist</span>
-        </Link>
-      </div>
     </>
   );
 }

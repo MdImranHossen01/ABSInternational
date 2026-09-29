@@ -15,8 +15,13 @@ export interface IUser extends Document {
   isSubscriptionActive: boolean;
   walletBalance: number;
   // MLM Fields
+  username?: string;
+  firstName?: string;
+  lastName?: string;
   memberId: string;
   sponsorId?: string;
+  placementId?: string;
+  placementPosition?: number;
   rank: 'Premium Member' | 'Team Manager' | 'Royal Manager' | 'Silver Manager' | 'Gold Manager' | 'Diamond Manager' | 'Crown Manager' | 'Director' | 'user';
   transactionPin?: string;
   depositWallet: number;
@@ -85,8 +90,13 @@ const UserSchema: Schema<IUser> = new Schema(
     isSubscriptionActive: { type: Boolean, default: false },
     walletBalance: { type: Number, default: 0, min: 0 },
     // MLM fields in schema
+    username: { type: String, unique: true, sparse: true, trim: true, lowercase: true },
+    firstName: { type: String, trim: true },
+    lastName: { type: String, trim: true },
     memberId: { type: String, unique: true, sparse: true },
     sponsorId: { type: String, index: true },
+    placementId: { type: String, index: true, trim: true },
+    placementPosition: { type: Number, min: 1, max: 6 },
     rank: { 
       type: String, 
       enum: ['Premium Member', 'Team Manager', 'Royal Manager', 'Silver Manager', 'Gold Manager', 'Diamond Manager', 'Crown Manager', 'Director', 'user'], 
@@ -144,6 +154,8 @@ const UserSchema: Schema<IUser> = new Schema(
   },
   { timestamps: true }
 );
+
+UserSchema.index({ placementId: 1, placementPosition: 1 }, { sparse: true });
 
 UserSchema.pre('save', async function () {
   if (!this.isModified('password') || !this.password) return;
