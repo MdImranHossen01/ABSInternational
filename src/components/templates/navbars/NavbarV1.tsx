@@ -4,8 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
-  ShoppingCart,
-  Heart,
+
   User,
   Search,
   Menu,
@@ -17,7 +16,8 @@ import {
   Package,
   Truck,
   LogIn,
-  UserPlus
+  UserPlus,
+  X,
 } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import { toast } from 'sonner';
@@ -25,7 +25,6 @@ import Image from 'next/image';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ModeToggle } from '@/components/mode-toggle';
 import { useAppSelector } from '@/store/hooks';
-import { CartDrawer } from '@/components/layout/CartDrawer';
 import { Logo } from '@/components/ui/logo';
 import { useSettings } from '@/components/SettingsProvider';
 
@@ -240,19 +239,36 @@ export default function Navbar() {
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle mobile menu</span>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[300px]">
-                  <nav className="flex flex-col gap-6 mt-12 px-2">
-                    <Logo onClick={() => setOpen(false)} />
-                    <div className="space-y-4 pt-6 border-t font-medium tracking-tight">
+                <SheetContent side="left" showCloseButton={false} className="w-[280px] p-0 gap-0">
+                  {/* Header Logo & Mobile Close (matches Personal Dashboard) */}
+                  <div className="border-b h-14 px-3 flex flex-row items-center justify-between overflow-hidden shrink-0">
+                    <Link href="/" onClick={() => setOpen(false)} className="flex items-center">
+                      <Logo
+                        imageClassName="size-6 shrink-0"
+                        textClassName="text-sm font-black tracking-tight whitespace-nowrap leading-none"
+                      />
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => setOpen(false)}
+                      className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
+                      aria-label="Close menu"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  <nav className="flex flex-col py-3 px-2 overflow-y-auto">
+                    <div className="space-y-1 font-medium tracking-tight">
                       {navItems.map((item) => {
                         const isActive = pathname === item.href;
                         return (
                           <React.Fragment key={item.href}>
                             <Link
                               href={item.href}
-                              className={`block px-4 py-2 rounded-xl transition-all ${isActive
-                                ? 'bg-primary text-white font-bold shadow-lg shadow-primary/20'
-                                : 'hover:text-primary font-medium'
+                              className={`block px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${isActive
+                                ? 'bg-primary text-white font-bold shadow-sm shadow-primary/20'
+                                : 'text-foreground/80 hover:text-primary hover:bg-muted/60'
                                 }`}
                               onClick={() => setOpen(false)}
                             >
@@ -285,11 +301,10 @@ export default function Navbar() {
                     <li key={item.href}>
                       <Link
                         href={item.href}
-                        className={`text-[11px] lg:text-xs font-semibold uppercase tracking-wide transition-all px-2 py-1 rounded-full whitespace-nowrap ${
-                          isActive
-                            ? 'bg-primary text-white shadow-sm shadow-primary/20'
-                            : 'text-foreground/75 hover:text-primary hover:bg-accent/50'
-                        }`}
+                        className={`text-[11px] lg:text-xs font-semibold uppercase tracking-wide transition-all px-2 py-1 rounded-full whitespace-nowrap ${isActive
+                          ? 'bg-primary text-white shadow-sm shadow-primary/20'
+                          : 'text-foreground/75 hover:text-primary hover:bg-accent/50'
+                          }`}
                       >
                         {item.label}
                       </Link>

@@ -9,25 +9,21 @@ import {
   Trophy,
   Users,
   Wallet,
-  TrendingUp,
   Gift,
   CheckCircle2,
   ArrowRight,
   Sparkles,
   Layers,
-  HeartHandshake,
   DollarSign,
   PieChart,
   Network,
   CreditCard,
-  Building,
   UserCheck,
   Stethoscope,
   Plane,
   Car,
   Home,
   Smartphone,
-  ChevronRight,
   HelpCircle,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -180,7 +176,7 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
-      
+
       {/* ─── Hero Section ────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 via-background to-background pt-12 pb-16 md:pt-20 md:pb-24 border-b border-border/40">
         <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
@@ -188,7 +184,7 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
           <Badge variant="outline" className="mb-4 px-4 py-1.5 border-primary/30 text-primary bg-primary/5 text-xs md:text-sm font-semibold tracking-wide uppercase rounded-full">
             ⭐ Official Business &amp; Member Plan
           </Badge>
-          
+
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-foreground">
             Build Long-Term Wealth with{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-primary">

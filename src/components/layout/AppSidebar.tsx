@@ -16,7 +16,8 @@ import {
   Store,
   Mail,
   CreditCard,
-  LifeBuoy
+  LifeBuoy,
+  X,
 } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 
@@ -306,14 +307,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
   const { data: session } = useSession()
   const role = (session?.user as any)?.role
+  const { setOpenMobile, isMobile } = useSidebar()
+
+  const closeMobileSidebar = () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
 
   return (
-    <Sidebar {...props}>
-      <SidebarHeader className="border-b h-14 lg:h-[60px] px-3 flex items-center overflow-hidden">
-        <Logo 
-          imageClassName="size-6 shrink-0" 
-          textClassName="text-sm font-black tracking-tight whitespace-nowrap leading-none" 
-        />
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader className="border-b h-14 lg:h-[60px] px-3 flex flex-row items-center justify-between overflow-hidden">
+        <Link href="/" onClick={closeMobileSidebar} className="flex items-center">
+          <Logo 
+            imageClassName="size-6 shrink-0" 
+            textClassName="text-sm font-black tracking-tight whitespace-nowrap leading-none" 
+          />
+        </Link>
+        <button
+          type="button"
+          onClick={closeMobileSidebar}
+          className="md:hidden p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
+          aria-label="Close sidebar"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </SidebarHeader>
       <SidebarContent className="gap-0">
         <NavMain items={data.navMain} pathname={pathname} role={role} />
