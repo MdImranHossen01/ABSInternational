@@ -11,10 +11,10 @@ export const proxy = auth(async (req) => {
   const role = (req.auth?.user as any)?.role as string | undefined;
 
   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
-  const isAuthRoute = nextUrl.pathname.startsWith("/login") || nextUrl.pathname.startsWith("/register");
+  const isLoginRoute = nextUrl.pathname.startsWith("/login");
 
-  // 1. Redirection for logged-in users on Auth routes (Login/Register)
-  if (isAuthRoute && isLoggedIn) {
+  // 1. Redirection for logged-in users on Login route (allow /register for logged-in users)
+  if (isLoginRoute && isLoggedIn) {
     if (role === "admin" || role === "super_admin" || role === "manager") {
       return NextResponse.redirect(new URL("/admin/dashboard", nextUrl));
     }

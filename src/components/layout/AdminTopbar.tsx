@@ -5,6 +5,8 @@ import {
   User, 
   LogOut,
   UserCheck,
+  Menu,
+  UserPlus,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -27,7 +29,9 @@ export default function AdminTopbar() {
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 justify-between sticky top-0 z-30">
       <div className="flex items-center gap-4">
-        <SidebarTrigger className="md:hidden" />
+        <SidebarTrigger className="md:hidden" aria-label="Open sidebar menu">
+          <Menu className="h-5 w-5" />
+        </SidebarTrigger>
       </div>
       <div className="hidden md:flex flex-1" />
       <div className="flex items-center gap-3">
@@ -75,6 +79,12 @@ export default function AdminTopbar() {
                   <Link href="/dashboard" className="text-primary font-semibold">
                     <UserCheck className="mr-2 h-4 w-4 text-primary" />
                     <span>Personal Dashboard</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/register">
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    <span>Register</span>
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>

@@ -147,6 +147,12 @@ export function MobileNavbar({ navItems, categories }: MobileNavbarProps) {
                       </DropdownMenuItem>
                     </>
                   )}
+
+                  <DropdownMenuItem asChild>
+                    <Link href="/register" className="cursor-pointer">
+                      <UserPlus className="mr-2 h-4 w-4" /> Register
+                    </Link>
+                  </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut({ callbackUrl: window.location.origin })} className="text-destructive cursor-pointer">

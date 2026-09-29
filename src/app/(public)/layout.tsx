@@ -37,7 +37,7 @@ export default async function PublicLayout({ children }: { children: React.React
     <>
       {showBlocker && <SubscriptionBlocker brandName={settings?.brandName || 'ABS International'} />}
       <Navbar style={ui.navbar} />
-      <main className="flex-1 pb-16 md:pb-0">{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer style={ui.footer} />
       <ScrollToTop />
       <MobileBottomNavbar />

@@ -50,15 +50,6 @@ export function CosmicAuthBackground() {
 
       {/* Subtle Vignette overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />
-
-      {/* Decorative Gold Chevrons in bottom right like the screenshot */}
-      <div className="hidden lg:flex fixed bottom-8 right-8 flex-col items-center gap-1 opacity-60 pointer-events-none z-0">
-        <svg width="28" height="24" viewBox="0 0 28 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M14 2L2 12H7L14 6L21 12H26L14 2Z" fill="#dfb248" />
-          <path d="M14 8L2 18H7L14 12L21 18H26L14 8Z" fill="#dfb248" />
-          <path d="M14 14L2 24H7L14 18L21 24H26L14 14Z" fill="#dfb248" />
-        </svg>
-      </div>
     </div>
   );
 }

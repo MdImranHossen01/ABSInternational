@@ -39,6 +39,7 @@ import {
   Lock,
   HelpCircle,
   LogOut,
+  X,
 } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 import {
@@ -53,6 +54,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
 // Sequential items matching client's notebook order
@@ -96,15 +98,39 @@ const serialNavItems = [
 export function UserSidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const { isMobile, setOpenMobile } = useSidebar()
+
+  const closeMobileSidebar = React.useCallback(() => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }, [isMobile, setOpenMobile])
+
+  // Automatically close mobile sidebar when route/pathname changes
+  React.useEffect(() => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }, [pathname, isMobile, setOpenMobile])
 
   return (
     <Sidebar collapsible="icon" className="border-r">
-      {/* Header Logo */}
-      <SidebarHeader className="border-b h-14 lg:h-[60px] px-3 flex items-center overflow-hidden">
-        <Logo 
-          imageClassName="size-6 shrink-0" 
-          textClassName="text-sm font-black tracking-tight whitespace-nowrap leading-none" 
-        />
+      {/* Header Logo & Mobile Close */}
+      <SidebarHeader className="border-b h-14 lg:h-[60px] px-3 flex flex-row items-center justify-between overflow-hidden">
+        <Link href="/" onClick={closeMobileSidebar} className="flex items-center">
+          <Logo 
+            imageClassName="size-6 shrink-0" 
+            textClassName="text-sm font-black tracking-tight whitespace-nowrap leading-none" 
+          />
+        </Link>
+        <button
+          type="button"
+          onClick={closeMobileSidebar}
+          className="md:hidden p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
+          aria-label="Close sidebar"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </SidebarHeader>
 
       {/* Sequential Nav Items */}
@@ -123,7 +149,8 @@ export function UserSidebar() {
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
-                      render={<Link href={item.href} />}
+                      render={<Link href={item.href} onClick={closeMobileSidebar} />}
+                      onClick={closeMobileSidebar}
                       isActive={isActive}
                       tooltip={item.title}
                       className="text-xs font-semibold h-8.5 px-3 rounded-lg transition-colors hover:bg-muted/60"
@@ -146,7 +173,10 @@ export function UserSidebar() {
             <SidebarMenuButton
               tooltip="Logout"
               className="text-destructive hover:bg-destructive/10 hover:text-destructive text-xs font-bold h-9 rounded-lg"
-              onClick={() => signOut({ callbackUrl: window.location.origin })}
+              onClick={() => {
+                closeMobileSidebar()
+                signOut({ callbackUrl: window.location.origin })
+              }}
             >
               <LogOut className="h-4 w-4" />
               <span>Logout</span>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, signOut } from 'next-auth/react';
-import { User, LogOut, Bell, ShieldCheck } from 'lucide-react';
+import { User, LogOut, Bell, ShieldCheck, Menu, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,9 @@ export default function UserTopbar() {
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 justify-between sticky top-0 z-30">
       <div className="flex items-center gap-4">
         {/* Mobile hamburger */}
-        <SidebarTrigger className="md:hidden" />
+        <SidebarTrigger className="md:hidden" aria-label="Open sidebar menu">
+          <Menu className="h-5 w-5" />
+        </SidebarTrigger>
       </div>
 
       {/* Desktop spacer */}
@@ -87,6 +89,12 @@ export default function UserTopbar() {
                   </Link>
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem asChild>
+                <Link href="/register">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  <span>Register</span>
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 variant="destructive"

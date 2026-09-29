@@ -6,9 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Logo } from '@/components/ui/logo';
 import { CosmicAuthBackground } from '@/components/layout/CosmicAuthBackground';
-import Navbar from '@/components/layout/Navbar';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -84,29 +82,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen relative flex flex-col text-slate-100 overflow-x-hidden">
+    <div className="relative flex flex-col text-slate-100 overflow-x-hidden">
       {/* Background Graphic Elements */}
       <CosmicAuthBackground />
 
-      {/* Main Navbar */}
-      <div className="relative z-30 w-full">
-        <Navbar />
-      </div>
-
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col items-center px-4 pt-10 pb-24 md:pt-14 md:pb-32">
-        {/* Brand Logo Centered */}
-        <div className="flex justify-center mb-4 md:mb-8">
-          <Logo
-            className="gap-3 md:gap-4"
-            imageClassName="size-12 sm:size-14 md:size-16"
-            textClassName="text-xl sm:text-2xl md:text-3xl font-black text-amber-400 tracking-wider whitespace-nowrap"
-            sizes="(max-width: 768px) 48px, 64px"
-          />
-        </div>
-
+      <div className="flex-1 flex flex-col items-center px-4 pt-6 pb-6 md:pt-8 md:pb-8 relative z-10">
         {/* Page Title: Metallic Gold LOGIN with generous top & bottom gaps */}
-        <div className="text-center mt-10 mb-14 md:mt-16 md:mb-24 lg:mt-20 lg:mb-28">
+        <div className="text-center mt-4 mb-10 md:mt-8 md:mb-16 lg:mt-12 lg:mb-20">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-[0.18em] uppercase bg-gradient-to-b from-[#ffea9f] via-[#dfb248] to-[#9e7623] bg-clip-text text-transparent drop-shadow-[0_4px_25px_rgba(223,178,72,0.35)]">
             LOGIN
           </h1>
@@ -260,7 +243,7 @@ export default function LoginPage() {
             </div>
           </form>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

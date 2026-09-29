@@ -228,86 +228,12 @@ export default function Navbar() {
       {/* ── Main Header Bar ────────────────────────────────────────────── */}
       {/* Sticky on mobile, static on desktop — scrolls away on desktop so the  */}
       {/* bottom nav can then stick to the top of the viewport.                 */}
-      <header className="sticky top-0 z-50 md:relative w-full bg-background border-b md:border-b-0">
-        <div className="container mx-auto px-2 md:px-4">
-          {/* Middle Main Row: Search | Logo | Icons */}
-          <div className="relative flex h-14 md:h-20 items-center justify-between px-1 md:px-6 border-b border-muted/30">
+      <header className="sticky top-0 z-50 w-full bg-background border-b shadow-sm">
+        <div className="w-full px-4">
+          {/* Single Row: Logo (Left) | Nav Items (Center) | Actions & Profile (Right) */}
+          <div className="relative flex h-14 md:h-20 items-center justify-between">
 
-            {/* Desktop Search (Left) */}
-            <div ref={searchContainerRef} className="hidden md:flex flex-1 items-center max-w-[280px] relative">
-              <form onSubmit={handleSearch} className="relative w-full group">
-                <label htmlFor="navbar-search" className="sr-only">Search products</label>
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
-                <input
-                  id="navbar-search"
-                  type="text"
-                  placeholder={isListening ? 'Listening...' : 'Search products...'}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onFocus={() => { if (liveResults.length > 0) setShowDropdown(true); }}
-                  aria-label="Search products"
-                  autoComplete="off"
-                  className="w-full bg-muted/40 border-none rounded-full py-2.5 pl-10 pr-10 text-xs focus:ring-1 focus:ring-primary/20 transition-all outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={handleVoiceSearch}
-                  title={isListening ? 'Stop listening' : 'Search by voice'}
-                  aria-label={isListening ? 'Stop listening' : 'Search by voice'}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors ${isListening ? 'text-red-500 animate-pulse' : 'text-muted-foreground hover:text-primary'}`}
-                >
-                  {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                </button>
-              </form>
-              {showDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
-                  {isSearching ? (
-                    <div className="flex items-center justify-center py-6 gap-2 text-muted-foreground text-xs">
-                      <div className="h-3 w-3 rounded-full border-2 border-primary border-t-transparent animate-spin" /> Searching...
-                    </div>
-                  ) : liveResults.length > 0 ? (
-                    <>
-                      <ul className="divide-y divide-border/50">
-                        {liveResults.map((product) => {
-                          const price = product.salePrice ?? product.price;
-                          const image = product.images?.[0];
-                          return (
-                            <li key={product._id}>
-                              <Link href={`/products/${product.slug}`} onClick={handleResultClick} className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50 transition-colors group">
-                                {image ? (
-                                  <div className="h-10 w-10 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
-                                    <Image src={image} alt={product.name} width={40} height={40} className="h-full w-full object-cover" />
-                                  </div>
-                                ) : (
-                                  <div className="h-10 w-10 rounded-lg bg-muted flex-shrink-0 flex items-center justify-center">
-                                    <Search className="h-4 w-4 text-muted-foreground" />
-                                  </div>
-                                )}
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-xs font-semibold truncate group-hover:text-primary transition-colors">{product.name}</p>
-                                  <p className="text-[11px] text-primary font-bold">৳{price?.toLocaleString()}</p>
-                                </div>
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                      <div className="border-t border-border/50 px-4 py-2.5">
-                        <Link href={`/shop?search=${encodeURIComponent(searchTerm.trim())}`} onClick={handleResultClick} className="flex items-center justify-center gap-1.5 text-xs font-semibold text-primary hover:underline">
-                          <Search className="h-3 w-3" /> See all results for &ldquo;{searchTerm}&rdquo;
-                        </Link>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="flex flex-col items-center py-6 text-muted-foreground text-xs gap-1">
-                      <Search className="h-5 w-5 mb-1 opacity-40" /> No results found for &ldquo;{searchTerm}&rdquo;
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Mobile Menu Trigger */}
+            {/* Mobile Menu Trigger (Left on mobile) */}
             <div className="flex md:hidden items-center">
               <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger className="inline-flex h-9 w-9 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors">
@@ -318,7 +244,7 @@ export default function Navbar() {
                   <nav className="flex flex-col gap-6 mt-12 px-2">
                     <Logo onClick={() => setOpen(false)} />
                     <div className="space-y-4 pt-6 border-t font-medium tracking-tight">
-                      {navItems.map((item, index) => {
+                      {navItems.map((item) => {
                         const isActive = pathname === item.href;
                         return (
                           <React.Fragment key={item.href}>
@@ -341,25 +267,122 @@ export default function Navbar() {
               </Sheet>
             </div>
 
-            {/* Logo (Centered in desktop, Left-ish in mobile) */}
-            <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center justify-center">
+            {/* LEFT: Logo (Centered on mobile, Left on desktop) */}
+            <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center shrink-0">
               <Logo
-                imageClassName="md:size-16"
-                textClassName="text-lg md:text-3xl whitespace-nowrap"
-                sizes="(max-width: 768px) 24px, 64px"
+                imageClassName="size-9 sm:size-10 md:size-12 lg:size-14"
+                textClassName="text-base sm:text-lg md:text-xl lg:text-2xl font-black whitespace-nowrap"
+                sizes="(max-width: 768px) 36px, 56px"
               />
             </div>
 
-            {/* Icons/Action Row (Right) */}
-            <div className="flex items-center justify-end gap-1 flex-1 max-w-[320px]">
+            {/* CENTER: Navigation Items (Desktop Only - Center Aligned) */}
+            <nav className="hidden md:flex items-center justify-center flex-1 mx-1 lg:mx-2">
+              <ul className="flex items-center gap-0.5 sm:gap-1 lg:gap-1.5 xl:gap-2">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={`text-[11px] lg:text-xs font-semibold uppercase tracking-wide transition-all px-2 py-1 rounded-full whitespace-nowrap ${
+                          isActive
+                            ? 'bg-primary text-white shadow-sm shadow-primary/20'
+                            : 'text-foreground/75 hover:text-primary hover:bg-accent/50'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+
+            {/* RIGHT: Search (xl+) + Theme Toggle + User Profile */}
+            <div className="flex items-center justify-end gap-1.5 md:gap-3 shrink-0">
+
+              {/* Compact Search Bar for wide screens */}
+              <div ref={searchContainerRef} className="hidden xl:flex relative w-44 2xl:w-60">
+                <form onSubmit={handleSearch} className="relative w-full group">
+                  <label htmlFor="navbar-search" className="sr-only">Search products</label>
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                  <input
+                    id="navbar-search"
+                    type="text"
+                    placeholder={isListening ? 'Listening...' : 'Search products...'}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onFocus={() => { if (liveResults.length > 0) setShowDropdown(true); }}
+                    aria-label="Search products"
+                    autoComplete="off"
+                    className="w-full bg-muted/40 border border-border/40 rounded-full py-1.5 pl-8 pr-8 text-xs focus:ring-1 focus:ring-primary/20 transition-all outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleVoiceSearch}
+                    title={isListening ? 'Stop listening' : 'Search by voice'}
+                    aria-label={isListening ? 'Stop listening' : 'Search by voice'}
+                    className={`absolute right-2.5 top-1/2 -translate-y-1/2 transition-colors ${isListening ? 'text-red-500 animate-pulse' : 'text-muted-foreground hover:text-primary'}`}
+                  >
+                    {isListening ? <MicOff className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
+                  </button>
+                </form>
+                {showDropdown && (
+                  <div className="absolute top-full right-0 w-80 mt-2 bg-background border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
+                    {isSearching ? (
+                      <div className="flex items-center justify-center py-6 gap-2 text-muted-foreground text-xs">
+                        <div className="h-3 w-3 rounded-full border-2 border-primary border-t-transparent animate-spin" /> Searching...
+                      </div>
+                    ) : liveResults.length > 0 ? (
+                      <>
+                        <ul className="divide-y divide-border/50 max-h-72 overflow-y-auto">
+                          {liveResults.map((product) => {
+                            const price = product.salePrice ?? product.price;
+                            const image = product.images?.[0];
+                            return (
+                              <li key={product._id}>
+                                <Link href={`/products/${product.slug}`} onClick={handleResultClick} className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50 transition-colors group">
+                                  {image ? (
+                                    <div className="h-10 w-10 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
+                                      <Image src={image} alt={product.name} width={40} height={40} className="h-full w-full object-cover" />
+                                    </div>
+                                  ) : (
+                                    <div className="h-10 w-10 rounded-lg bg-muted flex-shrink-0 flex items-center justify-center">
+                                      <Search className="h-4 w-4 text-muted-foreground" />
+                                    </div>
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-semibold truncate group-hover:text-primary transition-colors">{product.name}</p>
+                                    <p className="text-[11px] text-primary font-bold">৳{price?.toLocaleString()}</p>
+                                  </div>
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                        <div className="border-t border-border/50 px-4 py-2.5">
+                          <Link href={`/shop?search=${encodeURIComponent(searchTerm.trim())}`} onClick={handleResultClick} className="flex items-center justify-center gap-1.5 text-xs font-semibold text-primary hover:underline">
+                            <Search className="h-3 w-3" /> See all results for &ldquo;{searchTerm}&rdquo;
+                          </Link>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center py-6 text-muted-foreground text-xs gap-1">
+                        <Search className="h-5 w-5 mb-1 opacity-40" /> No results found for &ldquo;{searchTerm}&rdquo;
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Theme Toggle (Left of group) */}
               <div className="hidden sm:block">
                 <ModeToggle />
               </div>
 
-              {/* User Account (Right end) */}
-              <div className="hidden md:flex items-center">
+              {/* User Account (Right end - visible on mobile & desktop) */}
+              <div className="flex items-center">
                 {status === 'authenticated' && session?.user ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -442,6 +465,12 @@ export default function Navbar() {
                             </DropdownMenuItem>
                           </>
                         )}
+
+                        <DropdownMenuItem asChild>
+                          <Link href="/register" className="cursor-pointer">
+                            <UserPlus className="mr-2 h-4 w-4" /> Register
+                          </Link>
+                        </DropdownMenuItem>
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => signOut({ callbackUrl: window.location.origin })} className="text-destructive cursor-pointer">
@@ -453,10 +482,10 @@ export default function Navbar() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="h-10 w-10 flex items-center justify-center rounded-xl transition-all cursor-pointer hover:text-primary outline-none"
+                        className="h-10 w-10 flex items-center justify-center rounded-xl transition-all cursor-pointer text-foreground hover:text-primary hover:bg-accent/50 outline-none"
                         aria-label="User account"
                       >
-                        <User className="h-5 w-5" />
+                        <User className="h-5 w-5 text-foreground hover:text-primary transition-colors" />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 p-1.5 shadow-lg border">
@@ -485,31 +514,7 @@ export default function Navbar() {
       {/* ΓöÇΓöÇ Bottom Navigation Row ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
       {/* Siblings with <header> so sticky works relative to the viewport,      */}
       {/* not the parent's bounding box. Only visible on desktop (md+).         */}
-      <nav className="hidden md:flex sticky top-0 z-40 w-full h-12 items-center justify-center border-b bg-background/95 backdrop-blur-sm shadow-sm">
-        <div className="container mx-auto px-4 flex justify-center">
-          <ul className="flex items-center gap-10">
-            {navItems.map((item, index) => {
-              const isActive = pathname === item.href;
 
-              return (
-                <React.Fragment key={item.href}>
-                  <li className="flex items-center">
-                    <Link
-                      href={item.href}
-                      className={`text-[12px] font-bold uppercase tracking-[0.25em] transition-all px-4 py-1.5 rounded-full ${isActive
-                        ? 'bg-primary text-white shadow-md shadow-primary/20'
-                        : 'text-foreground/70 hover:text-primary'
-                        }`}
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                </React.Fragment>
-              );
-            })}
-          </ul>
-        </div>
-      </nav>
     </>
   );
 }

@@ -16,7 +16,7 @@ export function ModeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="bg-transparent hover:bg-transparent hover:scale-110 transition-all outline-none"
+      className="bg-transparent hover:bg-transparent hover:scale-110 transition-all outline-none text-foreground"
       onClick={toggle}
       aria-label="Toggle theme"
     >
