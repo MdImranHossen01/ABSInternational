@@ -102,7 +102,7 @@ export default function LoginPage() {
             {/* Field 1: Your Email Or Username */}
             <div>
               <label className="block text-xs md:text-sm font-bold text-[#dfb248] uppercase tracking-wider mb-2">
-                Your Email Or Username
+                Email Or Mobile Number
               </label>
               <div className="relative flex items-center bg-[#07080c] border border-neutral-800 rounded-xl px-4 py-3.5 focus-within:border-[#dfb248] transition-all">
                 <Mail className="size-5 text-[#dfb248] mr-3 shrink-0" />
@@ -111,7 +111,7 @@ export default function LoginPage() {
                   required
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="Email Or Username"
+                  placeholder="Email Or Mobile Number"
                   className="w-full bg-transparent text-white placeholder:text-neutral-500 text-sm md:text-base outline-none font-medium"
                 />
               </div>

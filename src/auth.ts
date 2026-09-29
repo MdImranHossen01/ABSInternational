@@ -21,7 +21,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         const inputIdentifier = (typeof credentials?.email === 'string' ? credentials.email : '').trim();
         if (!inputIdentifier) {
-          throw new Error('Please provide email, username, or phone number.');
+          throw new Error('Please provide email or mobile number.');
         }
 
         const isEmail = inputIdentifier.includes('@');
@@ -34,6 +34,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             $or: [
               { username: inputIdentifier.toLowerCase() },
               { memberId: inputIdentifier.toUpperCase() },
+              { memberId: inputIdentifier },
               { phone: normalizedPhone },
               { phone: inputIdentifier }
             ]
