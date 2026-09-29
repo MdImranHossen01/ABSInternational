@@ -76,7 +76,7 @@ function AnimatedCounter({ value }: { value: string }) {
 
 export function CounterSection() {
   return (
-    <section className="py-12 bg-primary text-primary-foreground">
+    <section className="py-6 md:py-12 bg-primary text-primary-foreground">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {stats.map((s, i) => (

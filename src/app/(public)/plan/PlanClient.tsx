@@ -178,7 +178,7 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
     <div className="min-h-screen bg-background text-foreground pb-20">
 
       {/* ─── Hero Section ────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 via-background to-background pt-12 pb-16 md:pt-20 md:pb-24 border-b border-border/40">
+      <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 via-background to-background pt-6 pb-6 md:pt-20 md:pb-24 border-b border-border/40">
         <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
         <div className="container mx-auto px-4 text-center max-w-5xl relative z-10">
           <Badge variant="outline" className="mb-4 px-4 py-1.5 border-primary/30 text-primary bg-primary/5 text-xs md:text-sm font-semibold tracking-wide uppercase rounded-full">
@@ -196,7 +196,7 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
             Our comprehensive compensation plan is crafted for fairness, sustainability, and rapid growth. Experience transparent 10-generation earnings, 3-wallet fund management, automated club rewards, and lifetime leadership prestige.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+          <div className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             <Link href="/register">
               <Button size="lg" className="rounded-full px-6 sm:px-8 font-bold gap-2 shadow-lg shadow-primary/25">
                 Join As Member <ArrowRight className="h-4 w-4" />
@@ -210,7 +210,7 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-12 max-w-4xl mx-auto text-left">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-6 md:mt-12 max-w-4xl mx-auto text-left">
             <div className="p-4 rounded-2xl bg-card border border-border/60 shadow-xs">
               <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Joining Package</div>
               <div className="text-xl sm:text-2xl font-black text-primary mt-1">৳1,500</div>
@@ -236,7 +236,7 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
       </section>
 
       {/* ─── Navigation Tabs ────────────────────────────────────────── */}
-      <section className="container mx-auto px-4 mt-8 max-w-6xl">
+      <section className="container mx-auto px-4 mt-6 md:mt-8 max-w-6xl">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 w-full h-auto p-1.5 bg-muted/80 dark:bg-muted/40 rounded-2xl border border-border/50">
             <TabsTrigger
@@ -745,8 +745,8 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
       </section>
 
       {/* ─── Frequently Asked Questions ────────────────────────────────── */}
-      <section className="container mx-auto px-4 mt-20 max-w-4xl">
-        <div className="text-center mb-10">
+      <section className="container mx-auto px-4 mt-8 md:mt-20 max-w-4xl">
+        <div className="text-center mb-6 md:mb-10">
           <Badge variant="outline" className="mb-2 px-3 py-1 text-xs font-semibold uppercase rounded-full">
             Got Questions?
           </Badge>
@@ -797,7 +797,7 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
       </section>
 
       {/* ─── Call To Action Banner ─────────────────────────────────── */}
-      <section className="container mx-auto px-4 mt-16 max-w-5xl">
+      <section className="container mx-auto px-4 mt-8 md:mt-16 max-w-5xl">
         <div className="rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-600 to-primary p-8 sm:p-12 text-white text-center shadow-xl relative overflow-hidden">
           <div className="relative z-10 max-w-2xl mx-auto space-y-4">
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-black">

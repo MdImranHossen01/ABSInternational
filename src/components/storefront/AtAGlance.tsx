@@ -31,10 +31,10 @@ const items = [
 
 export function AtAGlance({ brandName = 'ABS International' }: AtAGlanceProps) {
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-6 md:py-24 bg-background">
       <div className="container mx-auto px-4">
         {/* Title */}
-        <h2 className="text-2xl md:text-3xl font-extrabold uppercase tracking-wider text-center mb-16 text-primary font-display">
+        <h2 className="text-2xl md:text-3xl font-extrabold uppercase tracking-wider text-center mb-6 md:mb-16 text-primary font-display">
           {brandName} at a Glance
         </h2>
 

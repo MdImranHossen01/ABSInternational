@@ -54,7 +54,7 @@ export default function HeroBanner({ brandName }: HeroBannerProps) {
   ];
 
   return (
-    <section className="relative pt-0 md:pt-10 pb-12 md:pb-24 overflow-hidden border-b border-border bg-background">
+    <section className="relative pt-0 md:pt-10 pb-6 md:pb-24 overflow-hidden border-b border-border bg-background">
       {/* Dynamic background glow */}
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-primary/5 pointer-events-none" />
 

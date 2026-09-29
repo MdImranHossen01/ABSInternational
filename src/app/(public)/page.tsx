@@ -50,9 +50,9 @@ export default async function Home() {
       <AtAGlance brandName={brandName} />
 
       {/* 3. ABS Dream (Vision & Goals) */}
-      <section className="py-20 bg-muted/30 border-b border-border">
+      <section className="py-6 md:py-20 bg-muted/30 border-b border-border">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-6 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
               ABS Dream: Vision & Goals
             </h2>
@@ -61,7 +61,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {/* Vision */}
             <div className="bg-card border border-border p-8 rounded-2xl shadow-sm hover:shadow-md transition-all">
               <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
@@ -99,9 +99,9 @@ export default async function Home() {
       </section>
 
       {/* 5. Seba & Healthcare Benefits Section */}
-      <section className="py-20 border-b border-border">
+      <section className="py-6 md:py-20 border-b border-border">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center">
             <div>
               <span className="text-sm font-bold text-primary tracking-wide uppercase">Exclusive Healthcare Benefit</span>
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2 mb-6">
@@ -249,9 +249,9 @@ export default async function Home() {
       </section>
 
       {/* 6. MLM & Business Plan Opportunity */}
-      <section className="py-20 bg-muted/30 border-b border-border">
+      <section className="py-6 md:py-20 bg-muted/30 border-b border-border">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-6 md:mb-16">
             <span className="text-sm font-bold text-primary tracking-wide uppercase">Earn & Grow</span>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2 mb-4">
               Our Lucrative Business Plan
@@ -299,7 +299,7 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="mt-12 bg-card border border-border p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="mt-6 md:mt-12 bg-card border border-border p-6 md:p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex gap-4 items-center">
               <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                 <HeartHandshake className="h-6 w-6" />
@@ -321,9 +321,9 @@ export default async function Home() {
       </section>
 
       {/* ABS Shops & Network Section */}
-      <section className="py-20 border-b border-border">
+      <section className="py-6 md:py-20 border-b border-border">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center">
             <div className="space-y-6">
               <span className="text-sm font-bold text-primary tracking-wide uppercase">Physical Network</span>
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
@@ -352,7 +352,7 @@ export default async function Home() {
               </div>
             </div>
             
-            <div className="bg-muted/40 border border-border p-8 rounded-3xl flex flex-col justify-center items-center text-center py-16">
+            <div className="bg-muted/40 border border-border p-6 md:p-8 rounded-3xl flex flex-col justify-center items-center text-center py-6 md:py-16">
               <Store className="h-16 w-16 text-primary/80 mb-6" />
               <h3 className="text-xl font-bold mb-2">Locate an ABS Shop Near You</h3>
               <p className="text-muted-foreground text-sm max-w-md mb-6">
