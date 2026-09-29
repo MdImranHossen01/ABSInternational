@@ -110,6 +110,7 @@ export default function FooterV1() {
     ? settings.footerNavigation
     : [
       { label: 'Shop All', href: '/shop' },
+      { label: 'Member Plan', href: '/plan' },
       { label: 'About Us', href: '/about' },
       { label: 'Our Team', href: '/team' },
       { label: 'Order Tracking', href: '/track-order' },
@@ -155,6 +156,9 @@ export default function FooterV1() {
           <div className="flex flex-col items-center text-center md:items-start md:text-left md:pt-3">
             <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-foreground">Information</h2>
             <ul className="grid gap-2 text-sm text-muted-foreground">
+              <li>
+                <Link href="/blog" className="hover:text-primary transition-colors">Our Blogs</Link>
+              </li>
               <li>
                 <Link href="/contact" className="hover:text-primary transition-colors">Contact Us</Link>
               </li>

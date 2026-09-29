@@ -43,7 +43,7 @@ import Swal from 'sweetalert2';
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/shop', label: 'Products' },
-  { href: '/blog', label: 'Blogs' },
+  { href: '/plan', label: 'Plan' },
   { href: '/about', label: 'About Us' },
   { href: '/team', label: 'Our Team' },
   { href: '/contact', label: 'Contact' },
