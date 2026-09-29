@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { User, LogOut, LayoutDashboard, Truck, Settings, Package } from 'lucide-react';
+import { User, LogOut, LayoutDashboard, Truck, Settings, Package, LogIn, UserPlus } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { MobileMenu } from '@/components/layout/MobileMenu';
@@ -155,13 +155,30 @@ export function MobileNavbar({ navItems, categories }: MobileNavbarProps) {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link
-              href="/login"
-              className="h-10 w-10 flex items-center justify-center rounded-xl transition-all hover:text-primary"
-              aria-label="Log in"
-            >
-              <User className="h-5 w-5" />
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="h-10 w-10 flex items-center justify-center rounded-xl transition-all hover:text-primary outline-none"
+                  aria-label="User account"
+                >
+                  <User className="h-5 w-5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44 p-1.5 shadow-lg border">
+                <DropdownMenuItem asChild>
+                  <Link href="/login" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
+                    <LogIn className="h-4 w-4 text-primary" />
+                    <span>Login</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/register" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
+                    <UserPlus className="h-4 w-4 text-primary" />
+                    <span>Register</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
 
         </div>

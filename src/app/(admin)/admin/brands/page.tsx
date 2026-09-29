@@ -192,94 +192,162 @@ export default function BrandsPage() {
 
       {/* Brands Table */}
       <div className="rounded-2xl border bg-card/60 backdrop-blur shadow-sm overflow-hidden">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow>
-              <TableHead className="w-[80px]">Logo</TableHead>
-              <TableHead>Brand Name</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell><Skeleton className="h-10 w-10 rounded-lg" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-36" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
-                  <TableCell className="text-right"><Skeleton className="h-8 w-20 ml-auto" /></TableCell>
-                </TableRow>
-              ))
-            ) : brands.length === 0 ? (
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                  No brands found. Click &quot;Add Brand&quot; to create your first brand.
-                </TableCell>
+                <TableHead className="w-[80px]">Logo</TableHead>
+                <TableHead>Brand Name</TableHead>
+                <TableHead>Slug</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ) : (
-              brands.map((brand) => (
-                <TableRow key={brand._id} className="hover:bg-muted/40 transition-colors">
-                  <TableCell>
-                    {brand.image ? (
-                      <div className="relative h-10 w-10 rounded-lg overflow-hidden border bg-background">
-                        <Image
-                          src={brand.image}
-                          alt={brand.name}
-                          fill
-                          className="object-contain p-1"
-                        />
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell><Skeleton className="h-10 w-10 rounded-lg" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-36" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
+                    <TableCell className="text-right"><Skeleton className="h-8 w-20 ml-auto" /></TableCell>
+                  </TableRow>
+                ))
+              ) : brands.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                    No brands found. Click &quot;Add Brand&quot; to create your first brand.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                brands.map((brand) => (
+                  <TableRow key={brand._id} className="hover:bg-muted/40 transition-colors">
+                    <TableCell>
+                      {brand.image ? (
+                        <div className="relative h-10 w-10 rounded-lg overflow-hidden border bg-background">
+                          <Image
+                            src={brand.image}
+                            alt={brand.name}
+                            fill
+                            className="object-contain p-1"
+                          />
+                        </div>
+                      ) : (
+                        <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center font-bold text-xs text-muted-foreground">
+                          {brand.name.substring(0, 2).toUpperCase()}
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="font-semibold text-foreground">
+                      {brand.name}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                      {brand.slug}
+                    </TableCell>
+                    <TableCell>
+                      {brand.isActive ? (
+                        <Badge className="bg-emerald-600/15 text-emerald-600 hover:bg-emerald-600/20 border-emerald-600/20">
+                          Active
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-muted-foreground">
+                          Inactive
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(brand)}
+                          className="h-8 px-2.5"
+                        >
+                          <Edit className="h-3.5 w-3.5 mr-1" /> Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDelete(brand._id)}
+                          className="h-8 px-2.5"
+                        >
+                          <Trash className="h-3.5 w-3.5" />
+                        </Button>
                       </div>
-                    ) : (
-                      <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center font-bold text-xs text-muted-foreground">
-                        {brand.name.substring(0, 2).toUpperCase()}
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell className="font-semibold text-foreground">
-                    {brand.name}
-                  </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">
-                    {brand.slug}
-                  </TableCell>
-                  <TableCell>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Cards View */}
+        <div className="md:hidden divide-y divide-border">
+          {loading ? (
+            <div className="p-8 text-center text-xs text-muted-foreground">Loading brands...</div>
+          ) : brands.length === 0 ? (
+            <div className="p-8 text-center text-xs text-muted-foreground">
+              No brands found. Click &quot;Add Brand&quot; to create your first brand.
+            </div>
+          ) : (
+            brands.map((brand) => (
+              <div key={brand._id} className="p-3.5 flex items-center gap-3 bg-card">
+                <div className="h-12 w-12 shrink-0 rounded-lg overflow-hidden border bg-background relative flex items-center justify-center">
+                  {brand.image ? (
+                    <Image
+                      src={brand.image}
+                      alt={brand.name}
+                      fill
+                      className="object-contain p-1"
+                    />
+                  ) : (
+                    <div className="font-bold text-xs text-muted-foreground">
+                      {brand.name.substring(0, 2).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-foreground truncate">{brand.name}</span>
                     {brand.isActive ? (
-                      <Badge className="bg-emerald-600/15 text-emerald-600 hover:bg-emerald-600/20 border-emerald-600/20">
+                      <Badge className="bg-emerald-600/15 text-emerald-600 border-emerald-600/20 text-[10px] px-1.5 py-0 h-4">
                         Active
                       </Badge>
                     ) : (
-                      <Badge variant="secondary" className="text-muted-foreground">
+                      <Badge variant="secondary" className="text-muted-foreground text-[10px] px-1.5 py-0 h-4">
                         Inactive
                       </Badge>
                     )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(brand)}
-                        className="h-8 px-2.5"
-                      >
-                        <Edit className="h-3.5 w-3.5 mr-1" /> Edit
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(brand._id)}
-                        className="h-8 px-2.5"
-                      >
-                        <Trash className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+                  </div>
+                  <div className="text-xs text-muted-foreground font-mono truncate">{brand.slug}</div>
+                </div>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleEdit(brand)}
+                    className="h-8 w-8"
+                  >
+                    <Edit className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleDelete(brand._id)}
+                    className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Modal Dialog for Add / Edit */}

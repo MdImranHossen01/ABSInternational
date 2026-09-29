@@ -178,51 +178,100 @@ export default function UserRanksPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-muted/50">
-                      <TableHead className="font-bold">Rank</TableHead>
-                      <TableHead className="font-bold">Qualification</TableHead>
-                      <TableHead className="font-bold">Cash Bonus</TableHead>
-                      <TableHead className="font-bold">Incentives & Rewards</TableHead>
-                      <TableHead className="font-bold text-center">Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {ranksMaster.map((r: any, idx: number) => {
-                      const isAchieved =
-                        currentRank === r.id ||
-                        (currentRank !== 'user' && idx < ranksMaster.findIndex((x: any) => x.id === currentRank));
+              <>
+                {/* Desktop Table View */}
+                <div className="hidden md:block rounded-md border overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50">
+                        <TableHead className="font-bold">Rank</TableHead>
+                        <TableHead className="font-bold">Qualification</TableHead>
+                        <TableHead className="font-bold">Cash Bonus</TableHead>
+                        <TableHead className="font-bold">Incentives & Rewards</TableHead>
+                        <TableHead className="font-bold text-center">Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {ranksMaster.map((r: any, idx: number) => {
+                        const isAchieved =
+                          currentRank === r.id ||
+                          (currentRank !== 'user' && idx < ranksMaster.findIndex((x: any) => x.id === currentRank));
 
-                      return (
-                        <TableRow key={r.id} className={currentRank === r.id ? 'bg-primary/5 font-semibold' : ''}>
-                          <TableCell className="font-bold flex items-center gap-2">
-                            <span className="p-1 rounded bg-muted text-primary">
-                              <Trophy className="h-4 w-4" />
-                            </span>
-                            {r.title}
-                          </TableCell>
-                          <TableCell className="text-xs">{r.requirement}</TableCell>
-                          <TableCell className="font-mono font-bold text-emerald-600">
+                        return (
+                          <TableRow key={r.id} className={currentRank === r.id ? 'bg-primary/5 font-semibold' : ''}>
+                            <TableCell className="font-bold flex items-center gap-2">
+                              <span className="p-1 rounded bg-muted text-primary">
+                                <Trophy className="h-4 w-4" />
+                              </span>
+                              {r.title}
+                            </TableCell>
+                            <TableCell className="text-xs">{r.requirement}</TableCell>
+                            <TableCell className="font-mono font-bold text-emerald-600">
+                              {r.bonus > 0 ? `৳${r.bonus.toLocaleString()}` : '—'}
+                            </TableCell>
+                            <TableCell className="text-xs text-muted-foreground font-medium">{r.reward}</TableCell>
+                            <TableCell className="text-center">
+                              {currentRank === r.id ? (
+                                <Badge className="bg-emerald-600 text-white font-bold">Current</Badge>
+                              ) : isAchieved ? (
+                                <Badge variant="outline" className="text-emerald-600 border-emerald-500">Achieved</Badge>
+                              ) : (
+                                <Badge variant="secondary" className="text-muted-foreground">Locked</Badge>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Cards View */}
+                <div className="md:hidden space-y-3">
+                  {ranksMaster.map((r: any, idx: number) => {
+                    const isAchieved =
+                      currentRank === r.id ||
+                      (currentRank !== 'user' && idx < ranksMaster.findIndex((x: any) => x.id === currentRank));
+
+                    return (
+                      <div
+                        key={r.id}
+                        className={`p-3.5 rounded-xl border bg-card space-y-2 transition-all ${
+                          currentRank === r.id ? 'ring-2 ring-emerald-500/40 bg-emerald-500/5' : ''
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 font-bold text-sm">
+                            <Trophy className="h-4 w-4 text-amber-600 shrink-0" />
+                            <span>{r.title}</span>
+                          </div>
+                          {currentRank === r.id ? (
+                            <Badge className="bg-emerald-600 text-white font-bold text-[10px] px-2 py-0.5">Current</Badge>
+                          ) : isAchieved ? (
+                            <Badge variant="outline" className="text-emerald-600 border-emerald-500 text-[10px] px-2 py-0.5">Achieved</Badge>
+                          ) : (
+                            <Badge variant="secondary" className="text-muted-foreground text-[10px] px-2 py-0.5">Locked</Badge>
+                          )}
+                        </div>
+                        <div className="text-xs space-y-1">
+                          <div className="text-muted-foreground">
+                            <strong className="text-foreground">Requirement:</strong> {r.requirement}
+                          </div>
+                          <div className="text-muted-foreground">
+                            <strong className="text-foreground">Incentive:</strong> {r.reward}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between pt-1 border-t text-xs">
+                          <span className="text-muted-foreground font-semibold">Promotion Bonus:</span>
+                          <span className="font-mono font-bold text-emerald-600">
                             {r.bonus > 0 ? `৳${r.bonus.toLocaleString()}` : '—'}
-                          </TableCell>
-                          <TableCell className="text-xs text-muted-foreground font-medium">{r.reward}</TableCell>
-                          <TableCell className="text-center">
-                            {currentRank === r.id ? (
-                              <Badge className="bg-emerald-600 text-white font-bold">Current</Badge>
-                            ) : isAchieved ? (
-                              <Badge variant="outline" className="text-emerald-600 border-emerald-500">Achieved</Badge>
-                            ) : (
-                              <Badge variant="secondary" className="text-muted-foreground">Locked</Badge>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             </CardContent>
           </Card>
         </TabsContent>
@@ -313,30 +362,50 @@ export default function UserRanksPage() {
                   You have not received any rank promotion rewards yet. Build your 6 active direct downlines to earn your first Team Manager bonus!
                 </div>
               ) : (
-                <div className="rounded-md border overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-muted/50">
-                        <TableHead>Date</TableHead>
-                        <TableHead>Event</TableHead>
-                        <TableHead className="text-right">Amount Awarded</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {rewardTransactions.map((tx: any) => (
-                        <TableRow key={tx._id}>
-                          <TableCell className="text-xs font-mono">
-                            {new Date(tx.createdAt).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell className="text-xs font-medium">{tx.description}</TableCell>
-                          <TableCell className="text-right font-mono font-bold text-emerald-600">
-                            +৳{(tx.amount || 0).toLocaleString()}
-                          </TableCell>
+                <>
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block rounded-md border overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/50">
+                          <TableHead>Date</TableHead>
+                          <TableHead>Event</TableHead>
+                          <TableHead className="text-right">Amount Awarded</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                      </TableHeader>
+                      <TableBody>
+                        {rewardTransactions.map((tx: any) => (
+                          <TableRow key={tx._id}>
+                            <TableCell className="text-xs font-mono">
+                              {new Date(tx.createdAt).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell className="text-xs font-medium">{tx.description}</TableCell>
+                            <TableCell className="text-right font-mono font-bold text-emerald-600">
+                              +৳{(tx.amount || 0).toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Mobile Cards View */}
+                  <div className="md:hidden divide-y divide-border rounded-xl border overflow-hidden">
+                    {rewardTransactions.map((tx: any) => (
+                      <div key={tx._id} className="p-3 bg-card space-y-1.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-medium text-foreground/90 leading-snug">{tx.description}</span>
+                          <span className="font-mono font-bold text-emerald-600 text-sm shrink-0">
+                            +৳{(tx.amount || 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-muted-foreground font-mono">
+                          {new Date(tx.createdAt).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>

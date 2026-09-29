@@ -126,104 +126,181 @@ export default function ReviewsModerationPage() {
       </div>
       
       <div className="rounded-md border bg-background overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/50">
-              <TableHead className="w-[200px]">Product</TableHead>
-              <TableHead className="w-[150px]">Customer</TableHead>
-              <TableHead className="w-[100px]">Rating</TableHead>
-              <TableHead>Comment</TableHead>
-              <TableHead className="w-[100px]">Status</TableHead>
-              <TableHead className="text-right w-[150px]">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {reviews.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                  No reviews found for moderation.
-                </TableCell>
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead className="w-[200px]">Product</TableHead>
+                <TableHead className="w-[150px]">Customer</TableHead>
+                <TableHead className="w-[100px]">Rating</TableHead>
+                <TableHead>Comment</TableHead>
+                <TableHead className="w-[100px]">Status</TableHead>
+                <TableHead className="text-right w-[150px]">Actions</TableHead>
               </TableRow>
-            ) : (
-              reviews.map((review) => (
-                <TableRow key={review._id} className={review.status === 'pending' ? 'bg-yellow-50/30' : ''}>
-                  <TableCell>
-                    <div className="flex flex-col gap-1">
-                      <span className="font-bold text-sm truncate max-w-[180px]">{review.product?.name}</span>
-                      {review.product?.slug && (
-                        <Link 
-                          href={`/product/${review.product?.slug}`} 
-                          target="_blank"
-                          className="text-[10px] text-primary flex items-center gap-1 hover:underline"
-                        >
-                          View Product <ExternalLink className="h-2 w-2" />
-                        </Link>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-col text-xs">
-                      <span className="font-semibold">{review.user?.name || review.name}</span>
-                      <span className="text-muted-foreground truncate max-w-[140px]">{review.user?.email}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1 text-yellow-500">
-                      <Star className="h-3 w-3 fill-current" />
-                      <span className="font-bold text-sm">{review.rating}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-xs text-muted-foreground line-clamp-2 max-w-[300px]" title={review.comment}>
-                      {review.comment}
-                    </p>
-                    <span className="text-[10px] text-muted-foreground italic block mt-1">
-                      {review.createdAt && !isNaN(new Date(review.createdAt).getTime()) 
-                        ? format(new Date(review.createdAt), 'MMM dd, yyyy')
-                        : 'Date N/A'}
-                    </span>
-                  </TableCell>
-                  <TableCell>{getStatusBadge(review.status)}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      {review.status !== 'approved' && (
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="text-green-600 hover:text-green-700 hover:bg-green-50" 
-                          onClick={() => updateStatus(review._id, 'approved')}
-                          title="Approve"
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                        </Button>
-                      )}
-                      {review.status !== 'rejected' && (
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="text-destructive hover:bg-destructive/10" 
-                          onClick={() => updateStatus(review._id, 'rejected')}
-                          title="Reject"
-                        >
-                          <XCircle className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="text-muted-foreground hover:text-destructive hover:bg-destructive/5" 
-                        onClick={() => deleteReview(review._id)}
-                        title="Delete Forever"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+            </TableHeader>
+            <TableBody>
+              {reviews.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    No reviews found for moderation.
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                reviews.map((review) => (
+                  <TableRow key={review._id} className={review.status === 'pending' ? 'bg-yellow-50/30' : ''}>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <span className="font-bold text-sm truncate max-w-[180px]">{review.product?.name}</span>
+                        {review.product?.slug && (
+                          <Link 
+                            href={`/product/${review.product?.slug}`} 
+                            target="_blank" 
+                            className="text-[10px] text-primary flex items-center gap-1 hover:underline"
+                          >
+                            View Product <ExternalLink className="h-2 w-2" />
+                          </Link>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col text-xs">
+                        <span className="font-semibold">{review.user?.name || review.name}</span>
+                        <span className="text-muted-foreground truncate max-w-[140px]">{review.user?.email}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-yellow-500">
+                        <Star className="h-3 w-3 fill-current" />
+                        <span className="font-bold text-sm">{review.rating}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <p className="text-xs text-muted-foreground line-clamp-2 max-w-[300px]" title={review.comment}>
+                        {review.comment}
+                      </p>
+                      <span className="text-[10px] text-muted-foreground italic block mt-1">
+                        {review.createdAt && !isNaN(new Date(review.createdAt).getTime()) 
+                          ? format(new Date(review.createdAt), 'MMM dd, yyyy')
+                          : 'Date N/A'}
+                      </span>
+                    </TableCell>
+                    <TableCell>{getStatusBadge(review.status)}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        {review.status !== 'approved' && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50" 
+                            onClick={() => updateStatus(review._id, 'approved')}
+                            title="Approve"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {review.status !== 'rejected' && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="text-destructive hover:bg-destructive/10" 
+                            onClick={() => updateStatus(review._id, 'rejected')}
+                            title="Reject"
+                          >
+                            <XCircle className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="text-muted-foreground hover:text-destructive hover:bg-destructive/5" 
+                          onClick={() => deleteReview(review._id)}
+                          title="Delete Forever"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Cards View */}
+        <div className="md:hidden divide-y divide-border">
+          {reviews.length === 0 ? (
+            <div className="h-24 flex items-center justify-center text-sm text-muted-foreground">
+              No reviews found for moderation.
+            </div>
+          ) : (
+            reviews.map((review) => (
+              <div key={review._id} className="p-3.5 space-y-2 bg-card">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-bold text-sm text-foreground truncate max-w-[200px]">
+                    {review.product?.name}
+                  </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-0.5 text-yellow-500 font-bold text-xs">
+                      <Star className="h-3.5 w-3.5 fill-current" />
+                      <span>{review.rating}</span>
+                    </div>
+                    {getStatusBadge(review.status)}
+                  </div>
+                </div>
+
+                <div className="text-xs text-muted-foreground">
+                  <span className="font-semibold text-foreground">{review.user?.name || review.name}</span>
+                  {review.user?.email && <span> • {review.user.email}</span>}
+                </div>
+
+                <p className="text-xs text-foreground/90 bg-muted/30 p-2.5 rounded-lg border leading-relaxed">
+                  "{review.comment}"
+                </p>
+
+                <div className="flex items-center justify-between text-xs pt-1 border-t">
+                  <span className="text-[11px] text-muted-foreground font-mono">
+                    {review.createdAt && !isNaN(new Date(review.createdAt).getTime()) 
+                      ? format(new Date(review.createdAt), 'MMM dd, yyyy')
+                      : 'Date N/A'}
+                  </span>
+
+                  <div className="flex items-center gap-1.5">
+                    {review.status !== 'approved' && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-7 text-xs gap-1 text-emerald-600 hover:bg-emerald-50"
+                        onClick={() => updateStatus(review._id, 'approved')}
+                      >
+                        <CheckCircle className="h-3.5 w-3.5" /> Approve
+                      </Button>
+                    )}
+                    {review.status !== 'rejected' && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-7 text-xs gap-1 text-amber-600 hover:bg-amber-50"
+                        onClick={() => updateStatus(review._id, 'rejected')}
+                      >
+                        <XCircle className="h-3.5 w-3.5" /> Reject
+                      </Button>
+                    )}
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="h-7 text-xs text-destructive hover:bg-destructive/10 px-2"
+                      onClick={() => deleteReview(review._id)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

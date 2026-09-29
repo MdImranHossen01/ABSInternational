@@ -463,47 +463,142 @@ function ClientOffersContent() {
               <p>No quotations found</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Quotation No</TableHead>
-                    <TableHead>Client Name</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Total Offer (৳)</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedOffers.map((offer) => (
-                    <TableRow key={offer._id}>
-                      <TableCell className="font-semibold">{offer.invoiceNo}</TableCell>
-                      <TableCell>{offer.clientName}</TableCell>
-                      <TableCell>{offer.clientPhone}</TableCell>
-                      <TableCell>{format(new Date(offer.date), 'dd MMM yyyy')}</TableCell>
-                      <TableCell className="text-right font-medium">৳{Math.round(offer.total)}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-teal-600 hover:text-teal-700 hover:bg-teal-50"
-                            onClick={() => generateBillPDF(offer, settings, 'print')}
-                            title="Print Quotation"
-                          >
-                            <Printer className="h-4 w-4" />
-                          </Button>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Quotation No</TableHead>
+                      <TableHead>Client Name</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead className="text-right">Total Offer (৳)</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedOffers.map((offer) => (
+                      <TableRow key={offer._id}>
+                        <TableCell className="font-semibold">{offer.invoiceNo}</TableCell>
+                        <TableCell>{offer.clientName}</TableCell>
+                        <TableCell>{offer.clientPhone}</TableCell>
+                        <TableCell>{format(new Date(offer.date), 'dd MMM yyyy')}</TableCell>
+                        <TableCell className="text-right font-medium">৳{Math.round(offer.total)}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-teal-600 hover:text-teal-700 hover:bg-teal-50"
+                              onClick={() => generateBillPDF(offer, settings, 'print')}
+                              title="Print Quotation"
+                            >
+                              <Printer className="h-4 w-4" />
+                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => setSelectedOffer(offer)}>
+                                  <Eye className="mr-2 h-4 w-4" /> View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setEditingOffer(offer);
+                                    setClientName(offer.clientName);
+                                    setClientPhone(offer.clientPhone);
+                                    setClientAddress(offer.clientAddress);
+                                    setBillItems(offer.items);
+                                    setDeliveryCharge(offer.deliveryCharge);
+                                    setServiceFee(offer.serviceFee || 0);
+                                    setDiscountType(offer.discountType || 'fixed');
+                                    setDiscountValue(offer.discountValue || 0);
+                                    setIsCreateOpen(true);
+                                  }}
+                                >
+                                  <Edit className="mr-2 h-4 w-4" /> Edit Offer
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => generateBillPDF(offer, settings, 'download')}>
+                                  <Download className="mr-2 h-4 w-4" /> Download PDF
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => generateBillPDF(offer, settings, 'print')}>
+                                  <Printer className="mr-2 h-4 w-4" /> Print PDF
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleConvertToChalan(offer)}>
+                                  <ArrowRight className="mr-2 h-4 w-4" /> Convert to Challan
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="text-destructive focus:text-destructive"
+                                  onClick={() => handleDeleteOffer(offer._id)}
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="md:hidden divide-y divide-border">
+                {paginatedOffers.map((offer) => (
+                  <div key={offer._id} className="p-3.5 space-y-2.5 bg-card">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="font-mono font-bold text-foreground text-sm">{offer.invoiceNo}</div>
+                        <div className="text-xs text-muted-foreground">{format(new Date(offer.date), 'dd MMM yyyy')}</div>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[10px] uppercase text-muted-foreground block font-medium">Total Offer</span>
+                        <span className="text-sm font-bold text-primary">৳{Math.round(offer.total).toLocaleString()}</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs bg-muted/30 p-2.5 rounded-lg border border-border/50 text-muted-foreground">
+                      <div>
+                        <span className="font-medium text-foreground">Client:</span> {offer.clientName}
+                      </div>
+                      <div>
+                        <span className="font-medium text-foreground">Phone:</span> {offer.clientPhone}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="text-[11px] text-muted-foreground">
+                        {offer.items?.length || 0} item{(offer.items?.length || 0) === 1 ? '' : 's'}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-xs gap-1.5"
+                          onClick={() => setSelectedOffer(offer)}
+                        >
+                          <Eye className="h-3.5 w-3.5 text-indigo-600" /> View
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-xs gap-1.5"
+                          onClick={() => generateBillPDF(offer, settings, 'print')}
+                        >
+                          <Printer className="h-3.5 w-3.5 text-teal-600" /> Print
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setSelectedOffer(offer)}>
-                              <Eye className="mr-2 h-4 w-4" /> View Details
-                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
                                 setEditingOffer(offer);
@@ -523,9 +618,6 @@ function ClientOffersContent() {
                             <DropdownMenuItem onClick={() => generateBillPDF(offer, settings, 'download')}>
                               <Download className="mr-2 h-4 w-4" /> Download PDF
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => generateBillPDF(offer, settings, 'print')}>
-                              <Printer className="mr-2 h-4 w-4" /> Print PDF
-                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleConvertToChalan(offer)}>
                               <ArrowRight className="mr-2 h-4 w-4" /> Convert to Challan
                             </DropdownMenuItem>
@@ -538,12 +630,11 @@ function ClientOffersContent() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                    </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
           {totalPages > 1 && (
             <div className="py-4 border-t bg-background px-6 mt-4">

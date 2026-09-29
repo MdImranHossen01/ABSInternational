@@ -162,87 +162,156 @@ export default function LandingPagesPage() {
       </div>
 
       <div className="border rounded-2xl bg-white overflow-hidden shadow-sm">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow>
-              <TableHead className="font-bold">Title & URL</TableHead>
-              <TableHead className="font-bold">Status</TableHead>
-              <TableHead className="font-bold text-center">Sections</TableHead>
-              <TableHead className="font-bold text-center">Orders</TableHead>
-              <TableHead className="font-bold text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10">Loading pages...</TableCell>
+                <TableHead className="font-bold">Title & URL</TableHead>
+                <TableHead className="font-bold">Status</TableHead>
+                <TableHead className="font-bold text-center">Sections</TableHead>
+                <TableHead className="font-bold text-center">Orders</TableHead>
+                <TableHead className="font-bold text-right">Actions</TableHead>
               </TableRow>
-            ) : filteredPages.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">No landing pages found. Create your first one!</TableCell>
-              </TableRow>
-            ) : filteredPages.map((page) => (
-              <TableRow key={page._id} className="hover:bg-muted/20 transition-colors">
-                <TableCell>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-sm">{page.title}</span>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-10">Loading pages...</TableCell>
+                </TableRow>
+              ) : filteredPages.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">No landing pages found. Create your first one!</TableCell>
+                </TableRow>
+              ) : filteredPages.map((page) => (
+                <TableRow key={page._id} className="hover:bg-muted/20 transition-colors">
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-sm">{page.title}</span>
+                      <Link 
+                        href={`/lp/${page.slug}`} 
+                        target="_blank" 
+                        className="text-xs text-primary hover:underline flex items-center gap-1"
+                      >
+                        /lp/{page.slug} <ExternalLink className="h-2 w-2" />
+                      </Link>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={page.isActive ? "default" : "secondary"} className="rounded-full px-3">
+                      {page.isActive ? "Active" : "Inactive"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant="outline" className="rounded-md font-mono">
+                      {page.sections?.length || 0}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center font-bold text-emerald-600">
+                    {page.orderCount || 0}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                          <Link href={`/admin/landing-pages/${page._id}/builder`} className="flex items-center gap-2">
+                            <Edit3 className="h-4 w-4 text-blue-500" /> Open Builder
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer gap-2" onClick={() => window.open(`/lp/${page.slug}`, '_blank')}>
+                          <Eye className="h-4 w-4 text-emerald-500" /> View Live
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer gap-2">
+                          <BarChart2 className="h-4 w-4 text-purple-500" /> Analytics
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          className="cursor-pointer gap-2 text-red-500 focus:text-red-500"
+                          onClick={() => handleDelete(page._id)}
+                        >
+                          <Trash2 className="h-4 w-4" /> Delete Page
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Cards View */}
+        <div className="md:hidden divide-y divide-border">
+          {loading ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">Loading pages...</div>
+          ) : filteredPages.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">No landing pages found. Create your first one!</div>
+          ) : (
+            filteredPages.map((page) => (
+              <div key={page._id} className="p-3.5 space-y-2.5 bg-card">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-sm text-foreground truncate">{page.title}</h3>
                     <Link 
                       href={`/lp/${page.slug}`} 
                       target="_blank" 
-                      className="text-xs text-primary hover:underline flex items-center gap-1"
+                      className="text-xs text-primary hover:underline flex items-center gap-1 font-mono"
                     >
                       /lp/{page.slug} <ExternalLink className="h-2 w-2" />
                     </Link>
                   </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={page.isActive ? "default" : "secondary"} className="rounded-full px-3">
+                  <Badge variant={page.isActive ? "default" : "secondary"} className="text-[10px] px-2 py-0.5 rounded-full shrink-0">
                     {page.isActive ? "Active" : "Inactive"}
                   </Badge>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Badge variant="outline" className="rounded-md font-mono">
-                    {page.sections?.length || 0}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center font-bold text-emerald-600">
-                  {page.orderCount || 0}
-                </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
-                        <MoreHorizontal className="h-4 w-4" />
+                </div>
+
+                <div className="flex items-center justify-between text-xs pt-1 border-t">
+                  <div className="flex items-center gap-3">
+                    <span className="text-muted-foreground">
+                      Sections: <strong className="text-foreground font-mono">{page.sections?.length || 0}</strong>
+                    </span>
+                    <span className="text-muted-foreground">
+                      Orders: <strong className="text-emerald-600 font-mono">{page.orderCount || 0}</strong>
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <Link href={`/admin/landing-pages/${page._id}/builder`}>
+                      <Button variant="default" size="sm" className="h-7 text-xs gap-1 font-bold">
+                        <Edit3 className="h-3 w-3" /> Builder
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild className="cursor-pointer">
-                        <Link href={`/admin/landing-pages/${page._id}/builder`} className="flex items-center gap-2">
-                          <Edit3 className="h-4 w-4 text-blue-500" /> Open Builder
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer gap-2" onClick={() => window.open(`/lp/${page.slug}`, '_blank')}>
-                        <Eye className="h-4 w-4 text-emerald-500" /> View Live
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer gap-2">
-                        <BarChart2 className="h-4 w-4 text-purple-500" /> Analytics
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem 
-                        className="cursor-pointer gap-2 text-red-500 focus:text-red-500"
-                        onClick={() => handleDelete(page._id)}
-                      >
-                        <Trash2 className="h-4 w-4" /> Delete Page
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                    </Link>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl">
+                        <DropdownMenuItem className="cursor-pointer gap-2" onClick={() => window.open(`/lp/${page.slug}`, '_blank')}>
+                          <Eye className="h-4 w-4 text-emerald-500" /> View Live
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          className="cursor-pointer gap-2 text-red-500 focus:text-red-500"
+                          onClick={() => handleDelete(page._id)}
+                        >
+                          <Trash2 className="h-4 w-4" /> Delete Page
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

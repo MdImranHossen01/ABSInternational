@@ -94,43 +94,75 @@ export default function WithdrawHistoryPage() {
               No withdrawal records found yet.
             </div>
           ) : (
-            <div className="rounded-md border overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead>Date</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transactions.map((tx: any) => (
-                    <TableRow key={tx._id}>
-                      <TableCell className="text-xs font-mono">{new Date(tx.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell className="text-xs">{tx.description}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className={`capitalize text-[10px] ${
-                            tx.status === 'completed'
-                              ? 'text-emerald-600 border-emerald-500 bg-emerald-500/5'
-                              : tx.status === 'rejected'
-                              ? 'text-rose-600 border-rose-500 bg-rose-500/5'
-                              : 'text-amber-600 border-amber-500 bg-amber-500/5'
-                          }`}
-                        >
-                          {tx.status || 'pending'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-mono font-bold text-rose-600">
-                        -৳{(tx.amount || 0).toLocaleString()}
-                      </TableCell>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block rounded-md border overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Date</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {transactions.map((tx: any) => (
+                      <TableRow key={tx._id}>
+                        <TableCell className="text-xs font-mono">{new Date(tx.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-xs">{tx.description}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={`capitalize text-[10px] ${
+                              tx.status === 'completed'
+                                ? 'text-emerald-600 border-emerald-500 bg-emerald-500/5'
+                                : tx.status === 'rejected'
+                                ? 'text-rose-600 border-rose-500 bg-rose-500/5'
+                                : 'text-amber-600 border-amber-500 bg-amber-500/5'
+                            }`}
+                          >
+                            {tx.status || 'pending'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-mono font-bold text-rose-600">
+                          -৳{(tx.amount || 0).toLocaleString()}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="md:hidden divide-y divide-border rounded-xl border overflow-hidden">
+                {transactions.map((tx: any) => (
+                  <div key={tx._id} className="p-3 bg-card space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <Badge
+                        variant="outline"
+                        className={`capitalize text-[10px] px-2 py-0.5 ${
+                          tx.status === 'completed'
+                            ? 'text-emerald-600 border-emerald-500 bg-emerald-500/5'
+                            : tx.status === 'rejected'
+                            ? 'text-rose-600 border-rose-500 bg-rose-500/5'
+                            : 'text-amber-600 border-amber-500 bg-amber-500/5'
+                        }`}
+                      >
+                        {tx.status || 'pending'}
+                      </Badge>
+                      <span className="font-mono font-bold text-rose-600 text-sm">
+                        -৳{(tx.amount || 0).toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="text-xs text-foreground/90 font-medium leading-snug">{tx.description}</p>
+                    <div className="text-[11px] text-muted-foreground font-mono">
+                      {new Date(tx.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

@@ -446,77 +446,154 @@ function AccountsLedgerContent() {
               <p>No journal entries found</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Account</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead className="text-right">Amount (৳)</TableHead>
-                    <TableHead className="text-right">Running Balance (৳)</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedTransactions.map((tx) => (
-                    <TableRow key={tx._id}>
-                      <TableCell className="text-muted-foreground">
-                        {format(new Date(tx.date), 'dd MMM yyyy')}
-                      </TableCell>
-                      <TableCell className="font-medium">{tx.account?.name}</TableCell>
-                      <TableCell>
-                        <div className="space-y-0.5">
-                          <p>{tx.description}</p>
-                          {tx.reference && (
-                            <span className="text-xs text-muted-foreground uppercase bg-muted px-1.5 py-0.5 rounded">
-                              Ref: {tx.reference}
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={tx.type === 'debit' ? 'default' : 'outline'}
-                          className={tx.type === 'debit' ? 'bg-primary/20 text-primary hover:bg-primary/20 border-transparent' : ''}
-                        >
-                          {tx.type === 'debit' ? 'Debit (+)' : 'Credit (-)'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-medium">৳{Math.round(tx.amount)}</TableCell>
-                      <TableCell className="text-right font-semibold">৳{Math.round(tx.balanceAfter)}</TableCell>
-                      <TableCell className="text-right">
-                        {tx.reference && ['manual-deposit', 'manual-withdrawal', 'manual-transfer'].includes(tx.reference) ? (
-                          <div className="flex items-center justify-end gap-1.5">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleEditClick(tx)}>
-                                  <Edit2 className="mr-2 h-4 w-4 text-indigo-600" /> Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="text-destructive focus:text-destructive"
-                                  onClick={() => handleDeleteTx(tx._id)}
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4" /> Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Account</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead className="text-right">Amount (৳)</TableHead>
+                      <TableHead className="text-right">Running Balance (৳)</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedTransactions.map((tx) => (
+                      <TableRow key={tx._id}>
+                        <TableCell className="text-muted-foreground">
+                          {format(new Date(tx.date), 'dd MMM yyyy')}
+                        </TableCell>
+                        <TableCell className="font-medium">{tx.account?.name}</TableCell>
+                        <TableCell>
+                          <div className="space-y-0.5">
+                            <p>{tx.description}</p>
+                            {tx.reference && (
+                              <span className="text-xs text-muted-foreground uppercase bg-muted px-1.5 py-0.5 rounded">
+                                Ref: {tx.reference}
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={tx.type === 'debit' ? 'default' : 'outline'}
+                            className={tx.type === 'debit' ? 'bg-primary/20 text-primary hover:bg-primary/20 border-transparent' : ''}
+                          >
+                            {tx.type === 'debit' ? 'Debit (+)' : 'Credit (-)'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-medium">৳{Math.round(tx.amount)}</TableCell>
+                        <TableCell className="text-right font-semibold">৳{Math.round(tx.balanceAfter)}</TableCell>
+                        <TableCell className="text-right">
+                          {tx.reference && ['manual-deposit', 'manual-withdrawal', 'manual-transfer'].includes(tx.reference) ? (
+                            <div className="flex items-center justify-end gap-1.5">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => handleEditClick(tx)}>
+                                    <Edit2 className="mr-2 h-4 w-4 text-indigo-600" /> Edit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="text-destructive focus:text-destructive"
+                                    onClick={() => handleDeleteTx(tx._id)}
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="md:hidden divide-y divide-border">
+                {paginatedTransactions.map((tx) => {
+                  const isDebit = tx.type === 'debit';
+                  const isManual = tx.reference && ['manual-deposit', 'manual-withdrawal', 'manual-transfer'].includes(tx.reference);
+
+                  return (
+                    <div key={tx._id} className="p-3.5 space-y-2.5 bg-card">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="font-semibold text-foreground text-sm flex items-center gap-1.5">
+                            {tx.account?.name}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {format(new Date(tx.date), 'dd MMM yyyy')}
+                          </div>
+                        </div>
+                        <Badge
+                          variant={isDebit ? 'default' : 'outline'}
+                          className={`text-xs ${isDebit ? 'bg-primary/20 text-primary border-transparent' : 'text-muted-foreground'}`}
+                        >
+                          {isDebit ? 'Debit (+)' : 'Credit (-)'}
+                        </Badge>
+                      </div>
+
+                      <div className="text-xs text-foreground bg-muted/30 p-2.5 rounded-lg border border-border/50 space-y-1">
+                        <p className="font-medium">{tx.description}</p>
+                        {tx.reference && (
+                          <div className="text-[10px] text-muted-foreground uppercase font-mono">
+                            Ref: {tx.reference}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <div>
+                          <span className="text-[10px] uppercase text-muted-foreground block font-medium">Amount</span>
+                          <span className={`text-sm font-bold ${isDebit ? 'text-primary' : 'text-rose-600'}`}>
+                            {isDebit ? '+' : '-'}৳{Math.round(tx.amount).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-[10px] uppercase text-muted-foreground block font-medium">Balance After</span>
+                          <span className="text-xs font-semibold text-foreground">
+                            ৳{Math.round(tx.balanceAfter).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+
+                      {isManual && (
+                        <div className="flex items-center justify-end gap-2 pt-1 border-t border-dashed">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1"
+                            onClick={() => handleEditClick(tx)}
+                          >
+                            <Edit2 className="h-3 w-3 text-indigo-600" /> Edit
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1 text-rose-600 hover:text-rose-700"
+                            onClick={() => handleDeleteTx(tx._id)}
+                          >
+                            <Trash2 className="h-3 w-3" /> Delete
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
           {totalPages > 1 && (
             <div className="py-4 border-t bg-background px-6">

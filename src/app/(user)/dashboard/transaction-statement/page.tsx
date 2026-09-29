@@ -99,34 +99,70 @@ export default function TransactionStatementPage() {
           {filtered.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground">No transactions matching your search.</div>
           ) : (
-            <div className="rounded-md border overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead>Date & Time</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.map((tx: any) => {
-                    const isCredit = ['deposit', 'earned', 'received'].includes(tx.type);
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block rounded-md border overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Date & Time</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filtered.map((tx: any) => {
+                      const isCredit = ['deposit', 'earned', 'received'].includes(tx.type);
 
-                    return (
-                      <TableRow key={tx._id}>
-                        <TableCell className="text-xs font-mono">
-                          {new Date(tx.createdAt).toLocaleDateString()} {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="capitalize text-[10px]">{tx.type}</Badge>
-                        </TableCell>
-                        <TableCell className="text-xs">{tx.description}</TableCell>
-                        <TableCell>
+                      return (
+                        <TableRow key={tx._id}>
+                          <TableCell className="text-xs font-mono">
+                            {new Date(tx.createdAt).toLocaleDateString()} {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="capitalize text-[10px]">{tx.type}</Badge>
+                          </TableCell>
+                          <TableCell className="text-xs">{tx.description}</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className={`capitalize text-[10px] ${
+                                (tx.status || 'completed') === 'completed'
+                                  ? 'text-emerald-600 border-emerald-500 bg-emerald-500/5'
+                                  : tx.status === 'rejected'
+                                  ? 'text-rose-600 border-rose-500 bg-rose-500/5'
+                                  : 'text-amber-600 border-amber-500 bg-amber-500/5'
+                              }`}
+                            >
+                              {tx.status || 'completed'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className={`text-right font-mono font-bold text-xs ${isCredit ? 'text-emerald-600' : 'text-rose-600'}`}>
+                            {isCredit ? '+' : '-'}৳{(tx.amount || 0).toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="md:hidden divide-y divide-border rounded-xl border overflow-hidden">
+                {filtered.map((tx: any) => {
+                  const isCredit = ['deposit', 'earned', 'received'].includes(tx.type);
+                  return (
+                    <div key={tx._id} className="p-3 bg-card space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="outline" className="capitalize text-[10px] px-2 py-0.5">
+                            {tx.type}
+                          </Badge>
                           <Badge
                             variant="outline"
-                            className={`capitalize text-[10px] ${
+                            className={`capitalize text-[10px] px-2 py-0.5 ${
                               (tx.status || 'completed') === 'completed'
                                 ? 'text-emerald-600 border-emerald-500 bg-emerald-500/5'
                                 : tx.status === 'rejected'
@@ -136,16 +172,20 @@ export default function TransactionStatementPage() {
                           >
                             {tx.status || 'completed'}
                           </Badge>
-                        </TableCell>
-                        <TableCell className={`text-right font-mono font-bold text-xs ${isCredit ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        </div>
+                        <span className={`font-mono font-bold text-sm ${isCredit ? 'text-emerald-600' : 'text-rose-600'}`}>
                           {isCredit ? '+' : '-'}৳{(tx.amount || 0).toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+                        </span>
+                      </div>
+                      <p className="text-xs text-foreground/90 font-medium leading-snug">{tx.description}</p>
+                      <div className="text-[11px] text-muted-foreground font-mono">
+                        {new Date(tx.createdAt).toLocaleDateString()} {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

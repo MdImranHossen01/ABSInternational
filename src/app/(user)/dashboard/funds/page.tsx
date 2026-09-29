@@ -201,39 +201,70 @@ export default function UserFundsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-muted/50">
-                      <TableHead className="font-bold">Generation Level</TableHead>
-                      <TableHead className="font-bold">Pool Share (%)</TableHead>
-                      <TableHead className="font-bold">Payout Amount</TableHead>
-                      <TableHead className="font-bold">Description</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {genBonusBreakdown.map((row, idx) => (
-                      <TableRow key={idx} className={idx === 0 ? 'bg-primary/5 font-semibold' : ''}>
-                        <TableCell className="font-medium flex items-center gap-2">
+              <>
+                {/* Desktop Table View */}
+                <div className="hidden md:block rounded-md border overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50">
+                        <TableHead className="font-bold">Generation Level</TableHead>
+                        <TableHead className="font-bold">Pool Share (%)</TableHead>
+                        <TableHead className="font-bold">Payout Amount</TableHead>
+                        <TableHead className="font-bold">Description</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {genBonusBreakdown.map((row, idx) => (
+                        <TableRow key={idx} className={idx === 0 ? 'bg-primary/5 font-semibold' : ''}>
+                          <TableCell className="font-medium flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-primary" />
+                            {row.gen}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="secondary" className="font-mono font-bold">
+                              {row.percentage}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="font-mono font-bold text-emerald-600">
+                            {row.amountPerActivation}
+                          </TableCell>
+                          <TableCell className="text-xs text-muted-foreground">
+                            {row.desc}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Cards View */}
+                <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {genBonusBreakdown.map((row, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-3 rounded-xl border bg-card space-y-1.5 ${
+                        idx === 0 ? 'ring-2 ring-primary/40 bg-primary/5' : ''
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold text-sm flex items-center gap-1.5">
                           <span className="h-2 w-2 rounded-full bg-primary" />
                           {row.gen}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="font-mono font-bold">
-                            {row.percentage}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="font-mono font-bold text-emerald-600">
+                        </span>
+                        <Badge variant="secondary" className="font-mono font-bold text-xs px-2 py-0.5">
+                          {row.percentage}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between text-xs pt-1 border-t">
+                        <span className="text-muted-foreground">{row.desc}</span>
+                        <span className="font-mono font-bold text-emerald-600 shrink-0">
                           {row.amountPerActivation}
-                        </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
-                          {row.desc}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             </CardContent>
           </Card>
         </TabsContent>
@@ -434,36 +465,59 @@ export default function UserFundsPage() {
                   No bonus transactions found yet. Invite members to start earning sponsor and generation bonuses!
                 </div>
               ) : (
-                <div className="rounded-md border overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-muted/50">
-                        <TableHead>Date</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {history.map((tx: any) => (
-                        <TableRow key={tx._id}>
-                          <TableCell className="text-xs font-mono">
-                            {new Date(tx.createdAt).toLocaleDateString()} {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="capitalize text-emerald-600 border-emerald-500/30 bg-emerald-500/5">
-                              {tx.type}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-xs max-w-xs truncate">{tx.description}</TableCell>
-                          <TableCell className="text-right font-mono font-bold text-emerald-600">
-                            +৳{(tx.amount || 0).toLocaleString()}
-                          </TableCell>
+                <>
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block rounded-md border overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/50">
+                          <TableHead>Date</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead className="text-right">Amount</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                      </TableHeader>
+                      <TableBody>
+                        {history.map((tx: any) => (
+                          <TableRow key={tx._id}>
+                            <TableCell className="text-xs font-mono">
+                              {new Date(tx.createdAt).toLocaleDateString()} {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="capitalize text-emerald-600 border-emerald-500/30 bg-emerald-500/5">
+                                {tx.type}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-xs max-w-xs truncate">{tx.description}</TableCell>
+                            <TableCell className="text-right font-mono font-bold text-emerald-600">
+                              +৳{(tx.amount || 0).toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Mobile Cards View */}
+                  <div className="md:hidden divide-y divide-border rounded-xl border overflow-hidden">
+                    {history.map((tx: any) => (
+                      <div key={tx._id} className="p-3 bg-card space-y-1.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <Badge variant="outline" className="capitalize text-emerald-600 border-emerald-500/30 bg-emerald-500/5 text-[11px] px-2 py-0.5">
+                            {tx.type}
+                          </Badge>
+                          <span className="font-mono font-bold text-emerald-600 text-sm">
+                            +৳{(tx.amount || 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-xs text-foreground/90 font-medium leading-snug">{tx.description}</p>
+                        <div className="text-[11px] text-muted-foreground font-mono">
+                          {new Date(tx.createdAt).toLocaleDateString()} {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>

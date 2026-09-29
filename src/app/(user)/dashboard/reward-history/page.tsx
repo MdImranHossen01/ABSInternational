@@ -79,28 +79,48 @@ export default function RewardHistoryPage() {
               No reward history found yet. Achieve 6 active direct downlines to earn your Team Manager reward!
             </div>
           ) : (
-            <div className="rounded-md border overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead>Date</TableHead>
-                    <TableHead>Event & Reward Details</TableHead>
-                    <TableHead className="text-right">Bonus Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rewards.map((tx: any) => (
-                    <TableRow key={tx._id}>
-                      <TableCell className="text-xs font-mono">{new Date(tx.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell className="text-xs font-semibold">{tx.description}</TableCell>
-                      <TableCell className="text-right font-mono font-bold text-emerald-600">
-                        +৳{(tx.amount || 0).toLocaleString()}
-                      </TableCell>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block rounded-md border overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Date</TableHead>
+                      <TableHead>Event & Reward Details</TableHead>
+                      <TableHead className="text-right">Bonus Amount</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {rewards.map((tx: any) => (
+                      <TableRow key={tx._id}>
+                        <TableCell className="text-xs font-mono">{new Date(tx.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-xs font-semibold">{tx.description}</TableCell>
+                        <TableCell className="text-right font-mono font-bold text-emerald-600">
+                          +৳{(tx.amount || 0).toLocaleString()}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="md:hidden divide-y divide-border rounded-xl border overflow-hidden">
+                {rewards.map((tx: any) => (
+                  <div key={tx._id} className="p-3 bg-card space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-semibold text-foreground/90 leading-snug">{tx.description}</span>
+                      <span className="font-mono font-bold text-emerald-600 text-sm shrink-0">
+                        +৳{(tx.amount || 0).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-muted-foreground font-mono">
+                      {new Date(tx.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

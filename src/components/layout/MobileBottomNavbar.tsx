@@ -17,7 +17,9 @@ import {
   Settings,
   Truck,
   LogOut,
-  Package
+  Package,
+  LogIn,
+  UserPlus
 } from 'lucide-react';
 import { useAppSelector } from '@/store/hooks';
 import { CartDrawer } from '@/components/layout/CartDrawer';
@@ -231,14 +233,39 @@ export function MobileBottomNavbar() {
               </SheetContent>
             </Sheet>
           ) : (
-            <Link
-              href="/login"
-              aria-label="Go to login page"
-              className={`flex flex-col items-center justify-center gap-1 min-w-[64px] transition-all relative ${pathname === '/login' ? 'text-primary scale-110' : 'text-muted-foreground'
-                } active:scale-95 transition-transform`}
-            >
-              <User className={`h-5 w-5 ${pathname === '/login' ? 'stroke-[2.5px]' : 'stroke-[1.5px]'}`} />
-            </Link>
+            <Sheet>
+              <SheetTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="User account menu"
+                  className={`flex flex-col items-center justify-center gap-1 min-w-[64px] transition-all relative ${pathname === '/login' || pathname === '/register' ? 'text-primary scale-110' : 'text-muted-foreground'
+                    } active:scale-95 transition-transform`}
+                >
+                  <User className={`h-5 w-5 ${pathname === '/login' || pathname === '/register' ? 'stroke-[2.5px]' : 'stroke-[1.5px]'}`} />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="rounded-t-[2rem] border-t-0 p-6 bg-background z-[150] space-y-4">
+                <SheetHeader>
+                  <SheetTitle className="text-center text-base font-bold">
+                    Account Access
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <Link
+                    href="/login"
+                    className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 active:scale-95 transition-all text-center"
+                  >
+                    <LogIn className="h-4 w-4" /> Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-primary text-primary font-bold text-sm hover:bg-primary/10 active:scale-95 transition-all text-center"
+                  >
+                    <UserPlus className="h-4 w-4" /> Register
+                  </Link>
+                </div>
+              </SheetContent>
+            </Sheet>
           )}
         </div>
       </nav>

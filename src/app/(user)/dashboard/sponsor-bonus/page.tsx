@@ -114,26 +114,46 @@ export default function SponsorBonusPage() {
               No sponsor bonuses recorded yet. Share your referral sponsor link to start earning ৳225 per joining!
             </div>
           ) : (
-            <div className="rounded-md border overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead>Date</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-right">Bonus Credited</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {history.map((tx: any) => (
-                    <TableRow key={tx._id}>
-                      <TableCell className="text-xs font-mono">{new Date(tx.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell className="text-xs">{tx.description}</TableCell>
-                      <TableCell className="text-right font-mono font-bold text-emerald-600">+৳{(tx.amount || 0).toLocaleString()}</TableCell>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block rounded-md border overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Date</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Bonus Credited</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {history.map((tx: any) => (
+                      <TableRow key={tx._id}>
+                        <TableCell className="text-xs font-mono">{new Date(tx.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-xs">{tx.description}</TableCell>
+                        <TableCell className="text-right font-mono font-bold text-emerald-600">+৳{(tx.amount || 0).toLocaleString()}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="md:hidden divide-y divide-border rounded-xl border overflow-hidden">
+                {history.map((tx: any) => (
+                  <div key={tx._id} className="p-3 bg-card space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-mono text-muted-foreground">
+                        {new Date(tx.createdAt).toLocaleDateString()}
+                      </span>
+                      <span className="font-mono font-bold text-emerald-600 text-sm">
+                        +৳{(tx.amount || 0).toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="text-xs text-foreground font-medium leading-relaxed">{tx.description}</p>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

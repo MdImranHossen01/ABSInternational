@@ -26,28 +26,12 @@ export default function UserTopbar() {
       <div className="flex items-center gap-4">
         {/* Mobile hamburger */}
         <SidebarTrigger className="md:hidden" />
-        <div className="flex-1 font-semibold text-lg md:hidden">
-          My Dashboard
-        </div>
       </div>
 
       {/* Desktop spacer */}
       <div className="hidden md:flex flex-1" />
 
       <div className="flex items-center gap-3">
-        {isAdmin && (
-          <Link href="/admin/dashboard">
-            <Button
-              size="sm"
-              variant="outline"
-              className="border-amber-500/40 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 dark:text-amber-300 font-bold h-8 text-xs flex items-center gap-1.5 shadow-xs"
-              title="Return to Admin Management Panel"
-            >
-              <ShieldCheck className="h-3.5 w-3.5 text-amber-600" />
-              <span className="hidden sm:inline">Admin Panel</span>
-            </Button>
-          </Link>
-        )}
 
         <Link href="/dashboard/notifications">
           <Button variant="ghost" size="icon" className="relative rounded-full" title="Notifications">
@@ -99,7 +83,7 @@ export default function UserTopbar() {
                 <DropdownMenuItem asChild>
                   <Link href="/admin/dashboard" className="text-amber-700 dark:text-amber-300 font-semibold">
                     <ShieldCheck className="mr-2 h-4 w-4 text-amber-600" />
-                    <span>Admin Panel</span>
+                    <span>System Dashboard</span>
                   </Link>
                 </DropdownMenuItem>
               )}

@@ -76,41 +76,85 @@ export default function RankSystemPage() {
           <CardDescription>Rules to achieve Team Manager through Company Director</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead className="font-bold">Rank Tier</TableHead>
-                  <TableHead className="font-bold">Requirements</TableHead>
-                  <TableHead className="font-bold">Cash Promotion Bonus</TableHead>
-                  <TableHead className="font-bold">Incentives & Rewards</TableHead>
-                  <TableHead className="font-bold text-center">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {ranksMaster.map((r: any) => (
-                  <TableRow key={r.id} className={currentRank === r.id ? 'bg-primary/5 font-semibold' : ''}>
-                    <TableCell className="font-bold flex items-center gap-2">
-                      <Trophy className="h-4 w-4 text-amber-600 shrink-0" />
-                      {r.title}
-                    </TableCell>
-                    <TableCell className="text-xs">{r.requirement}</TableCell>
-                    <TableCell className="font-mono font-bold text-emerald-600">
-                      {r.bonus > 0 ? `৳${r.bonus.toLocaleString()}` : '—'}
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{r.reward}</TableCell>
-                    <TableCell className="text-center">
-                      {currentRank === r.id ? (
-                        <Badge className="bg-primary text-white font-bold text-[10px]">Your Rank</Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-[10px]">Standard</Badge>
-                      )}
-                    </TableCell>
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block rounded-md border overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="font-bold">Rank Tier</TableHead>
+                    <TableHead className="font-bold">Requirements</TableHead>
+                    <TableHead className="font-bold">Cash Promotion Bonus</TableHead>
+                    <TableHead className="font-bold">Incentives & Rewards</TableHead>
+                    <TableHead className="font-bold text-center">Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {ranksMaster.map((r: any) => (
+                    <TableRow key={r.id} className={currentRank === r.id ? 'bg-primary/5 font-semibold' : ''}>
+                      <TableCell className="font-bold flex items-center gap-2">
+                        <Trophy className="h-4 w-4 text-amber-600 shrink-0" />
+                        {r.title}
+                      </TableCell>
+                      <TableCell className="text-xs">{r.requirement}</TableCell>
+                      <TableCell className="font-mono font-bold text-emerald-600">
+                        {r.bonus > 0 ? `৳${r.bonus.toLocaleString()}` : '—'}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{r.reward}</TableCell>
+                      <TableCell className="text-center">
+                        {currentRank === r.id ? (
+                          <Badge className="bg-primary text-white font-bold text-[10px]">Your Rank</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px]">Standard</Badge>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile Cards View */}
+            <div className="md:hidden space-y-3">
+              {ranksMaster.map((r: any) => {
+                const isCurrent = currentRank === r.id;
+                return (
+                  <div
+                    key={r.id}
+                    className={`p-3.5 rounded-xl border bg-card space-y-2 transition-all ${
+                      isCurrent ? 'ring-2 ring-primary/40 bg-primary/5' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 font-bold text-sm">
+                        <Trophy className="h-4 w-4 text-amber-600 shrink-0" />
+                        <span>{r.title}</span>
+                      </div>
+                      {isCurrent ? (
+                        <Badge className="bg-primary text-white font-bold text-[10px] px-2 py-0.5">Your Rank</Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-[10px] px-2 py-0.5">Standard</Badge>
+                      )}
+                    </div>
+                    <div className="text-xs space-y-1">
+                      <div className="text-muted-foreground">
+                        <strong className="text-foreground">Requirement:</strong> {r.requirement}
+                      </div>
+                      <div className="text-muted-foreground">
+                        <strong className="text-foreground">Incentive:</strong> {r.reward}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-1 border-t text-xs">
+                      <span className="text-muted-foreground font-semibold">Promotion Bonus:</span>
+                      <span className="font-mono font-bold text-emerald-600">
+                        {r.bonus > 0 ? `৳${r.bonus.toLocaleString()}` : '—'}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         </CardContent>
       </Card>
     </div>

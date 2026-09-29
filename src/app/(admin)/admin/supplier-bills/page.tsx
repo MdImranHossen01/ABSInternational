@@ -398,123 +398,240 @@ function SupplierBillsContent() {
 
       <Card>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Bill No</TableHead>
-                <TableHead>Supplier</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Total Amount</TableHead>
-                <TableHead className="text-right">Paid Amount</TableHead>
-                <TableHead className="text-right">Due Amount</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
+          {/* Desktop Table View */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-6 text-muted-foreground">
-                    Loading bills...
-                  </TableCell>
+                  <TableHead>Bill No</TableHead>
+                  <TableHead>Supplier</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Total Amount</TableHead>
+                  <TableHead className="text-right">Paid Amount</TableHead>
+                  <TableHead className="text-right">Due Amount</TableHead>
+                  <TableHead className="text-center">Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ) : filteredBills.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-6 text-muted-foreground">
-                    No bills found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginatedBills.map((bill: any) => (
-                  <TableRow key={bill._id}>
-                    <TableCell className="font-semibold text-foreground">{bill.billNo}</TableCell>
-                    <TableCell>
-                      {bill.supplier ? (
-                        <div>
-                          <div className="font-medium">{bill.supplier.name}</div>
-                          {bill.supplier.companyName && (
-                            <div className="text-xs text-muted-foreground">{bill.supplier.companyName}</div>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground">Deleted Supplier</span>
-                      )}
-                    </TableCell>
-                    <TableCell>{format(new Date(bill.date), 'dd MMM yyyy')}</TableCell>
-                    <TableCell className="text-right font-medium">৳{bill.total.toLocaleString()}</TableCell>
-                    <TableCell className="text-right text-emerald-600 font-medium">
-                      ৳{bill.paidAmount.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right text-rose-600 font-semibold">
-                      ৳{bill.dueAmount.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <span className={`px-2 py-1 text-xs rounded-full font-semibold ${
-                        bill.status === 'Paid' ? 'bg-emerald-100 text-emerald-800' :
-                        bill.status === 'Partially Paid' ? 'bg-amber-100 text-amber-800' :
-                        'bg-rose-100 text-rose-800'
-                      }`}>
-                        {bill.status}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-teal-600 hover:text-teal-700 hover:bg-teal-50"
-                          onClick={() => generateBillPDF(bill, settings, 'print')}
-                          title="Print Purchase Bill"
-                        >
-                          <Printer className="h-4 w-4" />
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => { setSelectedBill(bill); setIsDetailOpen(true); }}>
-                              <Eye className="mr-2 h-4 w-4 text-indigo-600" /> View Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setEditingBill(bill);
-                                setSelectedSupplierId(bill.supplier?._id || bill.supplier || '');
-                                setBillDate(format(new Date(bill.date), 'yyyy-MM-dd'));
-                                setBillItems(bill.items);
-                                setDiscountValue(bill.discount || 0);
-                                setPaidAmount(bill.paidAmount || 0);
-                                setPaymentMethod(bill.paymentMethod || 'Cash');
-                                setIsCreateOpen(true);
-                              }}
-                            >
-                              <Edit className="mr-2 h-4 w-4" /> Edit Bill
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => generateBillPDF(bill, settings, 'download')}>
-                              <Download className="mr-2 h-4 w-4 text-blue-600" /> Download PDF
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => generateBillPDF(bill, settings, 'print')}>
-                              <Printer className="mr-2 h-4 w-4 text-teal-600" /> Print Bill
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive"
-                              onClick={() => handleDeleteBill(bill._id)}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-6 text-muted-foreground">
+                      Loading bills...
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : filteredBills.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-6 text-muted-foreground">
+                      No bills found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedBills.map((bill: any) => (
+                    <TableRow key={bill._id}>
+                      <TableCell className="font-semibold text-foreground">{bill.billNo}</TableCell>
+                      <TableCell>
+                        {bill.supplier ? (
+                          <div>
+                            <div className="font-medium">{bill.supplier.name}</div>
+                            {bill.supplier.companyName && (
+                              <div className="text-xs text-muted-foreground">{bill.supplier.companyName}</div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">Deleted Supplier</span>
+                        )}
+                      </TableCell>
+                      <TableCell>{format(new Date(bill.date), 'dd MMM yyyy')}</TableCell>
+                      <TableCell className="text-right font-medium">৳{bill.total.toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-emerald-600 font-medium">
+                        ৳{bill.paidAmount.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right text-rose-600 font-semibold">
+                        ৳{bill.dueAmount.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className={`px-2 py-1 text-xs rounded-full font-semibold ${
+                          bill.status === 'Paid' ? 'bg-emerald-100 text-emerald-800' :
+                          bill.status === 'Partially Paid' ? 'bg-amber-100 text-amber-800' :
+                          'bg-rose-100 text-rose-800'
+                        }`}>
+                          {bill.status}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-teal-600 hover:text-teal-700 hover:bg-teal-50"
+                            onClick={() => generateBillPDF(bill, settings, 'print')}
+                            title="Print Purchase Bill"
+                          >
+                            <Printer className="h-4 w-4" />
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => { setSelectedBill(bill); setIsDetailOpen(true); }}>
+                                <Eye className="mr-2 h-4 w-4 text-indigo-600" /> View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setEditingBill(bill);
+                                  setSelectedSupplierId(bill.supplier?._id || bill.supplier || '');
+                                  setBillDate(format(new Date(bill.date), 'yyyy-MM-dd'));
+                                  setBillItems(bill.items);
+                                  setDiscountValue(bill.discount || 0);
+                                  setPaidAmount(bill.paidAmount || 0);
+                                  setPaymentMethod(bill.paymentMethod || 'Cash');
+                                  setIsCreateOpen(true);
+                                }}
+                              >
+                                <Edit className="mr-2 h-4 w-4" /> Edit Bill
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => generateBillPDF(bill, settings, 'download')}>
+                                <Download className="mr-2 h-4 w-4 text-blue-600" /> Download PDF
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => generateBillPDF(bill, settings, 'print')}>
+                                <Printer className="mr-2 h-4 w-4 text-teal-600" /> Print Bill
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => handleDeleteBill(bill._id)}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Cards View */}
+          <div className="md:hidden divide-y divide-border">
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground text-sm flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" /> Loading bills...
+              </div>
+            ) : filteredBills.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground text-sm">
+                No bills found.
+              </div>
+            ) : (
+              paginatedBills.map((bill: any) => (
+                <div key={bill._id} className="p-3.5 space-y-3 bg-card">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="font-mono font-bold text-foreground text-sm">{bill.billNo}</div>
+                      <div className="text-xs text-muted-foreground">{format(new Date(bill.date), 'dd MMM yyyy')}</div>
+                    </div>
+                    <span className={`px-2 py-0.5 text-xs rounded-full font-semibold ${
+                      bill.status === 'Paid' ? 'bg-emerald-100 text-emerald-800' :
+                      bill.status === 'Partially Paid' ? 'bg-amber-100 text-amber-800' :
+                      'bg-rose-100 text-rose-800'
+                    }`}>
+                      {bill.status}
+                    </span>
+                  </div>
+
+                  <div className="text-xs">
+                    <span className="text-muted-foreground">Supplier: </span>
+                    <span className="font-semibold text-foreground">
+                      {bill.supplier ? bill.supplier.name : 'Deleted Supplier'}
+                    </span>
+                    {bill.supplier?.companyName && (
+                      <span className="text-muted-foreground"> ({bill.supplier.companyName})</span>
+                    )}
+                  </div>
+
+                  {/* Financial Breakdown Grid */}
+                  <div className="grid grid-cols-3 gap-2 bg-muted/40 p-2.5 rounded-lg border border-border/50 text-center">
+                    <div>
+                      <span className="text-[10px] uppercase text-muted-foreground block font-medium">Total</span>
+                      <span className="text-xs font-bold text-foreground">৳{bill.total.toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase text-muted-foreground block font-medium">Paid</span>
+                      <span className="text-xs font-bold text-emerald-600">৳{bill.paidAmount.toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase text-muted-foreground block font-medium">Due</span>
+                      <span className="text-xs font-bold text-rose-600">৳{bill.dueAmount.toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="text-[11px] text-muted-foreground">
+                      {bill.items?.length || 0} item{(bill.items?.length || 0) === 1 ? '' : 's'}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 text-xs gap-1.5"
+                        onClick={() => { setSelectedBill(bill); setIsDetailOpen(true); }}
+                      >
+                        <Eye className="h-3.5 w-3.5 text-indigo-600" /> View
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 text-xs gap-1.5"
+                        onClick={() => generateBillPDF(bill, settings, 'print')}
+                      >
+                        <Printer className="h-3.5 w-3.5 text-teal-600" /> Print
+                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditingBill(bill);
+                              setSelectedSupplierId(bill.supplier?._id || bill.supplier || '');
+                              setBillDate(format(new Date(bill.date), 'yyyy-MM-dd'));
+                              setBillItems(bill.items);
+                              setDiscountValue(bill.discount || 0);
+                              setPaidAmount(bill.paidAmount || 0);
+                              setPaymentMethod(bill.paymentMethod || 'Cash');
+                              setIsCreateOpen(true);
+                            }}
+                          >
+                            <Edit className="mr-2 h-4 w-4" /> Edit Bill
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => generateBillPDF(bill, settings, 'download')}>
+                            <Download className="mr-2 h-4 w-4 text-blue-600" /> Download PDF
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => handleDeleteBill(bill._id)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
           {totalPages > 1 && (
-            <div className="py-4 border-t bg-background px-6">
+            <div className="py-4 border-t bg-background px-4 sm:px-6">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

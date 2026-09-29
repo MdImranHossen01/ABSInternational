@@ -28,9 +28,6 @@ export default function AdminTopbar() {
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 justify-between sticky top-0 z-30">
       <div className="flex items-center gap-4">
         <SidebarTrigger className="md:hidden" />
-        <div className="flex-1 font-semibold text-lg md:hidden">
-          Admin Panel
-        </div>
       </div>
       <div className="hidden md:flex flex-1" />
       <div className="flex items-center gap-3">
@@ -77,7 +74,7 @@ export default function AdminTopbar() {
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard" className="text-primary font-semibold">
                     <UserCheck className="mr-2 h-4 w-4 text-primary" />
-                    <span>My Member Portal</span>
+                    <span>Personal Dashboard</span>
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>

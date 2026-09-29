@@ -16,7 +16,8 @@ import {
   Settings,
   Package,
   Truck,
-
+  LogIn,
+  UserPlus
 } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import { toast } from 'sonner';
@@ -357,53 +358,6 @@ export default function Navbar() {
                 <ModeToggle />
               </div>
 
-
-
-              {/* Wishlist */}
-              <Link
-                href="/dashboard/wishlist"
-                className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl transition-all cursor-pointer hover:text-primary hover:scale-110"
-                aria-label="Wishlist"
-                onClick={(e) => {
-                  if (status !== 'authenticated') {
-                    e.preventDefault();
-                    toast.error('Please login to view your wishlist');
-                  }
-                }}
-              >
-                <div className="relative">
-                  <Heart className="h-5 w-5" />
-                  {wishlistItems.length > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 h-3.5 w-3.5 bg-primary text-[8px] font-bold text-white flex items-center justify-center rounded-full shadow-sm animate-in fade-in zoom-in duration-300">
-                      {wishlistItems.length}
-                    </span>
-                  )}
-                </div>
-              </Link>
-
-              {/* Cart */}
-              <div className="hidden md:block">
-                <CartDrawer>
-                  <div
-                    className="flex items-center gap-2 group cursor-pointer hover:text-primary px-2 py-1.5 rounded-full transition-all hover:scale-110 active:scale-95"
-                    aria-label="Shopping Cart"
-                    role="button"
-                  >
-                    <div className="relative">
-                      <ShoppingCart className="h-5 w-5 stroke-[1.5]" />
-                      {mounted && cartCount > 0 && (
-                        <span className="absolute -top-2 -right-2 h-4 w-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center animate-in zoom-in">
-                          {cartCount}
-                        </span>
-                      )}
-                    </div>
-                    <div className="hidden lg:flex flex-col text-left">
-                      <span className="text-[10px] font-bold leading-none tracking-tighter">৳{totalAmount.toLocaleString()}</span>
-                    </div>
-                  </div>
-                </CartDrawer>
-              </div>
-
               {/* User Account (Right end) */}
               <div className="hidden md:flex items-center">
                 {status === 'authenticated' && session?.user ? (
@@ -496,13 +450,30 @@ export default function Navbar() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                  <Link
-                    href="/login"
-                    className="h-10 w-10 flex items-center justify-center rounded-xl transition-all cursor-pointer hover:text-primary"
-                    aria-label="Log in"
-                  >
-                    <User className="h-5 w-5" />
-                  </Link>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="h-10 w-10 flex items-center justify-center rounded-xl transition-all cursor-pointer hover:text-primary outline-none"
+                        aria-label="User account"
+                      >
+                        <User className="h-5 w-5" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 p-1.5 shadow-lg border">
+                      <DropdownMenuItem asChild>
+                        <Link href="/login" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
+                          <LogIn className="h-4 w-4 text-primary" />
+                          <span>Login</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/register" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
+                          <UserPlus className="h-4 w-4 text-primary" />
+                          <span>Register</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
               </div>
 
@@ -539,6 +510,56 @@ export default function Navbar() {
           </ul>
         </div>
       </nav>
+
+      {/* ── Floating Right Side Center Widget (Cart & Wishlist) ── */}
+      <div className="fixed right-3 sm:right-4 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2.5 items-center">
+        {/* Floating Cart Button */}
+        <CartDrawer>
+          <button
+            type="button"
+            className="flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/30 hover:scale-110 active:scale-95 transition-all cursor-pointer relative group border-2 border-white/20 dark:border-slate-800"
+            aria-label="Shopping Cart"
+          >
+            <div className="relative">
+              <ShoppingCart className="h-5 w-5 stroke-[2] transition-transform group-hover:scale-110" />
+              {mounted && cartCount > 0 && (
+                <span className="absolute -top-2.5 -right-2.5 h-4 min-w-4 px-1 bg-amber-400 text-slate-950 text-[9px] font-black rounded-full flex items-center justify-center shadow-md animate-in zoom-in">
+                  {cartCount}
+                </span>
+              )}
+            </div>
+            {mounted && totalAmount > 0 && (
+              <span className="text-[10px] font-black leading-none mt-1 tracking-tight">
+                ৳{totalAmount.toLocaleString()}
+              </span>
+            )}
+            <span className="sr-only">Cart</span>
+          </button>
+        </CartDrawer>
+
+        {/* Floating Wishlist Button */}
+        <Link
+          href="/dashboard/wishlist"
+          className="flex items-center justify-center p-2.5 sm:p-3 rounded-2xl bg-background/95 backdrop-blur-md text-foreground border border-border/80 shadow-lg hover:shadow-xl hover:text-rose-500 hover:border-rose-300 dark:hover:border-rose-800 hover:scale-110 active:scale-95 transition-all relative group"
+          aria-label="Wishlist"
+          onClick={(e) => {
+            if (status !== 'authenticated') {
+              e.preventDefault();
+              toast.error('Please login to view your wishlist');
+            }
+          }}
+        >
+          <div className="relative">
+            <Heart className="h-5 w-5 stroke-[2] transition-transform group-hover:scale-110 group-hover:fill-rose-500 group-hover:text-rose-500" />
+            {wishlistItems.length > 0 && (
+              <span className="absolute -top-2.5 -right-2.5 h-4 min-w-4 px-1 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm animate-in zoom-in">
+                {wishlistItems.length}
+              </span>
+            )}
+          </div>
+          <span className="sr-only">Wishlist</span>
+        </Link>
+      </div>
     </>
   );
 }

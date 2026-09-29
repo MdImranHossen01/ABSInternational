@@ -111,7 +111,7 @@ export function UserSidebar() {
       <SidebarContent className="py-2">
         <SidebarGroup className="py-0">
           <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/90 px-3 pb-1">
-            Member Portal
+            Personal Dashboard
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">

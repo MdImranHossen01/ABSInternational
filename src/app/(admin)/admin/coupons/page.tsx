@@ -142,90 +142,163 @@ export default function CouponsPage() {
       </div>
 
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow>
-              <TableHead className="font-bold">Code</TableHead>
-              <TableHead className="font-bold">Discount</TableHead>
-              <TableHead className="font-bold">Min Purchase</TableHead>
-              <TableHead className="font-bold">Expiry</TableHead>
-              <TableHead className="font-bold">Usage</TableHead>
-              <TableHead className="font-bold">Status</TableHead>
-              <TableHead className="text-right font-bold">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
-                  <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
-                </TableCell>
+                <TableHead className="font-bold">Code</TableHead>
+                <TableHead className="font-bold">Discount</TableHead>
+                <TableHead className="font-bold">Min Purchase</TableHead>
+                <TableHead className="font-bold">Expiry</TableHead>
+                <TableHead className="font-bold">Usage</TableHead>
+                <TableHead className="font-bold">Status</TableHead>
+                <TableHead className="text-right font-bold">Actions</TableHead>
               </TableRow>
-            ) : filteredCoupons.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
-                  No coupons found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredCoupons.map((coupon) => (
-                <TableRow key={coupon._id} className="hover:bg-muted/30 transition-colors">
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Tag className="h-4 w-4 text-primary" />
-                      <span className="font-bold">{coupon.code}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {coupon.discountType === 'percentage' 
-                      ? `${coupon.discountValue}%` 
-                      : `৳${coupon.discountValue}`}
-                  </TableCell>
-                  <TableCell>৳{coupon.minPurchase}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1 text-xs">
-                      <Calendar className="h-3 w-3" />
-                      {new Date(coupon.expiryDate).toLocaleDateString()}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1 text-xs">
-                      <Users className="h-3 w-3" />
-                      {coupon.usedCount} / {coupon.usageLimit || '∞'}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={coupon.isActive ? "default" : "secondary"}>
-                      {coupon.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger 
-                        render={
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        }
-                      />
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setEditingCoupon(coupon)}>
-                          <Edit className="mr-2 h-4 w-4" /> Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          className="text-destructive"
-                          onClick={() => handleDelete(coupon._id)}
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center">
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : filteredCoupons.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                    No coupons found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredCoupons.map((coupon) => (
+                  <TableRow key={coupon._id} className="hover:bg-muted/30 transition-colors">
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Tag className="h-4 w-4 text-primary" />
+                        <span className="font-bold">{coupon.code}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {coupon.discountType === 'percentage' 
+                        ? `${coupon.discountValue}%` 
+                        : `৳${coupon.discountValue}`}
+                    </TableCell>
+                    <TableCell>৳{coupon.minPurchase}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-xs">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(coupon.expiryDate).toLocaleDateString()}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-xs">
+                        <Users className="h-3 w-3" />
+                        {coupon.usedCount} / {coupon.usageLimit || '∞'}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={coupon.isActive ? "default" : "secondary"}>
+                        {coupon.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger 
+                          render={
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          }
+                        />
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setEditingCoupon(coupon)}>
+                            <Edit className="mr-2 h-4 w-4" /> Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            className="text-destructive"
+                            onClick={() => handleDelete(coupon._id)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Cards View */}
+        <div className="md:hidden divide-y divide-border">
+          {loading ? (
+            <div className="h-24 flex items-center justify-center">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          ) : filteredCoupons.length === 0 ? (
+            <div className="h-24 flex items-center justify-center text-sm text-muted-foreground">
+              No coupons found.
+            </div>
+          ) : (
+            filteredCoupons.map((coupon) => (
+              <div key={coupon._id} className="p-3.5 space-y-2 bg-card">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-primary" />
+                    <span className="font-bold text-sm tracking-wide">{coupon.code}</span>
+                  </div>
+                  <Badge variant={coupon.isActive ? "default" : "secondary"} className="text-[10px] px-1.5 py-0 h-4">
+                    {coupon.isActive ? 'Active' : 'Inactive'}
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-muted-foreground block text-[11px]">Discount</span>
+                    <span className="font-bold text-emerald-600">
+                      {coupon.discountType === 'percentage' ? `${coupon.discountValue}%` : `৳${coupon.discountValue}`}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground block text-[11px]">Min Purchase</span>
+                    <span className="font-semibold">৳{coupon.minPurchase}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    <span>Exp: {new Date(coupon.expiryDate).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    <span>{coupon.usedCount} / {coupon.usageLimit || '∞'}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-1 border-t">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-7 text-xs gap-1"
+                    onClick={() => setEditingCoupon(coupon)}
+                  >
+                    <Edit className="h-3 w-3" /> Edit
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-7 text-xs gap-1 text-destructive hover:bg-destructive/10"
+                    onClick={() => handleDelete(coupon._id)}
+                  >
+                    <Trash2 className="h-3 w-3" /> Delete
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       <Dialog open={!!editingCoupon} onOpenChange={() => setEditingCoupon(null)}>

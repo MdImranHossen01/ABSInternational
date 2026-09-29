@@ -105,7 +105,8 @@ export default function GenerationBonusPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
@@ -131,6 +132,32 @@ export default function GenerationBonusPage() {
                 ))}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile Cards View */}
+          <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {genTiers.map((tier) => (
+              <div 
+                key={tier.level} 
+                className={`p-3 rounded-xl border bg-card space-y-2 ${tier.level === 1 ? 'border-primary/40 bg-primary/5 shadow-xs' : ''}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="size-6 rounded-md bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
+                      G{tier.level}
+                    </span>
+                    <span className="font-bold text-xs">Generation {tier.level}</span>
+                  </div>
+                  <Badge variant="secondary" className="font-mono font-bold text-[10px]">
+                    {tier.split}
+                  </Badge>
+                </div>
+                <div className="flex items-baseline justify-between pt-1 border-t border-border/50">
+                  <span className="text-[11px] text-muted-foreground">{tier.note}</span>
+                  <span className="font-mono font-bold text-emerald-600 text-sm">{tier.amount}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

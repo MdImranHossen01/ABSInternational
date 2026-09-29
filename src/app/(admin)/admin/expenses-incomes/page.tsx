@@ -298,91 +298,158 @@ function ExpensesIncomesContent() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead className="text-right">Amount (Tk)</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-10">
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
-                      Loading transactions...
-                    </div>
-                  </TableCell>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead className="text-right">Amount (Tk)</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ) : filteredTransactions.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
-                    No transactions found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginatedTransactions.map((tx) => {
-                  const isExpense = (tx.type || 'expense') === 'expense';
-                  return (
-                    <TableRow key={tx._id}>
-                      <TableCell>{format(new Date(tx.date), 'dd MMM yyyy')}</TableCell>
-                      <TableCell>
-                        <div className="font-medium">{tx.title}</div>
-                        {tx.description && (
-                          <div className="text-xs text-muted-foreground mt-0.5 max-w-[300px] break-words">
-                            {tx.description}
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {isExpense ? (
-                          <span className="px-2 py-0.5 rounded text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/20 dark:text-rose-400 dark:border-rose-900/30">
-                            Expense
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30">
-                            Income
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className={`text-right font-semibold ${isExpense ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-10">
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
+                        Loading transactions...
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : filteredTransactions.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
+                      No transactions found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedTransactions.map((tx) => {
+                    const isExpense = (tx.type || 'expense') === 'expense';
+                    return (
+                      <TableRow key={tx._id}>
+                        <TableCell>{format(new Date(tx.date), 'dd MMM yyyy')}</TableCell>
+                        <TableCell>
+                          <div className="font-medium">{tx.title}</div>
+                          {tx.description && (
+                            <div className="text-xs text-muted-foreground mt-0.5 max-w-[300px] break-words">
+                              {tx.description}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {isExpense ? (
+                            <span className="px-2 py-0.5 rounded text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/20 dark:text-rose-400 dark:border-rose-900/30">
+                              Expense
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30">
+                              Income
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className={`text-right font-semibold ${isExpense ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                          {isExpense ? '-' : '+'}৳{tx.amount.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setEditingTransaction(tx);
+                                  setIsDialogOpen(true);
+                                }}
+                              >
+                                <Edit className="mr-2 h-4 w-4" /> Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => handleDelete(tx._id)}
+                              >
+                                <Trash className="mr-2 h-4 w-4" /> Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Cards View */}
+          <div className="md:hidden divide-y divide-border">
+            {loading ? (
+              <div className="py-10 text-center text-xs text-muted-foreground">Loading transactions...</div>
+            ) : filteredTransactions.length === 0 ? (
+              <div className="py-10 text-center text-xs text-muted-foreground">No transactions found.</div>
+            ) : (
+              paginatedTransactions.map((tx) => {
+                const isExpense = (tx.type || 'expense') === 'expense';
+                return (
+                  <div key={tx._id} className="p-3.5 space-y-2 bg-card">
+                    <div className="flex items-center justify-between gap-2">
+                      {isExpense ? (
+                        <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/20 dark:text-rose-400 dark:border-rose-900/30">
+                          Expense
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30">
+                          Income
+                        </span>
+                      )}
+                      <span className={`font-mono font-bold text-sm ${isExpense ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                         {isExpense ? '-' : '+'}৳{tx.amount.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setEditingTransaction(tx);
-                                setIsDialogOpen(true);
-                              }}
-                            >
-                              <Edit className="mr-2 h-4 w-4" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive"
-                              onClick={() => handleDelete(tx._id)}
-                            >
-                              <Trash className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
+                      </span>
+                    </div>
+
+                    <div className="space-y-0.5">
+                      <div className="font-bold text-sm text-foreground">{tx.title}</div>
+                      {tx.description && (
+                        <p className="text-xs text-muted-foreground leading-snug">{tx.description}</p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs pt-1 border-t text-muted-foreground">
+                      <span className="font-mono text-[11px]">{format(new Date(tx.date), 'dd MMM yyyy')}</span>
+
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs gap-1"
+                          onClick={() => {
+                            setEditingTransaction(tx);
+                            setIsDialogOpen(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3" /> Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs gap-1 text-destructive hover:bg-destructive/10"
+                          onClick={() => handleDelete(tx._id)}
+                        >
+                          <Trash className="h-3 w-3" /> Delete
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
           {totalPages > 1 && (
             <div className="py-4 border-t bg-background px-6">
               <Pagination

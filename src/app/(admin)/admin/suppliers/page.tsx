@@ -275,61 +275,116 @@ function SuppliersContent() {
 
       <Card>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name / Company</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Address</TableHead>
-                <TableHead className="text-right">Outstanding Payable</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
+          {/* Desktop Table View */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                    Loading suppliers...
-                  </TableCell>
+                  <TableHead>Name / Company</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Address</TableHead>
+                  <TableHead className="text-right">Outstanding Payable</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ) : filteredSuppliers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                    No suppliers found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginatedSuppliers.map((supplier) => (
-                  <TableRow key={supplier._id}>
-                    <TableCell>
-                      <div className="font-medium text-foreground">{supplier.name}</div>
-                      {supplier.companyName && (
-                        <div className="text-xs text-muted-foreground">{supplier.companyName}</div>
-                      )}
-                    </TableCell>
-                    <TableCell>{supplier.phone}</TableCell>
-                    <TableCell className="max-w-[200px] truncate">{supplier.address}</TableCell>
-                    <TableCell className="text-right font-semibold text-rose-600">
-                      ৳{supplier.currentBalance.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button variant="ghost" size="icon" onClick={() => viewSupplierDetails(supplier)}>
-                        <Eye className="h-4 w-4 text-sky-600" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => openEditDialog(supplier)}>
-                        <Edit className="h-4 w-4 text-indigo-600" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(supplier._id)}>
-                        <Trash2 className="h-4 w-4 text-rose-600" />
-                      </Button>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+                      Loading suppliers...
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : filteredSuppliers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+                      No suppliers found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedSuppliers.map((supplier) => (
+                    <TableRow key={supplier._id}>
+                      <TableCell>
+                        <div className="font-medium text-foreground">{supplier.name}</div>
+                        {supplier.companyName && (
+                          <div className="text-xs text-muted-foreground">{supplier.companyName}</div>
+                        )}
+                      </TableCell>
+                      <TableCell>{supplier.phone}</TableCell>
+                      <TableCell className="max-w-[200px] truncate">{supplier.address}</TableCell>
+                      <TableCell className="text-right font-semibold text-rose-600">
+                        ৳{supplier.currentBalance.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right space-x-2">
+                        <Button variant="ghost" size="icon" onClick={() => viewSupplierDetails(supplier)} title="View Statement">
+                          <Eye className="h-4 w-4 text-sky-600" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(supplier)} title="Edit Supplier">
+                          <Edit className="h-4 w-4 text-indigo-600" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(supplier._id)} title="Delete Supplier">
+                          <Trash2 className="h-4 w-4 text-rose-600" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Cards View */}
+          <div className="md:hidden divide-y divide-border">
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground text-sm flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" /> Loading suppliers...
+              </div>
+            ) : filteredSuppliers.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground text-sm">
+                No suppliers found.
+              </div>
+            ) : (
+              paginatedSuppliers.map((supplier) => (
+                <div key={supplier._id} className="p-3.5 space-y-3 bg-card">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="font-semibold text-foreground text-sm truncate">{supplier.name}</div>
+                      {supplier.companyName && (
+                        <div className="text-xs text-muted-foreground truncate">{supplier.companyName}</div>
+                      )}
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-[10px] uppercase text-muted-foreground block font-medium">Payable</span>
+                      <span className="text-sm font-bold text-rose-600">৳{supplier.currentBalance.toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-muted-foreground bg-muted/30 p-2.5 rounded-lg border border-border/50">
+                    <div>
+                      <span className="font-medium text-foreground">Phone:</span> {supplier.phone}
+                    </div>
+                    <div className="truncate">
+                      <span className="font-medium text-foreground">Address:</span> {supplier.address}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-1">
+                    <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5" onClick={() => viewSupplierDetails(supplier)}>
+                      <Eye className="h-3.5 w-3.5 text-sky-600" /> Statement
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5" onClick={() => openEditDialog(supplier)}>
+                      <Edit className="h-3.5 w-3.5 text-indigo-600" /> Edit
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5 text-rose-600 hover:text-rose-700" onClick={() => handleDelete(supplier._id)}>
+                      <Trash2 className="h-3.5 w-3.5" /> Delete
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
           {totalPages > 1 && (
-            <div className="py-4 border-t bg-background px-6">
+            <div className="py-4 border-t bg-background px-4 sm:px-6">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -418,7 +473,7 @@ function SuppliersContent() {
           {selectedSupplier && (
             <div className="space-y-6 mt-4">
               {/* Supplier Info Cards */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <Card>
                   <CardHeader className="py-3">
                     <CardTitle className="text-xs text-muted-foreground uppercase">Phone</CardTitle>

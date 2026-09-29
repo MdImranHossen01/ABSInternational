@@ -192,58 +192,105 @@ export default function MyTreePage() {
                       No members in Generation {gen.level} under this filter.
                     </div>
                   ) : (
-                    <div className="rounded-lg border bg-card overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-muted/50">
-                            <TableHead>Member ID</TableHead>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Sponsor ID</TableHead>
-                            <TableHead>Rank</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {gen.members.map((member: any) => (
-                            <TableRow
-                              key={member.memberId}
-                              onClick={() => handleMemberClick(member.memberId)}
-                              className="cursor-pointer hover:bg-primary/[0.04] transition-colors group"
-                            >
-                              <TableCell className="font-mono text-xs font-bold text-primary">
-                                {member.memberId}
-                              </TableCell>
-                              <TableCell className="font-bold text-xs">{member.name}</TableCell>
-                              <TableCell className="font-mono text-xs text-muted-foreground">
-                                {member.sponsorId || 'None'}
-                              </TableCell>
-                              <TableCell className="text-xs capitalize">{member.rank}</TableCell>
-                              <TableCell>
-                                {member.isSubscriptionActive ? (
-                                  <Badge className="bg-emerald-500 text-white text-[10px] py-0.5 px-2">Active</Badge>
-                                ) : (
-                                  <Badge className="bg-slate-300 text-slate-800 text-[10px] py-0.5 px-2">Inactive</Badge>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-7 text-xs font-semibold border-primary/30 text-primary group-hover:bg-primary group-hover:text-white transition-colors"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleMemberClick(member.memberId);
-                                  }}
-                                >
-                                  <Eye className="mr-1 h-3.5 w-3.5" /> Details
-                                </Button>
-                              </TableCell>
+                    <>
+                      {/* Desktop Table View */}
+                      <div className="hidden md:block rounded-lg border bg-card overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-muted/50">
+                              <TableHead>Member ID</TableHead>
+                              <TableHead>Name</TableHead>
+                              <TableHead>Sponsor ID</TableHead>
+                              <TableHead>Rank</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead className="text-right">Action</TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
+                          </TableHeader>
+                          <TableBody>
+                            {gen.members.map((member: any) => (
+                              <TableRow
+                                key={member.memberId}
+                                onClick={() => handleMemberClick(member.memberId)}
+                                className="cursor-pointer hover:bg-primary/[0.04] transition-colors group"
+                              >
+                                <TableCell className="font-mono text-xs font-bold text-primary">
+                                  {member.memberId}
+                                </TableCell>
+                                <TableCell className="font-bold text-xs">{member.name}</TableCell>
+                                <TableCell className="font-mono text-xs text-muted-foreground">
+                                  {member.sponsorId || 'None'}
+                                </TableCell>
+                                <TableCell className="text-xs capitalize">{member.rank}</TableCell>
+                                <TableCell>
+                                  {member.isSubscriptionActive ? (
+                                    <Badge className="bg-emerald-500 text-white text-[10px] py-0.5 px-2">Active</Badge>
+                                  ) : (
+                                    <Badge className="bg-slate-300 text-slate-800 text-[10px] py-0.5 px-2">Inactive</Badge>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 text-xs font-semibold border-primary/30 text-primary group-hover:bg-primary group-hover:text-white transition-colors"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMemberClick(member.memberId);
+                                    }}
+                                  >
+                                    <Eye className="mr-1 h-3.5 w-3.5" /> Details
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+
+                      {/* Mobile Cards View */}
+                      <div className="md:hidden divide-y divide-border rounded-xl border bg-card overflow-hidden">
+                        {gen.members.map((member: any) => (
+                          <div
+                            key={member.memberId}
+                            onClick={() => handleMemberClick(member.memberId)}
+                            className="p-3 space-y-2 active:bg-muted/50 transition-colors"
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="font-mono text-xs font-bold text-primary">
+                                {member.memberId}
+                              </span>
+                              {member.isSubscriptionActive ? (
+                                <Badge className="bg-emerald-500 text-white text-[10px] py-0.5 px-2">Active</Badge>
+                              ) : (
+                                <Badge className="bg-slate-300 text-slate-800 text-[10px] py-0.5 px-2">Inactive</Badge>
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between text-xs">
+                              <div>
+                                <div className="font-bold text-foreground">{member.name}</div>
+                                <div className="text-[11px] text-muted-foreground font-mono">
+                                  Sponsor: {member.sponsorId || 'None'}
+                                </div>
+                              </div>
+                              <span className="capitalize text-xs font-semibold text-muted-foreground">
+                                {member.rank}
+                              </span>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="w-full h-8 text-xs font-semibold border-primary/30 text-primary hover:bg-primary hover:text-white transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMemberClick(member.memberId);
+                              }}
+                            >
+                              <Eye className="mr-1 h-3.5 w-3.5" /> View Member Details
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </>
                   )}
                 </div>
               )}
@@ -354,44 +401,75 @@ export default function MyTreePage() {
                       No withdrawals recorded yet.
                     </div>
                   ) : (
-                    <div className="border rounded-lg overflow-x-auto max-h-56">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-muted/50">
-                            <TableHead className="text-xs">Date</TableHead>
-                            <TableHead className="text-xs">Amount</TableHead>
-                            <TableHead className="text-xs">Details</TableHead>
-                            <TableHead className="text-xs text-right">Status</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {selectedMember.withdrawals.map((w: any) => (
-                            <TableRow key={w.id} className="text-xs">
-                              <TableCell className="font-mono text-[11px]">
-                                {new Date(w.date).toLocaleDateString()}
-                              </TableCell>
-                              <TableCell className="font-bold text-purple-700 dark:text-purple-400">
-                                ৳{w.amount.toLocaleString()}
-                              </TableCell>
-                              <TableCell className="text-muted-foreground">{w.description}</TableCell>
-                              <TableCell className="text-right">
-                                <Badge
-                                  className={
-                                    w.status === 'completed'
-                                      ? 'bg-emerald-500 text-white text-[10px]'
-                                      : w.status === 'pending'
-                                        ? 'bg-amber-500 text-white text-[10px]'
-                                        : 'bg-rose-500 text-white text-[10px]'
-                                  }
-                                >
-                                  {w.status}
-                                </Badge>
-                              </TableCell>
+                    <>
+                      {/* Desktop Table View */}
+                      <div className="hidden md:block border rounded-lg overflow-x-auto max-h-56">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-muted/50">
+                              <TableHead className="text-xs">Date</TableHead>
+                              <TableHead className="text-xs">Amount</TableHead>
+                              <TableHead className="text-xs">Details</TableHead>
+                              <TableHead className="text-xs text-right">Status</TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
+                          </TableHeader>
+                          <TableBody>
+                            {selectedMember.withdrawals.map((w: any) => (
+                              <TableRow key={w.id} className="text-xs">
+                                <TableCell className="font-mono text-[11px]">
+                                  {new Date(w.date).toLocaleDateString()}
+                                </TableCell>
+                                <TableCell className="font-bold text-purple-700 dark:text-purple-400">
+                                  ৳{w.amount.toLocaleString()}
+                                </TableCell>
+                                <TableCell className="text-muted-foreground">{w.description}</TableCell>
+                                <TableCell className="text-right">
+                                  <Badge
+                                    className={
+                                      w.status === 'completed'
+                                        ? 'bg-emerald-500 text-white text-[10px]'
+                                        : w.status === 'pending'
+                                          ? 'bg-amber-500 text-white text-[10px]'
+                                          : 'bg-rose-500 text-white text-[10px]'
+                                    }
+                                  >
+                                    {w.status}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+
+                      {/* Mobile Cards View */}
+                      <div className="md:hidden divide-y border rounded-lg max-h-56 overflow-y-auto">
+                        {selectedMember.withdrawals.map((w: any) => (
+                          <div key={w.id} className="p-2.5 bg-card space-y-1">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-bold text-purple-700 dark:text-purple-400">
+                                ৳{w.amount.toLocaleString()}
+                              </span>
+                              <Badge
+                                className={
+                                  w.status === 'completed'
+                                    ? 'bg-emerald-500 text-white text-[10px] px-1.5 py-0'
+                                    : w.status === 'pending'
+                                      ? 'bg-amber-500 text-white text-[10px] px-1.5 py-0'
+                                      : 'bg-rose-500 text-white text-[10px] px-1.5 py-0'
+                                }
+                              >
+                                {w.status}
+                              </Badge>
+                            </div>
+                            <p className="text-[11px] text-muted-foreground leading-tight">{w.description}</p>
+                            <div className="text-[10px] text-muted-foreground/80 font-mono">
+                              {new Date(w.date).toLocaleDateString()}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
                   )}
                 </TabsContent>
 
@@ -402,44 +480,75 @@ export default function MyTreePage() {
                       No deposits recorded yet.
                     </div>
                   ) : (
-                    <div className="border rounded-lg overflow-x-auto max-h-56">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-muted/50">
-                            <TableHead className="text-xs">Date</TableHead>
-                            <TableHead className="text-xs">Amount</TableHead>
-                            <TableHead className="text-xs">Details</TableHead>
-                            <TableHead className="text-xs text-right">Status</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {selectedMember.deposits.map((d: any) => (
-                            <TableRow key={d.id} className="text-xs">
-                              <TableCell className="font-mono text-[11px]">
-                                {new Date(d.date).toLocaleDateString()}
-                              </TableCell>
-                              <TableCell className="font-bold text-emerald-700 dark:text-emerald-400">
-                                ৳{d.amount.toLocaleString()}
-                              </TableCell>
-                              <TableCell className="text-muted-foreground">{d.description}</TableCell>
-                              <TableCell className="text-right">
-                                <Badge
-                                  className={
-                                    d.status === 'completed'
-                                      ? 'bg-emerald-500 text-white text-[10px]'
-                                      : d.status === 'pending'
-                                        ? 'bg-amber-500 text-white text-[10px]'
-                                        : 'bg-rose-500 text-white text-[10px]'
-                                  }
-                                >
-                                  {d.status}
-                                </Badge>
-                              </TableCell>
+                    <>
+                      {/* Desktop Table View */}
+                      <div className="hidden md:block border rounded-lg overflow-x-auto max-h-56">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-muted/50">
+                              <TableHead className="text-xs">Date</TableHead>
+                              <TableHead className="text-xs">Amount</TableHead>
+                              <TableHead className="text-xs">Details</TableHead>
+                              <TableHead className="text-xs text-right">Status</TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
+                          </TableHeader>
+                          <TableBody>
+                            {selectedMember.deposits.map((d: any) => (
+                              <TableRow key={d.id} className="text-xs">
+                                <TableCell className="font-mono text-[11px]">
+                                  {new Date(d.date).toLocaleDateString()}
+                                </TableCell>
+                                <TableCell className="font-bold text-emerald-700 dark:text-emerald-400">
+                                  ৳{d.amount.toLocaleString()}
+                                </TableCell>
+                                <TableCell className="text-muted-foreground">{d.description}</TableCell>
+                                <TableCell className="text-right">
+                                  <Badge
+                                    className={
+                                      d.status === 'completed'
+                                        ? 'bg-emerald-500 text-white text-[10px]'
+                                        : d.status === 'pending'
+                                          ? 'bg-amber-500 text-white text-[10px]'
+                                          : 'bg-rose-500 text-white text-[10px]'
+                                    }
+                                  >
+                                    {d.status}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+
+                      {/* Mobile Cards View */}
+                      <div className="md:hidden divide-y border rounded-lg max-h-56 overflow-y-auto">
+                        {selectedMember.deposits.map((d: any) => (
+                          <div key={d.id} className="p-2.5 bg-card space-y-1">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                                ৳{d.amount.toLocaleString()}
+                              </span>
+                              <Badge
+                                className={
+                                  d.status === 'completed'
+                                    ? 'bg-emerald-500 text-white text-[10px] px-1.5 py-0'
+                                    : d.status === 'pending'
+                                      ? 'bg-amber-500 text-white text-[10px] px-1.5 py-0'
+                                      : 'bg-rose-500 text-white text-[10px] px-1.5 py-0'
+                                }
+                              >
+                                {d.status}
+                              </Badge>
+                            </div>
+                            <p className="text-[11px] text-muted-foreground leading-tight">{d.description}</p>
+                            <div className="text-[10px] text-muted-foreground/80 font-mono">
+                              {new Date(d.date).toLocaleDateString()}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
                   )}
                 </TabsContent>
               </Tabs>

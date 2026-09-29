@@ -572,7 +572,8 @@ export default function AdminUserProfilePage() {
 
             {/* Downline Table */}
             <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs">
-              <div className="overflow-x-auto">
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
                 <Table>
                   <TableHeader className="bg-slate-50/80">
                     <TableRow>
@@ -694,6 +695,83 @@ export default function AdminUserProfilePage() {
                   </TableBody>
                 </Table>
               </div>
+
+              {/* Mobile Cards View */}
+              <div className="md:hidden divide-y divide-slate-100">
+                {filteredDownlines.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-muted-foreground">
+                    {downlines.length === 0
+                      ? 'This member does not have any direct downlines registered yet.'
+                      : 'No downline members matched your search.'}
+                  </div>
+                ) : (
+                  filteredDownlines.map((member) => (
+                    <div key={member._id} className="p-3.5 space-y-2.5 bg-white">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs shrink-0">
+                            {member.name ? member.name.charAt(0).toUpperCase() : 'M'}
+                          </div>
+                          <div>
+                            <Link
+                              href={`/admin/users/${member._id}`}
+                              className="font-bold text-slate-900 hover:text-primary text-sm leading-tight block"
+                            >
+                              {member.name}
+                            </Link>
+                            <span className="font-mono text-xs text-primary font-semibold">
+                              {member.memberId}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1">
+                          {member.rank && member.rank !== 'user' ? (
+                            <Badge className="bg-amber-100 text-amber-900 border-amber-300 text-[10px] font-bold">
+                              {member.rank}
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                              General
+                            </Badge>
+                          )}
+                          {member.isSubscriptionActive ? (
+                            <Badge className="bg-emerald-500 text-white text-[10px] font-bold">
+                              Active
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-slate-200 text-slate-700 text-[10px]">
+                              Free
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs">
+                        <div>
+                          <span className="text-[10px] text-muted-foreground block font-medium">Purchases</span>
+                          <span className="font-bold text-slate-900">৳{(member.totalSpent || 0).toLocaleString()}</span>
+                          <span className="text-[10px] text-muted-foreground ml-1">({member.totalOrders || 0} orders)</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-muted-foreground block font-medium">Direct Team</span>
+                          <span className="font-bold text-slate-900">{member.teamCount || 0} Members</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <div className="text-[11px] text-slate-500 truncate max-w-[180px]">
+                          {member.phone || member.email}
+                        </div>
+                        <Link href={`/admin/users/${member._id}`}>
+                          <Button size="sm" variant="outline" className="h-7 px-2.5 text-xs font-bold text-primary">
+                            Profile <ChevronRight className="h-3 w-3 ml-0.5" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -733,7 +811,8 @@ export default function AdminUserProfilePage() {
 
             {/* Orders Table */}
             <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs">
-              <div className="overflow-x-auto">
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
                 <Table>
                   <TableHeader className="bg-slate-50/80">
                     <TableRow>
@@ -856,6 +935,90 @@ export default function AdminUserProfilePage() {
                     )}
                   </TableBody>
                 </Table>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="md:hidden divide-y divide-slate-100">
+                {filteredOrders.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-muted-foreground">
+                    {orders.length === 0
+                      ? 'No purchase history found for this user.'
+                      : 'No orders matched your search criteria.'}
+                  </div>
+                ) : (
+                  filteredOrders.map((order) => (
+                    <div key={order._id} className="p-3.5 space-y-2.5 bg-white">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <span className="font-mono font-bold text-primary text-xs">
+                            #{order.shortId}
+                          </span>
+                          <div className="text-[11px] text-muted-foreground">
+                            {new Date(order.createdAt).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Badge
+                            className={`text-[10px] font-bold ${
+                              order.paymentStatus === 'Paid'
+                                ? 'bg-emerald-500 text-white'
+                                : order.paymentStatus === 'Pending'
+                                ? 'bg-amber-100 text-amber-900 border-amber-300'
+                                : 'bg-red-100 text-red-900'
+                            }`}
+                          >
+                            {order.paymentStatus}
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className={`text-[10px] font-semibold ${
+                              order.status === 'Delivered'
+                                ? 'border-emerald-500 text-emerald-700 bg-emerald-50'
+                                : order.status === 'Confirmed'
+                                ? 'border-blue-500 text-blue-700 bg-blue-50'
+                                : 'border-slate-300 text-slate-700'
+                            }`}
+                          >
+                            {order.status}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      {/* Items */}
+                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 space-y-1 text-xs">
+                        {order.items.slice(0, 2).map((item, idx) => (
+                          <div key={idx} className="flex items-center justify-between text-slate-700">
+                            <span className="truncate max-w-[200px]">{item.name}</span>
+                            <span className="font-mono text-muted-foreground shrink-0">×{item.quantity}</span>
+                          </div>
+                        ))}
+                        {order.items.length > 2 && (
+                          <span className="text-[10px] text-muted-foreground font-semibold block pt-0.5">
+                            +{order.items.length - 2} more item(s)
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <div>
+                          <span className="text-[10px] text-muted-foreground block font-medium">Total ({order.paymentMethod || 'Manual'})</span>
+                          <span className="font-black text-slate-900 text-sm">
+                            ৳{order.totalAmount.toLocaleString()}
+                          </span>
+                        </div>
+                        <Link href={`/admin/orders`}>
+                          <Button size="sm" variant="outline" className="h-7 px-2.5 text-xs font-bold text-primary">
+                            View Order
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

@@ -121,32 +121,55 @@ export default function TotalIncomePage() {
           {history.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground">No income transactions found yet.</div>
           ) : (
-            <div className="rounded-md border overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead>Date</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {history.map((tx: any) => (
-                    <TableRow key={tx._id}>
-                      <TableCell className="text-xs font-mono">{new Date(tx.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="capitalize text-emerald-600 border-emerald-500/30 bg-emerald-500/5">
-                          {tx.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-xs">{tx.description}</TableCell>
-                      <TableCell className="text-right font-mono font-bold text-emerald-600">+৳{(tx.amount || 0).toLocaleString()}</TableCell>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block rounded-md border overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Date</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {history.map((tx: any) => (
+                      <TableRow key={tx._id}>
+                        <TableCell className="text-xs font-mono">{new Date(tx.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="capitalize text-emerald-600 border-emerald-500/30 bg-emerald-500/5">
+                            {tx.type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs">{tx.description}</TableCell>
+                        <TableCell className="text-right font-mono font-bold text-emerald-600">+৳{(tx.amount || 0).toLocaleString()}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="md:hidden divide-y divide-border rounded-xl border overflow-hidden">
+                {history.map((tx: any) => (
+                  <div key={tx._id} className="p-3 bg-card space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <Badge variant="outline" className="capitalize text-emerald-600 border-emerald-500/30 bg-emerald-500/5 text-[11px] px-2 py-0.5">
+                        {tx.type}
+                      </Badge>
+                      <span className="font-mono font-bold text-emerald-600 text-sm">
+                        +৳{(tx.amount || 0).toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="text-xs text-foreground/90 font-medium leading-snug">{tx.description}</p>
+                    <div className="text-[11px] text-muted-foreground font-mono">
+                      {new Date(tx.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
