@@ -344,8 +344,7 @@ export default function WalletPage() {
               <div>
                 <CardTitle className="text-sm sm:text-base font-bold">Auto Profit Matrix</CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  প্রতিটি downline activation-এ ৫২ BDT আপনার personal pool-এ জমা হয়।
-                  Pool নির্দিষ্ট tier threshold পৌঁছালে স্বয়ংক্রিয়ভাবে payout হয়।
+                  Each downline activation contributes ৳52.5 BDT to your auto profit pool. Payouts trigger automatically upon reaching tier thresholds.
                 </p>
               </div>
               <div className="text-right shrink-0">
@@ -690,7 +689,7 @@ export default function WalletPage() {
                 Bonus → Withdrawal Convert
               </CardTitle>
               <CardDescription>
-                Bonus Wallet থেকে Withdrawal Wallet এ টাকা নিন, তারপর bKash/Nagad/Bank এ cashout করুন।
+                Transfer funds from Bonus Wallet to Withdrawal Wallet, then cashout via bKash, Nagad, or Bank.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -753,7 +752,7 @@ export default function WalletPage() {
                     maxLength={6}
                     className="h-11 rounded-lg"
                   />
-                  <p className="text-xs text-muted-foreground">PIN সেট না থাকলে আগে &quot;Secure PIN&quot; tab থেকে set করুন।</p>
+                  <p className="text-xs text-muted-foreground">If PIN is not set yet, please set it from the &quot;Secure PIN&quot; tab first.</p>
                 </div>
 
                 <Button

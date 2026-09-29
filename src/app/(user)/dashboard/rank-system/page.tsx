@@ -71,7 +71,7 @@ export default function RankSystemPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base font-bold flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-amber-600" /> Rank Qualification Matrix (র‍্যাঙ্ক সিস্টেম নীতিমালা)
+            <Trophy className="h-5 w-5 text-amber-600" /> Rank Qualification Matrix
           </CardTitle>
           <CardDescription>Rules to achieve Team Manager through Company Director</CardDescription>
         </CardHeader>
@@ -80,11 +80,11 @@ export default function RankSystemPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
-                  <TableHead className="font-bold">পদবী (Rank Tier)</TableHead>
-                  <TableHead className="font-bold">যোগ্যতার শর্ত (Requirements)</TableHead>
-                  <TableHead className="font-bold">ক্যাশ প্রমোশন বোনাস</TableHead>
-                  <TableHead className="font-bold">পুরস্কার / ইনসেন্টিভ (Rewards)</TableHead>
-                  <TableHead className="font-bold text-center">স্ট্যাটাস</TableHead>
+                  <TableHead className="font-bold">Rank Tier</TableHead>
+                  <TableHead className="font-bold">Requirements</TableHead>
+                  <TableHead className="font-bold">Cash Promotion Bonus</TableHead>
+                  <TableHead className="font-bold">Incentives & Rewards</TableHead>
+                  <TableHead className="font-bold text-center">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

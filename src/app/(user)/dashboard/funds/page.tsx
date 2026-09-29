@@ -96,7 +96,7 @@ export default function UserFundsPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Badge className="bg-emerald-400 text-emerald-950 font-bold border-0">
-                10-জেনারেশন বোনাস ও ফান্ড পুল
+                10-Generation Bonuses & Fund Pools
               </Badge>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black">Bonuses & Global Fund Pools</h1>
@@ -194,10 +194,10 @@ export default function UserFundsPage() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Users className="h-5 w-5 text-primary" />
-                10-জেনারেশন বোনাস ডিস্ট্রিবিউশন প্ল্যান (Generation Bonus Structure)
+                10-Generation Bonus Distribution Structure
               </CardTitle>
               <CardDescription>
-                প্রতিটি ১৫০০ টাকার মেম্বারশিপ প্যাকেজ থেকে ৭% (১০৫ টাকা) মোট ১০টি স্তরে সমানুপাতে বণ্টন করা হয়।
+                7% (105 BDT) from each 1,500 BDT membership package is distributed proportionally across 10 generation tiers.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -205,7 +205,7 @@ export default function UserFundsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/50">
-                      <TableHead className="font-bold">Generation Level (স্তর)</TableHead>
+                      <TableHead className="font-bold">Generation Level</TableHead>
                       <TableHead className="font-bold">Pool Share (%)</TableHead>
                       <TableHead className="font-bold">Payout Amount</TableHead>
                       <TableHead className="font-bold">Description</TableHead>
@@ -241,6 +241,7 @@ export default function UserFundsPage() {
         {/* TAB 2: The 5 Dedicated Global Funds (Points 11, 12, 13, 14, 15) */}
         <TabsContent value="funds" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
             {/* 11. Global Profit */}
             <Card className="border border-purple-500/20 bg-linear-to-b from-purple-500/[0.03] to-transparent">
               <CardHeader className="pb-2">
@@ -258,7 +259,7 @@ export default function UserFundsPage() {
                   ৳{(globalFunds.globalProfit || 0).toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  কোম্পানির মোট মেম্বারশিপ থেকে সঞ্চিত গ্লোবাল প্রফিট ফান্ড, যা সমহারে সকল সক্রিয় মেম্বারদের মাঝে ভাগ করে দেওয়া হয়।
+                  Global profit pool accumulated from platform memberships, distributed equally across all active members.
                 </p>
                 <div className="pt-2 text-[11px] text-purple-700 dark:text-purple-400 font-semibold">
                   Status: Active & Accumulating
@@ -283,7 +284,7 @@ export default function UserFundsPage() {
                   ৳{(globalFunds.incentiveFund || 0).toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  টপ পারফর্মারদের স্পেশাল গিফট, স্মার্টফোন, মোটরবাইক ও দেশ-বিদেশ ভ্রমণের ইনসেন্টিভ ফান্ড।
+                  Special incentive fund reserved for high-performing leaders, smartphones, motorbikes, and travel rewards.
                 </p>
                 <div className="pt-2 text-[11px] text-amber-700 dark:text-amber-400 font-semibold">
                   Used For: Special Performer Rewards
@@ -308,7 +309,7 @@ export default function UserFundsPage() {
                   ৳{(globalFunds.rankDevelopmentFund || 0).toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  নতুন র‍্যাঙ্ক পদবী অর্জনকারীদের তাৎক্ষণিক ক্যাশ প্রমোশন বোনাস প্রদানের ডেডিকেটেড ফান্ড।
+                  Dedicated fund for instant cash promotion bonuses awarded upon reaching new leadership and manager ranks.
                 </p>
                 <div className="pt-2 text-[11px] text-cyan-700 dark:text-cyan-400 font-semibold">
                   Used For: Rank Upgrade Cash Payouts
@@ -333,7 +334,7 @@ export default function UserFundsPage() {
                   ৳{(globalFunds.royaltyFund || 0).toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  কোম্পানির শীর্ষ পদবীধারী (Diamond Manager, Crown Manager & Director) লিডারদের আজীবন রয়্যালটি পেমেন্ট।
+                  Lifetime executive royalty pool for top-tier Diamond Managers, Crown Managers, and Company Directors.
                 </p>
                 <div className="pt-2 text-[11px] text-indigo-700 dark:text-indigo-400 font-semibold">
                   Eligibility: Diamond Manager & Above
@@ -350,7 +351,7 @@ export default function UserFundsPage() {
                   </Badge>
                   <Plane className="h-5 w-5 text-sky-600" />
                 </div>
-                <CardTitle className="text-base font-bold mt-2">Tour Fund (ট্যুর ফান্ড)</CardTitle>
+                <CardTitle className="text-base font-bold mt-2">Tour Fund</CardTitle>
                 <CardDescription>5% (৳75) per activation</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -358,7 +359,7 @@ export default function UserFundsPage() {
                   ৳{(globalFunds.tourFund || 0).toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  কোয়ালিফাইং লিডারদের দেশীয় ও আন্তর্জাতিক ট্যুর, রিসোর্ট রিট্রিট ও ট্রাভেল ইনসেন্টিভ ফান্ড।
+                  Domestic and international travel incentive fund for qualifying leaders and managers.
                 </p>
                 <div className="pt-2 text-[11px] text-sky-700 dark:text-sky-400 font-semibold">
                   Used For: Domestic & International Tours
@@ -375,7 +376,7 @@ export default function UserFundsPage() {
                   </Badge>
                   <Users2 className="h-5 w-5 text-purple-600" />
                 </div>
-                <CardTitle className="text-base font-bold mt-2">Community Fund (কমিউনিটি ফান্ড)</CardTitle>
+                <CardTitle className="text-base font-bold mt-2">Community Fund</CardTitle>
                 <CardDescription>15% (৳225) per activation</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -383,7 +384,7 @@ export default function UserFundsPage() {
                   ৳{(globalFunds.communityFund || 0).toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  সামাজিক উন্নয়ন, আঞ্চলিক সার্ভিস হাব তৈরি এবং মাঠ পর্যায়ের মেম্বারদের কল্যাণ ফান্ড।
+                  Community development, regional member service hubs, and social welfare programs.
                 </p>
                 <div className="pt-2 text-[11px] text-purple-700 dark:text-purple-400 font-semibold">
                   Used For: Regional Centers & Community Welfare
@@ -400,7 +401,7 @@ export default function UserFundsPage() {
                   </Badge>
                   <HeartHandshake className="h-5 w-5 text-rose-600" />
                 </div>
-                <CardTitle className="text-base font-bold mt-2">Charity Fund (চ্যারিটি ফান্ড)</CardTitle>
+                <CardTitle className="text-base font-bold mt-2">Charity Fund</CardTitle>
                 <CardDescription>1% (৳15) per activation</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -408,7 +409,7 @@ export default function UserFundsPage() {
                   ৳{(globalFunds.charityFund || 0).toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  অসহায়, এতিম ও সুবিধাবঞ্চিত মানুষের স্বাস্থ্য ও শিক্ষায় এবিএস ইন্টারন্যাশনালের সামাজিক দায়বদ্ধতা (CSR) ফান্ড।
+                  ABS International Corporate Social Responsibility (CSR) fund supporting orphans, destitute families, and healthcare.
                 </p>
                 <div className="pt-2 text-[11px] text-rose-700 dark:text-rose-400 font-semibold">
                   Social Welfare & Medical Assistance

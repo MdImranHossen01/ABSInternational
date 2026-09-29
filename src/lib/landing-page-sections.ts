@@ -70,11 +70,11 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     description: 'High-converting checkout form',
     icon: 'credit-card',
     defaultContent: {
-      title: 'অর্ডার করতে নিচের ফর্মটি পূরণ করুন',
-      buttonText: 'অর্ডার নিশ্চিত করুন',
+      title: 'Fill out the form below to order',
+      buttonText: 'Confirm Order',
       showQuantity: true,
       defaultQuantity: 1,
-      paymentInstructions: 'ডেলিভারি ম্যানের কাছে টাকা পেমেন্ট করুন।',
+      paymentInstructions: 'Pay cash to the delivery agent upon receiving the package.',
     }
   },
   {
@@ -83,11 +83,11 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     description: 'Display benefits or features with icons',
     icon: 'grid',
     defaultContent: {
-      title: 'কেন আমাদের পছন্দ করবেন?',
+      title: 'Why Choose Us?',
       items: [
-        { title: 'প্রাকৃতিক উপাদান', description: 'আমরা শতভাগ প্রাকৃতিক উপাদান ব্যবহার করি।', icon: 'leaf' },
-        { title: 'দ্রুত ডেলিভারি', description: '২৪-৪৮ ঘণ্টার মধ্যে হোম ডেলিভারি।', icon: 'truck' },
-        { title: 'ক্যাশ অন ডেলিভারি', description: 'পণ্য হাতে পেয়ে টাকা পরিশোধের সুবিধা।', icon: 'shield-check' },
+        { title: 'Natural Ingredients', description: 'We use 100% natural and organic ingredients.', icon: 'leaf' },
+        { title: 'Fast Delivery', description: 'Home delivery within 24-48 hours nationwide.', icon: 'truck' },
+        { title: 'Cash on Delivery', description: 'Pay cash conveniently after receiving your parcel.', icon: 'shield-check' },
       ]
     }
   },
@@ -97,7 +97,7 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     description: 'Embed a YouTube or Vimeo video',
     icon: 'play-circle',
     defaultContent: {
-      title: 'আমাদের পণ্য সম্পর্কে আরও জানুন',
+      title: 'Learn More About Our Products',
       videoUrl: '',
       thumbnail: '',
     }
@@ -108,10 +108,10 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     description: 'What your customers say',
     icon: 'message-square',
     defaultContent: {
-      title: 'আমাদের কাস্টমারদের মতামত',
+      title: 'What Our Customers Say',
       reviews: [
-        { name: 'আরিফ আহমেদ', role: 'নিয়মিত গ্রাহক', content: 'অসাধারণ পণ্য! আমি গত ২ মাস ধরে ব্যবহার করছি এবং খুব ভালো ফলাফল পেয়েছি।', rating: 5 },
-        { name: 'সাদিয়া ইসলাম', role: 'গৃহিণী', content: 'খুবই দ্রুত ডেলিভারি পেয়েছি। পণ্যের গুণগত মান নিয়ে কোনো সন্দেহ নেই।', rating: 5 },
+        { name: 'Arif Ahmed', role: 'Verified Customer', content: 'Outstanding product quality! I have been using it for 2 months and got fantastic results.', rating: 5 },
+        { name: 'Sadia Islam', role: 'Homemaker', content: 'Very fast delivery. Product quality and packaging are truly authentic.', rating: 5 },
       ]
     }
   },
@@ -121,10 +121,10 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     description: 'Frequently Asked Questions',
     icon: 'help-circle',
     defaultContent: {
-      title: 'সচরাচর জিজ্ঞাসিত প্রশ্নসমূহ',
+      title: 'Frequently Asked Questions',
       items: [
-        { question: 'কিভাবে অর্ডার করবো?', answer: 'অর্ডার করতে ল্যান্ডিং পেজের নিচের ফর্মটি পূরণ করুন অথবা আমাদের কল করুন।' },
-        { question: 'ডেলিভারি চার্জ কত?', answer: 'ঢাকার ভিতরে ৬০ টাকা এবং ঢাকার বাইরে ১২০ টাকা।' },
+        { question: 'How can I place an order?', answer: 'Fill out the order form at the bottom of the landing page or contact our support team.' },
+        { question: 'What are the delivery charges?', answer: 'Inside Dhaka ৳60 and Outside Dhaka ৳120.' },
       ]
     }
   },

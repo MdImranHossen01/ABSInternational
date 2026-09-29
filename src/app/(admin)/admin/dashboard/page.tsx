@@ -361,7 +361,7 @@ export default function AdminDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-lg font-bold">MLM Fund Pools (ফান্ড বরাদ্দ)</h3>
+              <h3 className="text-lg font-bold">MLM Fund Pools</h3>
               <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                 55% Total Allocation (৳825/act)
               </span>

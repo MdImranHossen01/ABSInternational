@@ -88,7 +88,7 @@ export default function UserRanksPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Badge className="bg-amber-300 text-amber-950 font-bold border-0">
-                র‍্যাঙ্ক, রিওয়ার্ড ও অ্যাচিভমেন্ট
+                Ranks, Rewards & Achievements
               </Badge>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black">Rank System & Career Rewards</h1>
@@ -171,10 +171,10 @@ export default function UserRanksPage() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Award className="h-5 w-5 text-primary" />
-                ABS International পদবী ও যোগ্যতা নির্দেশিকা (Rank System Matrix)
+                ABS International Rank System & Qualification Matrix
               </CardTitle>
               <CardDescription>
-                কোম্পানির ক্যারিয়ার প্ল্যানে প্রতিটি পদবীর রিকোয়ারমেন্ট এবং প্রমোশন শর্তাবলী।
+                Career plan advancement requirements and promotion criteria for each leadership rank tier.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -182,11 +182,11 @@ export default function UserRanksPage() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/50">
-                      <TableHead className="font-bold">পদবী (Rank)</TableHead>
-                      <TableHead className="font-bold">যোগ্যতার মাপকাঠি (Qualification)</TableHead>
-                      <TableHead className="font-bold">ক্যাশ বোনাস</TableHead>
-                      <TableHead className="font-bold">উপহার / ইনসেন্টিভ (Rewards)</TableHead>
-                      <TableHead className="font-bold text-center">স্ট্যাটাস</TableHead>
+                      <TableHead className="font-bold">Rank</TableHead>
+                      <TableHead className="font-bold">Qualification</TableHead>
+                      <TableHead className="font-bold">Cash Bonus</TableHead>
+                      <TableHead className="font-bold">Incentives & Rewards</TableHead>
+                      <TableHead className="font-bold text-center">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

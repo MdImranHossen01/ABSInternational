@@ -103,7 +103,7 @@ export default function UserPackagesPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Badge className="bg-teal-300 text-teal-950 font-bold border-0">
-                প্রোডাক্ট স্টোরি, ক্যাটাগরি ও প্যাকেজ
+                Product Story, Categories & Packages
               </Badge>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black">Packages & Product Ecosystem</h1>

@@ -63,11 +63,11 @@ export default async function PublicLandingPage({ params }: { params: Promise<{ 
       id: 'default-order-form-section',
       type: 'order_form',
       content: {
-        title: 'অর্ডার করতে নিচের ফর্মটি পূরণ করুন',
-        buttonText: 'অর্ডার নিশ্চিত করুন',
+        title: 'Fill out the form below to order',
+        buttonText: 'Confirm Order',
         showQuantity: true,
         defaultQuantity: 1,
-        paymentInstructions: 'ডেলিভারি ম্যানের কাছে টাকা পেমেন্ট করুন।',
+        paymentInstructions: 'Pay cash to the delivery agent upon receipt.',
         ...productDetails
       },
       styles: {

@@ -96,7 +96,7 @@ const productsData = [
     isFeatured: true,
     isNewArrival: false,
     isFlashSale: false,
-    description: '১০০% খাঁটি এবং অর্গানিক অশ্বগন্ধা রুট পাউডার। স্ট্রেস ও ক্লান্তি দূর করে শরীরের স্বাভাবিক রোগ প্রতিরোধ ক্ষমতা বৃদ্ধি এবং ঘুমের মান উন্নত করতে সহায়ক। সম্পূর্ণ কেমিক্যাল ও প্রিজারভেটিভ মুক্ত।',
+    description: '100% pure and organic Ashwagandha root powder. Helps reduce stress, fatigue, and supports immune system and quality sleep. Completely free of chemicals and preservatives.',
     tags: ['ashwagandha', 'herbal', 'wellness', 'organic', 'immunity'],
     attributes: [{ key: 'Weight', value: '200g' }, { key: 'Form', value: 'Powder' }, { key: 'Origin', value: 'Natural Organic' }]
   },
@@ -112,7 +112,7 @@ const productsData = [
     isFeatured: true,
     isNewArrival: false,
     isFlashSale: false,
-    description: 'সুন্দরবনের গভীর জঙ্গল থেকে সংগৃহীত ১০০% বিশুদ্ধ ও প্রাকৃতিক খলিসা ফুলের মধু। অ্যান্টিঅক্সিডেন্ট এবং প্রাকৃতিক খনিজ উপাদানে ভরপুর, যা দৈনিক শক্তি যোগাতে ও ঠান্ডা-কাশি প্রতিরোধে কার্যকর।',
+    description: '100% pure and raw forest honey harvested directly from the deep mangrove forests of Sundarbans. Packed with antioxidants and essential minerals for daily vitality.',
     tags: ['honey', 'sundarban', 'pure', 'organic', 'natural'],
     attributes: [{ key: 'Weight', value: '500g' }, { key: 'Type', value: 'Raw Forest Honey' }]
   },
@@ -128,7 +128,7 @@ const productsData = [
     isFeatured: true,
     isNewArrival: false,
     isFlashSale: false,
-    description: 'বিশুদ্ধ জাফরান ও ২৬টি ভেষজ উপাদানে প্রস্তুত ঐতিহ্যবাহী কুমকুমাদি ফেস সিরাম। ত্বকের উজ্জ্বলতা বৃদ্ধি করে, মেছতা ও ডার্ক স্পট দূর করে প্রাকৃতিকভাবে ত্বককে কোমল ও লাবণ্যময় করে তোলে।',
+    description: 'Traditional Kumkumadi face serum crafted with pure Kashmiri saffron and 26 revitalizing herbs. Boosts skin radiance, reduces blemishes, and restores natural glow.',
     tags: ['kumkumadi', 'face-serum', 'beauty', 'skincare', 'glowing'],
     attributes: [{ key: 'Volume', value: '30ml' }, { key: 'Skin Type', value: 'All Skin Types' }]
   },
@@ -144,7 +144,7 @@ const productsData = [
     isFeatured: true,
     isNewArrival: false,
     isFlashSale: false,
-    description: 'প্রথম কোল্ড প্রেস পদ্ধতিতে তৈরি শতভাগ খাঁটি কালোজিরা তেল। সকল রোগের মহৌষধ হিসেবে পরিচিত কালোজিরা তেল রোগ প্রতিরোধ ক্ষমতা বৃদ্ধি, চুল পড়া রোধ ও ত্বকের যত্নে অত্যন্ত কার্যকরী।',
+    description: '100% pure cold-pressed black seed (Kalonji) oil. Renowned as a versatile natural remedy for immunity, hair health, and nourished skin.',
     tags: ['kalonji', 'black-seed', 'oil', 'herbal', 'immunity'],
     attributes: [{ key: 'Volume', value: '100ml' }, { key: 'Extraction', value: 'Cold Pressed 100% Pure' }]
   },
@@ -160,7 +160,7 @@ const productsData = [
     isFeatured: true,
     isNewArrival: false,
     isFlashSale: false,
-    description: 'প্রকৃতির অন্যতম পুষ্টিকর সুপারফুড স্পিরুলিনা। এতে রয়েছে উচ্চমাত্রার প্রোটিন, ভিটামিন বি-কমপ্লেক্স ও আয়রন যা শারীরিক দুর্বলতা দূর করে মেটাবলিজম ও কর্মক্ষমতা বাড়াতে সহায়তা করে।',
+    description: 'Nutrient-rich spirulina superfood capsules packed with plant-based protein, B-complex vitamins, and iron to elevate metabolism and daily endurance.',
     tags: ['spirulina', 'superfood', 'supplements', 'wellness'],
     attributes: [{ key: 'Quantity', value: '60 Capsules' }, { key: 'Dosage', value: '1-2 Caps Daily' }]
   },
@@ -176,7 +176,7 @@ const productsData = [
     isFeatured: true,
     isNewArrival: false,
     isFlashSale: false,
-    description: 'ভৃঙ্গরাজ, ব্রাহ্মী, আমলকী ও তিল তেলের সমন্বয়ে প্রস্তুত মহা ভৃঙ্গরাজ তৈল। চুলের গোড়া শক্ত করে অতিরিক্ত চুল পড়া বন্ধ করে এবং নতুন চুল গজাতে সহায়তা করে। মাথার তালুর খুশকি ও চুলকানি দূর করে।',
+    description: 'Ayurvedic Maha Bhringraj hair oil blended with Brahmi, Amla, and sesame oil. Strengthens hair roots, prevents premature hair fall, and supports hair density.',
     tags: ['bhringraj', 'hair-oil', 'hair-care', 'anti-hairfall'],
     attributes: [{ key: 'Volume', value: '200ml' }, { key: 'Target', value: 'Hair Fall & Regrowth' }]
   },
@@ -192,7 +192,7 @@ const productsData = [
     isFeatured: true,
     isNewArrival: false,
     isFlashSale: false,
-    description: 'খাঁটি চন্দন ও কাশ্মীরি জাফরানের মিশ্রণে তৈরি প্রিমিয়াম ফেসপ্যাক। রোদে পোড়া দাগ (সানট্যান) দূর করে ত্বককে মুহূর্তেই ফ্রেশ, মসৃণ ও উজ্জ্বল করে তোলে। সব ধরনের ত্বকে ব্যবহার উপযোগী।',
+    description: 'Premium rejuvenating face pack enriched with pure sandalwood and Kashmiri saffron. Eliminates sun tan and restores skin brightness and smooth texture.',
     tags: ['sandalwood', 'saffron', 'face-pack', 'skin-brightening'],
     attributes: [{ key: 'Weight', value: '100g' }, { key: 'Usage', value: 'Twice Weekly' }]
   },
@@ -208,7 +208,7 @@ const productsData = [
     isFeatured: true,
     isNewArrival: false,
     isFlashSale: false,
-    description: 'মিরাকল ট্রি হিসেবে পরিচিত সজিনা পাতার প্রিমিয়াম পাউডার। এতে দুধের চেয়ে ৪ গুণ ক্যালসিয়াম এবং কলার চেয়ে ৩ গুণ পটাশিয়াম রয়েছে। ডায়াবেটিস নিয়ন্ত্রণ ও রক্তচাপ স্বাভাবিক রাখতে অত্যন্ত উপকারী।',
+    description: 'Premium organic Moringa leaf powder containing high calcium, potassium, and vital nutrients. Supports healthy blood pressure, glucose balance, and vitality.',
     tags: ['moringa', 'superfood', 'health', 'organic-powder'],
     attributes: [{ key: 'Weight', value: '200g' }, { key: 'Grade', value: '100% Organic Fine Powder' }]
   },
@@ -224,7 +224,7 @@ const productsData = [
     isFeatured: true,
     isNewArrival: false,
     isFlashSale: false,
-    description: 'নিমের অ্যান্টি-ব্যাকটেরিয়াল এবং তুলসীর অ্যান্টি-অক্সিডেন্ট গুণে সমৃদ্ধ হ্যান্ডমেড সোপ। ব্রণের জীবাণু ধ্বংস করে ত্বককে গভীর থেকে পরিষ্কার ও স্বাস্থ্যোজ্জ্বল রাখে।',
+    description: 'Handcrafted cleansing soap bar loaded with antibacterial neem and antioxidant tulsi. Purifies deep pores and keeps skin clear, healthy, and refreshed.',
     tags: ['soap', 'neem', 'basil', 'organic-soap', 'skincare'],
     attributes: [{ key: 'Weight', value: '125g' }, { key: 'Type', value: 'Handmade Herbal Soap' }]
   },
@@ -240,7 +240,7 @@ const productsData = [
     isFeatured: true,
     isNewArrival: false,
     isFlashSale: false,
-    description: 'তাজা গোলাপের পাপড়ি থেকে স্টিম ডিস্টিলেশন প্রক্রিয়ায় প্রস্তুত ১০০% পিওর রোজ ওয়াটার। ত্বকের পিএইচ লেভেল ব্যালান্স করে পোরস সঙ্কুচিত করে এবং প্রাকৃতিক আর্দ্রতা ধরে রাখে।',
+    description: '100% pure steam-distilled rose water toner. Balances skin pH levels, refines pores, and delivers long-lasting natural hydration.',
     tags: ['rose-water', 'toner', 'skincare', 'facial-mist'],
     attributes: [{ key: 'Volume', value: '120ml' }, { key: 'Purity', value: '100% Pure Distilled' }]
   },
@@ -258,7 +258,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: true,
     isFlashSale: false,
-    description: 'প্রাকৃতিক জবা ফুলের শুকনো পাপড়ি দিয়ে তৈরি সুস্বাদু ও রিফ্রেশিং রেড টি। এটি ভিটামিন সি এবং অ্যান্টিঅক্সিডেন্টে ভরপুর, যা উচ্চ রক্তচাপ নিয়ন্ত্রণ ও ওজন কমাতে সাহায্য করে।',
+    description: 'Refreshing herbal red tea brewed from dried natural hibiscus petals. High in Vitamin C and antioxidants that support healthy metabolism and wellness.',
     tags: ['hibiscus-tea', 'herbal-tea', 'weight-loss', 'new-arrival'],
     attributes: [{ key: 'Weight', value: '100g' }, { key: 'Caffeine', value: 'Caffeine Free' }]
   },
@@ -274,7 +274,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: true,
     isFlashSale: false,
-    description: 'লাল পেঁয়াজের নির্যাস ও কালোজিরা সমৃদ্ধ নন-স্টিকি হেয়ার সিরাম। চুলের ভাঙন রোধ করে, ফ্রিজি চুলকে সিল্কি ও উজ্জ্বল করে এবং চুল পড়া দ্রুত নিয়ন্ত্রণ করে।',
+    description: 'Non-greasy active hair serum enriched with red onion extract and black seed oil. Protects from breakage and smoothens frizz for shiny, silky hair.',
     tags: ['onion-serum', 'hair-care', 'hair-growth', 'new-arrival'],
     attributes: [{ key: 'Volume', value: '50ml' }, { key: 'Finish', value: 'Non-Greasy Silk Finish' }]
   },
@@ -290,7 +290,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: true,
     isFlashSale: false,
-    description: 'ক্যাফেইন-মুক্ত প্রিমিয়াম ক্যামোমাইল ফুল চা। রাতের অনিদ্রা ও মানসিক ক্লান্তি দূর করে গভীর ও প্রশান্তিদায়ক ঘুম নিশ্চিত করতে জাদুকরী ভূমিকা পালন করে।',
+    description: 'Caffeine-free premium whole chamomile flower tea. Promotes calm, soothes evening tension, and supports deep, restful sleep.',
     tags: ['chamomile', 'sleep-tea', 'relaxation', 'herbal-tea', 'new-arrival'],
     attributes: [{ key: 'Weight', value: '75g' }, { key: 'Flavor', value: 'Floral & Sweet Apple Aroma' }]
   },
@@ -306,7 +306,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: true,
     isFlashSale: false,
-    description: 'গিলয় ও নিমের অ্যান্টি-টক্সিন সংমিশ্রণ যা রক্ত পরিশোধিত করে, লিভার ডিটক্সিফাই করে এবং ক্রনিক জ্বর ও ত্বকের অ্যালার্জি প্রতিরোধে দারুণ কার্যকরী।',
+    description: 'Detoxifying herbal juice blend of Giloy and Neem. Purifies the bloodstream, cleanses the liver, and bolsters natural body defenses.',
     tags: ['giloy-juice', 'neem', 'detox', 'blood-purifier', 'new-arrival'],
     attributes: [{ key: 'Volume', value: '500ml' }, { key: 'Sugar Content', value: '0% Added Sugar' }]
   },
@@ -322,7 +322,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: true,
     isFlashSale: false,
-    description: 'জবা ও শিকাকাই এর সমন্বয়ে তৈরি সম্পূর্ণ প্রাকৃতিক হেয়ার প্যাক। চুলের রুক্ষতা দূর করে ডিপ কন্ডিশনিং প্রদান করে এবং চুলকে করে তোলে বাউন্সি ও ঝলমলে।',
+    description: 'All-natural herbal hair conditioning pack combining Hibiscus and Shikakai. Provides deep nourishment for soft, manageable, and voluminous hair.',
     tags: ['hair-pack', 'shikakai', 'hibiscus', 'hair-conditioning', 'new-arrival'],
     attributes: [{ key: 'Weight', value: '150g' }, { key: 'Form', value: 'Micro-fine Powder' }]
   },
@@ -338,7 +338,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: true,
     isFlashSale: false,
-    description: 'কাশ্মীরি গ্রিন টি, এলাচ, দারুচিনি ও জাফরানের সমন্বয়ে স্পেশাল কাহওয়া ব্লেন্ড। মেটাবলিজম বৃদ্ধি করে মেদ কমাতে এবং হজম প্রক্রিয়া সক্রিয় রাখতে অত্যন্ত উপাদেয়।',
+    description: 'Traditional Kashmiri Kahwa green tea blend infused with cardamom, cinnamon, and saffron. Helps boost metabolism and aids active digestion.',
     tags: ['kahwa', 'green-tea', 'detox-tea', 'weight-loss', 'new-arrival'],
     attributes: [{ key: 'Weight', value: '100g' }, { key: 'Ingredients', value: 'Green Tea, Saffron, Spices' }]
   },
@@ -354,7 +354,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: true,
     isFlashSale: false,
-    description: 'লেমনগ্রাস ও পুদিনা পাতার তরতাজা সুবাসযুক্ত ভেষজ পানীয়। এটি শরীরের ক্লান্তি নিমিষেই দূর করে এবং সতেজ অনুভূতি এনে দেয়।',
+    description: 'Invigorating herbal infusion of zesty lemongrass and cool mint leaves. Uplifts energy, calms digestion, and leaves a crisp refreshing finish.',
     tags: ['lemongrass', 'herbal-infusion', 'refreshing-tea', 'new-arrival'],
     attributes: [{ key: 'Weight', value: '80g' }, { key: 'Profile', value: 'Citrus & Minty' }]
   },
@@ -370,7 +370,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: true,
     isFlashSale: false,
-    description: 'আমলকী, হরিতকী ও বহেরা—এই তিন ফলের নিখুঁত মিশ্রণে প্রস্তুত ত্রিফলা ট্যাবলেট। দীর্ঘমেয়াদী কোষ্ঠকাঠিন্য ও গ্যাস্ট্রিকের সমস্যা থেকে স্থায়ী স্বস্তি দিতে পরীক্ষিত সমাধান।',
+    description: 'Digestive wellness formula combining Amla, Haritaki, and Bibhitaki. Supports gentle gastrointestinal cleansing and digestive regularity.',
     tags: ['triphala', 'digestion', 'ayurvedic-tablets', 'gut-health', 'new-arrival'],
     attributes: [{ key: 'Count', value: '60 Tablets' }, { key: 'Dosage', value: '2 Tablets Before Bed' }]
   },
@@ -386,7 +386,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: true,
     isFlashSale: false,
-    description: 'কৃষ্ণ তুলসী ও আদার কার্যকরী ফর্মুলা যা ঋতু পরিবর্তনের সর্দি, হাঁচি ও গলার অস্বস্তি দূর করে ফুসফুসের কার্যক্ষমতা উন্নত করে।',
+    description: 'Therapeutic herbal tea featuring Krishna Tulsi and spicy ginger. Soothes the throat, supports healthy respiration, and strengthens vitality.',
     tags: ['tulsi-tea', 'ginger-tea', 'immunity', 'respiratory-health', 'new-arrival'],
     attributes: [{ key: 'Weight', value: '100g' }, { key: 'Type', value: 'Loose Herbal Leaf Tea' }]
   },
@@ -402,7 +402,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: true,
     isFlashSale: false,
-    description: 'কেমিক্যাল, অ্যামোনিয়া ও পি-পি-ডি মুক্ত শতভাগ প্রাকৃতিক মেহেদি ও নীল পাতার হেয়ার কালার কিট। সাদা চুলকে কোনো পার্শ্বপ্রতিক্রিয়া ছাড়াই ন্যাচারাল কালো বা গাঢ় বাদামী রঙ দেয়।',
+    description: '100% chemical, ammonia, and PPD-free natural hair color kit with organic Henna and Indigo leaf powders for healthy dark brown or black shades.',
     tags: ['henna', 'indigo', 'natural-hair-color', 'organic-dye', 'new-arrival'],
     attributes: [{ key: 'Net Weight', value: '100g Henna + 100g Indigo' }, { key: 'Chemicals', value: '0% Ammonia / PPD' }]
   },
@@ -420,7 +420,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: false,
     isFlashSale: true,
-    description: 'ফ্ল্যাশ সেল অফার! ভৃঙ্গরাজ ও আমলকী এক্সট্র্যাক্ট সমৃদ্ধ হেয়ার অয়েল। চুলের গোড়ায় পুষ্টি যুগিয়ে অকালে চুল পাকা ও চুল পড়া বন্ধ করতে অত্যন্ত কার্যকরী।',
+    description: 'Flash Sale Special! Intensive hair and scalp repair oil powered by Bhringraj and Amla extracts to nourish roots and counter premature thinning.',
     tags: ['flash-sale', 'hair-oil', 'bhringraj', 'amla-oil'],
     attributes: [{ key: 'Volume', value: '150ml' }, { key: 'Discount', value: '40% OFF Special' }]
   },
@@ -436,7 +436,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: false,
     isFlashSale: true,
-    description: 'টি ট্রি অয়েল ও নিম সমৃদ্ধ সালফেট-মুক্ত অ্যান্টি-ড্যানড্রাফ শ্যাম্পু। প্রথম ব্যবহার থেকেই খুশকির কারণ ছত্রাক দূর করে এবং মাথার ত্বক পরিষ্কার ও চুলকে প্রাণবন্ত রাখে।',
+    description: 'Sulfate-free active anti-dandruff shampoo infused with organic tea tree and neem oil. Keeps scalp clear, fresh, and free from flake buildup.',
     tags: ['flash-sale', 'anti-dandruff', 'shampoo', 'hair-care'],
     attributes: [{ key: 'Volume', value: '200ml' }, { key: 'Free From', value: 'Sulfate & Paraben Free' }]
   },
@@ -452,7 +452,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: false,
     isFlashSale: true,
-    description: 'কাঁচা হলুদ ও নিমের কার্যকরী ফেসওয়াশ যা ত্বকের গভীর থেকে ধুলোবালি ও অতিরিক্ত তেল দূর করে ব্রণের উপদ্রব নিয়ন্ত্রণ করে। ত্বককে রাখে আর্দ্র ও ফ্রেশ।',
+    description: 'Clarifying face wash combining fresh turmeric and neem. Purifies dirt, regulates excess sebum, and keeps skin smooth, hydrated, and clear.',
     tags: ['flash-sale', 'face-wash', 'neem-turmeric', 'acne-care'],
     attributes: [{ key: 'Volume', value: '100ml' }, { key: 'Special Price', value: 'Limited Time Deal' }]
   },
@@ -468,7 +468,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: false,
     isFlashSale: true,
-    description: '৪০টিরও বেশি ভেষজ উপাদান এবং খাঁটি গাওয়া ঘিয়ে প্রস্তুত স্পেশাল চ্যবনপ্রাশ। শিশু ও বড়দের শারীরিক বলবৃদ্ধি, ফুসফুসের সুস্থতা ও দীর্ঘস্থায়ী শক্তি বৃদ্ধির অব্যর্থ দাওয়াই।',
+    description: 'Traditional immunity jam crafted with over 40 natural herbs and pure ghee. Rejuvenates physical strength, respiratory wellness, and daily stamina.',
     tags: ['flash-sale', 'chyawanprash', 'immunity', 'ayurvedic-jam'],
     attributes: [{ key: 'Weight', value: '500g' }, { key: 'Special Offer', value: 'Special Flash Discount' }]
   },
@@ -484,7 +484,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: false,
     isFlashSale: true,
-    description: 'তুলসী, মধু ও বাসক পাতার সুষম সংমিশ্রণে তৈরি সম্পূর্ণ প্রাকৃতিক কাশির সিরাপ। কোনো প্রকার তন্দ্রাচ্ছন্নতা বা পার্শ্বপ্রতিক্রিয়া ছাড়াই শুকনো ও কফযুক্ত কাশি নিরাময় করে।',
+    description: 'Natural soothing cough syrup formulated with tulsi, forest honey, and vasaka leaf. Provides quick, non-drowsy relief for throat irritation.',
     tags: ['flash-sale', 'cough-syrup', 'tulsi-honey', 'herbal-care'],
     attributes: [{ key: 'Volume', value: '100ml' }, { key: 'Non-Drowsy', value: '100% Non-Drowsy' }]
   },
@@ -500,7 +500,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: false,
     isFlashSale: true,
-    description: 'ফ্ল্যাশ সেল লিমিটেড অফার! প্রিমিয়াম অশ্বগন্ধা নির্যাস যা দ্রুত মানসিক অবসাদ কমায়, টেস্টোস্টেরন লেভেল ও শক্তি বৃদ্ধিতে সহায়তা করে।',
+    description: 'Limited Flash Deal! Concentrated Ashwagandha vitality extract to ease fatigue, promote mental calmness, and optimize physical energy.',
     tags: ['flash-sale', 'ashwagandha', 'vitality', 'stress-relief'],
     attributes: [{ key: 'Weight', value: '100g' }, { key: 'Discount', value: '40% Flash Deal' }]
   },
@@ -516,7 +516,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: false,
     isFlashSale: true,
-    description: '২০০ মিলি ফ্যামিলি প্যাক ভার্জিন কালোজিরা তেল। প্রিমিয়াম সিড থেকে সংগৃহীত। ফ্ল্যাশ সেলে পাচ্ছেন বিশেষ সাশ্রয়ী মূল্যে।',
+    description: '200ml family value pack of pure cold-pressed virgin black seed oil. High-potency seeds extracted cleanly for complete daily wellness.',
     tags: ['flash-sale', 'kalonji-oil', 'black-seed', 'health-wellness'],
     attributes: [{ key: 'Volume', value: '200ml' }, { key: 'Extraction', value: 'Cold Pressed Virgin' }]
   },
@@ -532,7 +532,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: false,
     isFlashSale: true,
-    description: 'গোল্ডেন টারমারিক ও নিমের ফোমিং ক্লিনজার। ত্বকের গভীর থেকে ময়লা অপসারণ করে নিখুঁত প্রাকৃতিক উজ্জ্বলতা এনে দেয়।',
+    description: 'Gentle foaming cleanser with golden turmeric and soothing neem. Cleanses pores deeply to reveal radiant, naturally balanced skin.',
     tags: ['flash-sale', 'turmeric-face-foam', 'beauty', 'skincare'],
     attributes: [{ key: 'Volume', value: '150ml' }, { key: 'Type', value: 'Foaming Pump Bottle' }]
   },
@@ -548,7 +548,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: false,
     isFlashSale: true,
-    description: '১ কেজি স্পেশাল ফ্যামিলি জার সুন্দরবনের প্রাকৃতিক মধু। ফ্ল্যাশ সেলে থাকছে অবিশ্বাস্য ডিসকাউন্ট! পরিবারের সবার জন্য স্বাস্থ্যকর প্রাকৃতিক সুইটনার।',
+    description: '1kg family jar of raw natural Sundarban floral honey. Unprocessed and nutrient-dense, serving as a wholesome natural sweetener for your family.',
     tags: ['flash-sale', 'honey-1kg', 'sundarban', 'family-pack'],
     attributes: [{ key: 'Weight', value: '1kg (1000g)' }, { key: 'Guarantee', value: '100% Pure Raw Honey' }]
   },
@@ -564,7 +564,7 @@ const productsData = [
     isFeatured: false,
     isNewArrival: false,
     isFlashSale: true,
-    description: '১৫ মিলি ট্রাভেল সাইজ কুমকুমাদি ডে ইলিক্সির। ত্বকের বলিরেখা দূর করে ত্বককে তারুণ্যদীপ্ত ও গ্লোয়িং রাখতে বিশেষ ফ্ল্যাশ ডিল।',
+    description: '15ml travel-size Kumkumadi facial elixir. Targeted treatment to diminish fine lines and maintain youthful, luminous skin radiance.',
     tags: ['flash-sale', 'kumkumadi', 'face-elixir', 'anti-aging'],
     attributes: [{ key: 'Volume', value: '15ml' }, { key: 'Deal', value: 'Exclusive Flash Sale' }]
   }

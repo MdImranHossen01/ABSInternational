@@ -29,7 +29,7 @@ export function getWhatsAppLink(phone: string): string {
 
 export function normalizePhoneNumber(phone?: string | null): string {
   if (!phone) return '';
-  const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  const banglaDigits = ['\u09E6', '\u09E7', '\u09E8', '\u09E9', '\u09EA', '\u09EB', '\u09EC', '\u09ED', '\u09EE', '\u09EF'];
   const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   let normalized = phone;
   for (let i = 0; i < 10; i++) {

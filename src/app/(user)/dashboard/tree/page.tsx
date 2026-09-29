@@ -301,7 +301,7 @@ export default function MyTreePage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {/* 1. Team Size */}
                 <div className="p-3 rounded-xl border bg-card shadow-2xs">
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground block">টিমের সদস্য (Team)</span>
+                  <span className="text-[10px] uppercase font-bold text-muted-foreground block">Team Size</span>
                   <div className="text-xl font-black text-primary mt-1">
                     {selectedMember.member.teamCount || 0}
                   </div>
@@ -310,7 +310,7 @@ export default function MyTreePage() {
 
                 {/* 2. Sales Volume */}
                 <div className="p-3 rounded-xl border bg-card shadow-2xs">
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground block">মোট সেলস (Sales)</span>
+                  <span className="text-[10px] uppercase font-bold text-muted-foreground block">Sales Volume</span>
                   <div className="text-xl font-black text-blue-700 dark:text-blue-400 mt-1">
                     ৳{(selectedMember.member.personalSales || 0).toLocaleString()}
                   </div>
@@ -319,7 +319,7 @@ export default function MyTreePage() {
 
                 {/* 3. Wallet Balances */}
                 <div className="p-3 rounded-xl border bg-card shadow-2xs">
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground block">জমা টাকা (Deposit)</span>
+                  <span className="text-[10px] uppercase font-bold text-muted-foreground block">Deposit Balance</span>
                   <div className="text-xl font-black text-emerald-700 dark:text-emerald-400 mt-1">
                     ৳{(selectedMember.member.depositWallet || 0).toLocaleString()}
                   </div>
@@ -328,7 +328,7 @@ export default function MyTreePage() {
 
                 {/* 4. Total Withdrawn */}
                 <div className="p-3 rounded-xl border bg-card shadow-2xs">
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground block">মোট উত্তোলন (Withdraw)</span>
+                  <span className="text-[10px] uppercase font-bold text-muted-foreground block">Total Withdrawn</span>
                   <div className="text-xl font-black text-purple-700 dark:text-purple-400 mt-1">
                     ৳{(selectedMember.member.totalWithdrawn || 0).toLocaleString()}
                   </div>
@@ -340,10 +340,10 @@ export default function MyTreePage() {
               <Tabs defaultValue="withdrawals" className="space-y-3">
                 <TabsList className="grid grid-cols-2 w-full max-w-sm">
                   <TabsTrigger value="withdrawals" className="text-xs font-semibold flex items-center gap-1.5">
-                    <ArrowDownLeft className="h-3.5 w-3.5 text-purple-600" /> উত্তোলনের হিস্টোরি
+                    <ArrowDownLeft className="h-3.5 w-3.5 text-purple-600" /> Withdrawal History
                   </TabsTrigger>
                   <TabsTrigger value="deposits" className="text-xs font-semibold flex items-center gap-1.5">
-                    <ArrowUpRight className="h-3.5 w-3.5 text-emerald-600" /> জমা টাকার হিস্টোরি
+                    <ArrowUpRight className="h-3.5 w-3.5 text-emerald-600" /> Deposit History
                   </TabsTrigger>
                 </TabsList>
 
@@ -351,17 +351,17 @@ export default function MyTreePage() {
                 <TabsContent value="withdrawals" className="space-y-2">
                   {selectedMember.withdrawals?.length === 0 ? (
                     <div className="p-6 text-center text-xs text-muted-foreground border rounded-lg bg-muted/20">
-                      কোনো উত্তোলনের রেকর্ড পাওয়া যায়নি। (No withdrawals recorded yet)
+                      No withdrawals recorded yet.
                     </div>
                   ) : (
                     <div className="border rounded-lg overflow-x-auto max-h-56">
                       <Table>
                         <TableHeader>
                           <TableRow className="bg-muted/50">
-                            <TableHead className="text-xs">তারিখ (Date)</TableHead>
-                            <TableHead className="text-xs">পরিমাণ (Amount)</TableHead>
-                            <TableHead className="text-xs">বিবরণ (Details)</TableHead>
-                            <TableHead className="text-xs text-right">স্ট্যাটাস (Status)</TableHead>
+                            <TableHead className="text-xs">Date</TableHead>
+                            <TableHead className="text-xs">Amount</TableHead>
+                            <TableHead className="text-xs">Details</TableHead>
+                            <TableHead className="text-xs text-right">Status</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -399,17 +399,17 @@ export default function MyTreePage() {
                 <TabsContent value="deposits" className="space-y-2">
                   {selectedMember.deposits?.length === 0 ? (
                     <div className="p-6 text-center text-xs text-muted-foreground border rounded-lg bg-muted/20">
-                      কোনো জমার রেকর্ড পাওয়া যায়নি। (No deposits recorded yet)
+                      No deposits recorded yet.
                     </div>
                   ) : (
                     <div className="border rounded-lg overflow-x-auto max-h-56">
                       <Table>
                         <TableHeader>
                           <TableRow className="bg-muted/50">
-                            <TableHead className="text-xs">তারিখ (Date)</TableHead>
-                            <TableHead className="text-xs">পরিমাণ (Amount)</TableHead>
-                            <TableHead className="text-xs">বিবরণ (Details)</TableHead>
-                            <TableHead className="text-xs text-right">স্ট্যাটাস (Status)</TableHead>
+                            <TableHead className="text-xs">Date</TableHead>
+                            <TableHead className="text-xs">Amount</TableHead>
+                            <TableHead className="text-xs">Details</TableHead>
+                            <TableHead className="text-xs text-right">Status</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>

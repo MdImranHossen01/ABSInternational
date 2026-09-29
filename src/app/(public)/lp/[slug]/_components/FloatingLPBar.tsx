@@ -16,7 +16,7 @@ export default function FloatingLPBar({ whatsappNumber, productShowcaseCount = 1
   const handleScrollToOrder = () => {
     // If there are multiple products and nothing has been added to the cart
     if (productShowcaseCount > 1 && cartItems.length === 0) {
-      toast.error('অনুগ্রহ করে প্রথমে যেকোনো একটি পণ্য কার্টে (Add to Cart) যোগ করুন।');
+      toast.error('Please add at least one product to the cart first.');
       return;
     }
 

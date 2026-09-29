@@ -50,7 +50,7 @@ export default function CharityFundPage() {
       <div className="rounded-2xl bg-linear-to-r from-rose-600 via-pink-600 to-primary p-6 text-white shadow-lg">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black">Charity Fund (চ্যারিটি ফান্ড)</h1>
+            <h1 className="text-2xl sm:text-3xl font-black">Charity Fund</h1>
             <p className="text-xs sm:text-sm opacity-90 mt-1 max-w-xl">
               1% (৳15 BDT) from every membership activation is contributed to ABS International’s Corporate Social Responsibility (CSR) fund to help orphans, underprivileged medical patients, and destitute families.
             </p>

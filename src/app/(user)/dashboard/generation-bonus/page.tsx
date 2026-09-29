@@ -77,14 +77,14 @@ export default function GenerationBonusPage() {
       <div className="rounded-2xl bg-linear-to-r from-blue-700 via-indigo-700 to-primary p-6 text-white shadow-lg">
         <div className="flex flex-wrap items-center gap-2 mb-2">
           <Badge className="bg-blue-300 text-blue-950 font-bold border-0 text-[10px]">
-            ১০-জেনারেশন বোনাস
+            10-Generation Bonus
           </Badge>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-black">Generation Bonus</h1>
             <p className="text-xs sm:text-sm opacity-90 mt-1 max-w-xl">
-              প্রতিটি মেম্বারশিপ প্যাকেজের ৭% (১০৫ টাকা) সমানুপাতে ১ থেকে ১০ম স্তর পর্যন্ত স্বয়ংক্রিয়ভাবে স্প্লিট হয়ে আপনার একাউন্টে জমা হয়।
+              7% (105 BDT) from every membership package is distributed proportionally across 1st to 10th generation levels automatically into your account.
             </p>
           </div>
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl text-right shrink-0 border border-white/15">
@@ -98,7 +98,7 @@ export default function GenerationBonusPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base font-bold flex items-center gap-2">
-            <Layers className="h-5 w-5 text-primary" /> 1-10 Generation Payout Matrix (১০ স্তরের বণ্টন তালিকা)
+            <Layers className="h-5 w-5 text-primary" /> 1-10 Generation Payout Matrix
           </CardTitle>
           <CardDescription>
             7% Generation Pool (৳105 BDT per 1,500 package) distributed across downline depths

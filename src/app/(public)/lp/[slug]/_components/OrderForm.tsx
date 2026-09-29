@@ -48,11 +48,11 @@ import { fbEvent } from '@/lib/fpixel';
 import { ttEvent } from '@/lib/tiktok';
 
 const checkoutSchema = z.object({
-  fullName: z.string().trim().min(2, 'নাম আবশ্যক'),
-  phone: z.string().trim().regex(/^(?:01)[3-9]\d{8}$/, 'সঠিক মোবাইল নম্বর দিন'),
-  street: z.string().trim().min(5, 'ঠিকানা আবশ্যক'),
+  fullName: z.string().trim().min(2, 'Full Name is required'),
+  phone: z.string().trim().regex(/^(?:01)[3-9]\d{8}$/, 'Enter a valid Bangladeshi mobile number'),
+  street: z.string().trim().min(5, 'Delivery address is required'),
   deliveryArea: z.enum(['inside', 'outside'], {
-    message: 'ডেলিভারি এলাকা নির্বাচন করুন',
+    message: 'Select delivery area',
   }),
   paymentMethod: z.enum(['COD', 'Online', 'Manual'], {
     message: 'Select a payment method'
@@ -102,7 +102,7 @@ function ProductSummaryCard({
 
       {showQuantity && (
         <div className="flex items-center justify-between bg-slate-50 dark:bg-zinc-900/30 p-3 rounded-2xl border">
-          <span className="font-bold text-xs text-slate-600 dark:text-zinc-400">পরিমাণ (Quantity)</span>
+          <span className="font-bold text-xs text-slate-600 dark:text-zinc-400">Quantity</span>
           <div className="flex items-center gap-3">
             <button 
               type="button"
@@ -200,29 +200,29 @@ function CouponAndBillBreakdown({
 
       <div className="space-y-2 text-sm text-slate-600 dark:text-zinc-400">
         <div className="flex justify-between">
-          <span>সাবটোটাল</span>
+          <span>Subtotal</span>
           <span className="font-bold text-slate-800 dark:text-zinc-100">৳{itemsTotal}</span>
         </div>
         <div className="flex justify-between">
-          <span>ডেলিভারি চার্জ</span>
+          <span>Delivery Charge</span>
           <span className={isFreeDelivery ? "text-green-600 font-black" : "font-bold text-slate-800 dark:text-zinc-100"}>
             {isFreeDelivery ? 'FREE' : `৳${deliveryCharge}`}
           </span>
         </div>
         {couponDiscount > 0 && (
           <div className="flex justify-between text-green-600 font-medium">
-            <span>কুপন ডিসকাউন্ট</span>
+            <span>Coupon Discount</span>
             <span>- ৳{couponDiscount}</span>
           </div>
         )}
         {isFreeDelivery && (
           <p className="text-[10px] text-green-600 font-bold text-right -mt-1">
-            ফ্রি শিপিং প্রযোজ্য (অর্ডার ≥ ৳{freeDeliveryThreshold})
+            Free shipping applied (Order ≥ ৳{freeDeliveryThreshold})
           </p>
         )}
         <Separator className="my-2" />
         <div className="flex justify-between text-base font-black text-slate-900 dark:text-zinc-100 pt-2">
-          <span>সর্বমোট</span>
+          <span>Total</span>
           <span className="text-primary text-xl">৳{finalTotal}</span>
         </div>
       </div>
@@ -331,7 +331,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
           const { hasPending } = await res.json();
           if (hasPending) {
             setIsPendingOrderBlocked(true);
-            toast.error("আপনার একটি পেন্ডিং অর্ডার রয়েছে। সেটি কনফার্ম হওয়ার আগে নতুন অর্ডার করা যাবে না।");
+            toast.error("You already have a pending order. Please wait for it to be confirmed before placing a new one.");
           } else {
             setIsPendingOrderBlocked(false);
           }
@@ -469,13 +469,13 @@ export default function OrderForm({ content, settings }: { content: any; setting
 
   const onSubmit = async (values: CheckoutValues) => {
     if (values.paymentMethod === 'Manual' && !selectedMethod?.id) {
-      toast.error('অনুগ্রহ করে একটি মোবাইল পেমেন্ট গেটওয়ে সিলেক্ট করে ট্রানজেকশন তথ্য দিন!');
+      toast.error('Please select a payment gateway and provide transaction details!');
       return;
     }
 
     // Product ID check
     if (!selectedProduct.productId) {
-      toast.error('দুঃখিত, এই পণ্যের অর্ডার বর্তমানে বন্ধ আছে। (Missing Product ID)');
+      toast.error('Sorry, orders for this product are currently unavailable. (Missing Product ID)');
       return;
     }
 
@@ -578,14 +578,14 @@ export default function OrderForm({ content, settings }: { content: any; setting
         } else {
           setSuccessOrderId(order._id);
           setSuccess(true);
-          toast.success('অর্ডারটি সফলভাবে সম্পন্ন হয়েছে!');
+          toast.success('Order placed successfully!');
         }
       } else {
         const error = await response.json();
-        toast.error(error.message || 'অর্ডার ব্যর্থ হয়েছে');
+        toast.error(error.message || 'Order failed');
       }
     } catch (error) {
-      toast.error('দুঃখিত, অর্ডার প্রসেস করার সময় সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+      toast.error('Sorry, there was an issue processing your order. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -597,12 +597,12 @@ export default function OrderForm({ content, settings }: { content: any; setting
         <div className="inline-flex h-20 w-20 items-center justify-center bg-emerald-100 text-emerald-600 rounded-full animate-bounce">
           <CheckCircle2 className="h-10 w-10" />
         </div>
-        <h2 className="text-3xl font-black tracking-tight text-slate-900">অর্ডারটি সফল হয়েছে!</h2>
-        <p className="text-muted-foreground">খুব শীঘ্রই আমাদের প্রতিনিধি আপনার সাথে ফোনে যোগাযোগ করবেন। আমাদের সাথে থাকার জন্য ধন্যবাদ।</p>
+        <h2 className="text-3xl font-black tracking-tight text-slate-900">Order Placed Successfully!</h2>
+        <p className="text-muted-foreground">Our representative will contact you via phone shortly. Thank you for shopping with us.</p>
         {successOrderId && (
-          <p className="text-xs font-bold text-primary">অর্ডার আইডি: #{successOrderId.slice(-6).toUpperCase()}</p>
+          <p className="text-xs font-bold text-primary">Order ID: #{successOrderId.slice(-6).toUpperCase()}</p>
         )}
-        <Button onClick={() => setSuccess(false)} variant="outline" className="rounded-full">নতুন অর্ডার করুন</Button>
+        <Button onClick={() => setSuccess(false)} variant="outline" className="rounded-full">Place New Order</Button>
       </div>
     );
   }
@@ -627,7 +627,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
             <CardHeader className="bg-slate-50 dark:bg-zinc-900/50 pb-4 border-b">
               <CardTitle className="text-lg font-black text-slate-800 dark:text-zinc-100 flex items-center gap-2">
                 <ShoppingCart className="h-5 w-5 text-primary" />
-                অর্ডার সারসংক্ষেপ
+                Order Summary
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
@@ -683,9 +683,9 @@ export default function OrderForm({ content, settings }: { content: any; setting
                     name="fullName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-bold">আপনার নাম</FormLabel>
+                        <FormLabel className="font-bold">Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="পূর্ণ নাম লিখুন" {...field} className="h-12 rounded-xl border-2 focus-visible:ring-primary/20" />
+                          <Input placeholder="Enter your full name" {...field} className="h-12 rounded-xl border-2 focus-visible:ring-primary/20" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -697,9 +697,9 @@ export default function OrderForm({ content, settings }: { content: any; setting
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-bold">মোবাইল নম্বর</FormLabel>
+                        <FormLabel className="font-bold">Mobile Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="যেমন: ০১৭XXXXXXXX" {...field} className="h-12 rounded-xl border-2 focus-visible:ring-primary/20" />
+                          <Input placeholder="e.g. 017XXXXXXXX" {...field} className="h-12 rounded-xl border-2 focus-visible:ring-primary/20" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -711,7 +711,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
                     name="deliveryArea"
                     render={({ field }) => (
                       <FormItem className="space-y-2">
-                        <FormLabel className="font-bold">ডেলিভারি এলাকা</FormLabel>
+                        <FormLabel className="font-bold">Delivery Area</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -723,7 +723,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
                                 <RadioGroupItem value="inside" />
                               </FormControl>
                               <FormLabel className="font-medium cursor-pointer text-sm">
-                                ঢাকার ভিতরে (৳{chargeInsideDhaka})
+                                Inside Dhaka (৳{chargeInsideDhaka})
                               </FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0 cursor-pointer">
@@ -731,7 +731,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
                                 <RadioGroupItem value="outside" />
                               </FormControl>
                               <FormLabel className="font-medium cursor-pointer text-sm">
-                                ঢাকার বাইরে (৳{chargeOutsideDhaka})
+                                Outside Dhaka (৳{chargeOutsideDhaka})
                               </FormLabel>
                             </FormItem>
                           </RadioGroup>
@@ -746,9 +746,9 @@ export default function OrderForm({ content, settings }: { content: any; setting
                     name="street"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-bold">সম্পূর্ণ ঠিকানা</FormLabel>
+                        <FormLabel className="font-bold">Full Address</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="গ্রাম/বাসা নং, রোড নং, এলাকা, থানা, জেলা" {...field} className="rounded-xl border-2 focus-visible:ring-primary/20" />
+                          <Textarea placeholder="House/Street, Road, Area, Thana, District" {...field} className="rounded-xl border-2 focus-visible:ring-primary/20" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -782,7 +782,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
                     name="paymentMethod"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel className="font-bold">পেমেন্ট পদ্ধতি</FormLabel>
+                        <FormLabel className="font-bold">Payment Method</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -794,8 +794,8 @@ export default function OrderForm({ content, settings }: { content: any; setting
                                 <RadioGroupItem value="COD" />
                               </FormControl>
                               <FormLabel className="font-bold flex-1 cursor-pointer">
-                                ক্যাশ অন ডেলিভারি (COD)
-                                <p className="text-xs font-normal text-muted-foreground mt-0.5">পণ্য হাতে পেয়ে টাকা পরিশোধ করুন।</p>
+                                Cash on Delivery (COD)
+                                <p className="text-xs font-normal text-muted-foreground mt-0.5">Pay in cash when you receive the product.</p>
                               </FormLabel>
                             </FormItem>
 
@@ -805,8 +805,8 @@ export default function OrderForm({ content, settings }: { content: any; setting
                                   <RadioGroupItem value="Online" />
                                 </FormControl>
                                 <FormLabel className="font-bold flex-1 cursor-pointer">
-                                  অনলাইন পেমেন্ট (SSLCommerz)
-                                  <p className="text-xs font-normal text-muted-foreground mt-0.5">বিকাশ, রকেট, নগদ বা কার্ড দিয়ে নিরাপদ পেমেন্ট।</p>
+                                  Online Payment (SSLCommerz)
+                                  <p className="text-xs font-normal text-muted-foreground mt-0.5">Secure payment via Cards or Mobile Banking.</p>
                                   <Badge variant="secondary" className="mt-1 text-[10px]">Recommended</Badge>
                                 </FormLabel>
                               </FormItem>
@@ -821,8 +821,8 @@ export default function OrderForm({ content, settings }: { content: any; setting
                                     <RadioGroupItem value="Manual" />
                                   </FormControl>
                                   <FormLabel className="font-bold flex-1 cursor-pointer">
-                                    ম্যানুয়াল পেমেন্ট (মোবাইল ব্যাংকিং / QR)
-                                    <p className="text-xs font-normal text-muted-foreground mt-0.5">টাকা পাঠিয়ে ট্রানজেকশন আইডি দিয়ে পেমেন্ট নিশ্চিত করুন।</p>
+                                    Manual Payment (Mobile Banking / QR)
+                                    <p className="text-xs font-normal text-muted-foreground mt-0.5">Send money and provide transaction ID to confirm.</p>
                                   </FormLabel>
                                 </FormItem>
                               )}
@@ -873,7 +873,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
                   {/* Validation message if Manual method selected but details missing */}
                   {form.watch('paymentMethod') === 'Manual' && !selectedMethod?.id && (
                     <p className="text-[10px] text-destructive font-bold text-center mt-2 animate-pulse">
-                      অনুগ্রহ করে একটি মোবাইল পেমেন্ট গেটওয়ে সিলেক্ট করে ট্রানজেকশন তথ্য দিন!
+                      Please select a mobile payment gateway and provide transaction details!
                     </p>
                   )}
                 </div>
@@ -881,7 +881,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
                 <div className="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl flex items-start gap-3">
                    <ShieldCheck className="h-6 w-6 text-emerald-600 shrink-0" />
                    <div className="text-sm text-emerald-800">
-                      <strong>নিরাপদ পেমেন্ট:</strong> {content.paymentInstructions}
+                      <strong>Secure Payment:</strong> {content.paymentInstructions}
                    </div>
                 </div>
 
@@ -897,7 +897,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
                   {loading ? (
                     <Loader2 className="h-6 w-6 animate-spin" />
                   ) : isPendingOrderBlocked ? (
-                    'পেন্ডিং অর্ডার রয়েছে'
+                    'Pending Order Exists'
                   ) : (
                     <>
                       <ShoppingCart className="h-6 w-6" /> 
@@ -907,7 +907,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
                 </Button>
                 {!isFormValid && (
                   <p className="text-[10px] font-bold text-muted-foreground text-center w-full uppercase tracking-widest mt-2">
-                    অর্ডার সম্পন্ন করতে ডেলিভারি তথ্য পূরণ করুন
+                    Please fill in delivery details to complete order
                   </p>
                 )}
 
@@ -982,16 +982,16 @@ export default function OrderForm({ content, settings }: { content: any; setting
 
             {/* Instruction Panel */}
             <div className="bg-slate-50 dark:bg-zinc-950 rounded-xl p-3 border border-slate-200 dark:border-zinc-800 space-y-1.5">
-              <p className="text-[10px] font-black text-slate-700 dark:text-zinc-300 uppercase tracking-wider">পেমেন্ট নির্দেশিকা (পড়ুন):</p>
+              <p className="text-[10px] font-black text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Payment Instructions:</p>
               <div className="max-h-24 overflow-y-auto pr-1 space-y-1 text-[9px] leading-relaxed text-slate-600 dark:text-zinc-400 font-medium">
-                <p>১. আপনার <strong>{selectedMethod?.id === 'bkash' ? 'বিকাশ' : selectedMethod?.id === 'nagad' ? 'নগদ' : selectedMethod?.id === 'rocket' ? 'রকেট' : 'মোবাইল'}</strong> অ্যাপে যান অথবা USSD ডায়াল করে <strong>"Send Money"</strong> অপশন সিলেক্ট করুন।</p>
+                <p>1. Open your <strong>{selectedMethod?.id === 'bkash' ? 'bKash' : selectedMethod?.id === 'nagad' ? 'Nagad' : selectedMethod?.id === 'rocket' ? 'Rocket' : 'Mobile Banking'}</strong> app or dial USSD and choose <strong>"Send Money"</strong>.</p>
                 {selectedMethod?.id !== 'banglaQr' ? (
-                  <p>২. উপরে দেওয়া <strong>Personal</strong> নম্বরটি প্রাপক হিসেবে দিন।</p>
+                  <p>2. Enter the <strong>Personal</strong> number shown above as the recipient.</p>
                 ) : (
-                  <p>২. উপরে দেওয়া <strong>Bangla QR</strong> কোডটি আপনার ব্যাংক বা পেমেন্ট অ্যাপ দিয়ে স্ক্যান করুন।</p>
+                  <p>2. Scan the <strong>Bangla QR</strong> code shown above using your bank or payment app.</p>
                 )}
-                <p>৩. মোট পেমেন্ট অ্যামাউন্ট <strong>৳{Math.round(finalTotal)}</strong> সেন্ড মানি করুন।</p>
-                <p>৪. সফলভাবে টাকা পাঠানোর পর নিচের ট্যাব থেকে <strong>মোবাইল নম্বর</strong> অথবা <strong>TrxID</strong> যেকোনো একটি তথ্য দিয়ে পেমেন্ট নিশ্চিত করুন।</p>
+                <p>3. Send the exact total payment amount of <strong>৳{Math.round(finalTotal)}</strong>.</p>
+                <p>4. After completing payment, confirm below using your <strong>Sender Phone Number</strong> or <strong>Transaction ID (TrxID)</strong>.</p>
               </div>
             </div>
 
@@ -1006,7 +1006,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
                     : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-zinc-200'
                 }`}
               >
-                {selectedMethod?.id === 'bkash' ? 'বিকাশ' : selectedMethod?.id === 'nagad' ? 'নগদ' : selectedMethod?.id === 'rocket' ? 'রকেট' : 'মোবাইল'} নম্বর দিয়ে
+                Via Sender Phone
               </button>
               <button
                 type="button"
@@ -1017,7 +1017,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
                     : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-zinc-200'
                 }`}
               >
-                ট্রানজেকশন আইডি (TrxID) দিয়ে
+                Via Transaction ID (TrxID)
               </button>
             </div>
 
@@ -1025,7 +1025,7 @@ export default function OrderForm({ content, settings }: { content: any; setting
             <div className="space-y-3 pt-1">
               {paymentDetailTab === 'phone' ? (
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold">যে নম্বর থেকে টাকা পাঠিয়েছেন</Label>
+                  <Label className="text-xs font-bold">Sender Phone Number</Label>
                   <Input
                     placeholder="017XXXXXXXX"
                     value={manualDetails.senderNumber}
@@ -1035,9 +1035,9 @@ export default function OrderForm({ content, settings }: { content: any; setting
                 </div>
               ) : (
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold">ট্রানজেকশন আইডি (Transaction ID / TrxID)</Label>
+                  <Label className="text-xs font-bold">Transaction ID (TrxID)</Label>
                   <Input
-                    placeholder="যেমন: 8N7792VOP"
+                    placeholder="e.g. 8N7792VOP"
                     value={manualDetails.transactionId}
                     onChange={(e) => setManualDetails({ ...manualDetails, transactionId: e.target.value })}
                     className="h-10 rounded-xl"
@@ -1066,15 +1066,15 @@ export default function OrderForm({ content, settings }: { content: any; setting
               className="flex-1 rounded-xl h-11 text-xs font-bold bg-primary text-white"
               onClick={() => {
                 if (paymentDetailTab === 'phone' && !manualDetails.senderNumber.trim()) {
-                  toast.error('অনুগ্রহ করে সেন্ডার মোবাইল নম্বরটি লিখুন');
+                  toast.error('Please enter the sender phone number');
                   return;
                 }
                 if (paymentDetailTab === 'trx' && !manualDetails.transactionId.trim()) {
-                  toast.error('অনুগ্রহ করে ট্রানজেকশন আইডিটি লিখুন');
+                  toast.error('Please enter the transaction ID');
                   return;
                 }
                 setShowPaymentModal(false);
-                toast.success('পেমেন্ট তথ্য সংরক্ষণ করা হয়েছে। আপনার অর্ডার কনফার্ম করতে ফর্মটি সাবমিট করুন।');
+                toast.success('Payment details saved. Please submit the form to confirm your order.');
               }}
             >
               Confirm Details

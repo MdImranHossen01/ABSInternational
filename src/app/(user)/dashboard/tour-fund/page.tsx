@@ -51,7 +51,7 @@ export default function TourFundPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl sm:text-3xl font-black">Tour Fund (ট্যুর ফান্ড)</h1>
+              <h1 className="text-2xl sm:text-3xl font-black">Tour Fund</h1>
               <span className="text-xs font-bold bg-white/20 px-2.5 py-0.5 rounded-full">
                 5% Allocation
               </span>

@@ -300,19 +300,19 @@ export function UsersManagementView({
       desc: 'Complete directory of all platform customers, leaders, and system staff.',
     },
     leaders: {
-      title: 'Founding Leaders (মূল ৬ জন লিডার)',
+      title: 'Founding Leaders',
       desc: 'Top root leaders directly sponsored by Company ID (ABS-COMPANY) driving the network.',
     },
     active: {
-      title: 'Active Subscription Members (একটিভ মেম্বার)',
+      title: 'Active Subscription Members',
       desc: 'Verified members who have activated a package subscription (৳1,500).',
     },
     free: {
-      title: 'Free Unactivated Members (ফ্রি মেম্বার)',
+      title: 'Free Unactivated Members',
       desc: 'Registered users who have not yet purchased/activated a membership package.',
     },
     ranks: {
-      title: 'Rank Achievers (পদবীধারী লিডারবৃন্দ)',
+      title: 'Rank Achievers',
       desc: 'Promoted leaders from Team Manager up to Company Director tier.',
     },
     admins: {

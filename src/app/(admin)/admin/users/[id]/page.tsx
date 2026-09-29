@@ -454,7 +454,7 @@ export default function AdminUserProfilePage() {
             <div className="h-7 w-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
               <UsersIcon className="h-4 w-4" />
             </div>
-            <h3 className="font-bold text-slate-900 text-sm">Sponsor Information (স্পন্সর কে)</h3>
+            <h3 className="font-bold text-slate-900 text-sm">Sponsor Information</h3>
           </div>
           <span className="text-xs text-muted-foreground">Who introduced this user</span>
         </div>

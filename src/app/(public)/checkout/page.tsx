@@ -47,11 +47,11 @@ import {
 } from "@/components/ui/dialog";
 
 const checkoutSchema = z.object({
-  fullName: z.string().min(2, 'নাম আবশ্যক'),
-  phone: z.string().min(11, 'সঠিক মোবাইল নম্বর দিন'),
-  street: z.string().min(5, 'ঠিকানা আবশ্যক'),
+  fullName: z.string().min(2, 'Full Name is required'),
+  phone: z.string().min(11, 'Enter a valid mobile number'),
+  street: z.string().min(5, 'Delivery address is required'),
   deliveryArea: z.enum(['inside', 'outside'], {
-    message: 'ডেলিভারি এলাকা নির্বাচন করুন',
+    message: 'Select delivery area',
   }),
   paymentMethod: z.enum(['COD', 'Online', 'Manual'], {
     message: 'Select a payment method'
@@ -595,16 +595,16 @@ function CheckoutContent() {
         <ShoppingBag className="w-12 h-12 text-muted-foreground" />
       </div>
       <div className="space-y-2">
-        <h2 className="text-2xl font-black tracking-tight">আপনার কার্ট খালি!</h2>
+        <h2 className="text-2xl font-black tracking-tight">Your Cart is Empty!</h2>
         <p className="text-muted-foreground text-sm max-w-xs">
-          চেকআউট করতে আগে কিছু পণ্য কার্টে যোগ করুন।
+          Please add some items to your cart before checking out.
         </p>
       </div>
       <Button
         onClick={() => router.push('/shop')}
         className="rounded-full px-8 h-11 font-bold"
       >
-        শপে যান <ArrowRight className="ml-2 h-4 w-4" />
+        Go to Shop <ArrowRight className="ml-2 h-4 w-4" />
       </Button>
     </div>
   );
@@ -723,7 +723,7 @@ function CheckoutContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl">
                     <Truck className="h-6 w-6 text-primary" />
-                    ডেলিভারি তথ্য
+                    Delivery Information
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -732,9 +732,9 @@ function CheckoutContent() {
                     name="fullName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>পূর্ণ নাম</FormLabel>
+                        <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="আপনার পূর্ণ নাম লিখুন" {...field} className="h-11 focus-visible:ring-primary/20" />
+                          <Input placeholder="Enter your full name" {...field} className="h-11 focus-visible:ring-primary/20" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -745,9 +745,9 @@ function CheckoutContent() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>মোবাইল নম্বর</FormLabel>
+                        <FormLabel>Mobile Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="যেমন: 017XXXXXXXX" {...field} className="h-11 focus-visible:ring-primary/20" />
+                          <Input placeholder="e.g. 017XXXXXXXX" {...field} className="h-11 focus-visible:ring-primary/20" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -758,7 +758,7 @@ function CheckoutContent() {
                     name="deliveryArea"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel className="font-bold">ডেলিভারি এলাকা</FormLabel>
+                        <FormLabel className="font-bold">Delivery Area</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -770,7 +770,7 @@ function CheckoutContent() {
                                 <RadioGroupItem value="inside" />
                               </FormControl>
                               <FormLabel className="font-medium cursor-pointer text-sm">
-                                ঢাকার ভিতরে
+                                Inside Dhaka
                               </FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0 cursor-pointer">
@@ -778,7 +778,7 @@ function CheckoutContent() {
                                 <RadioGroupItem value="outside" />
                               </FormControl>
                               <FormLabel className="font-medium cursor-pointer text-sm">
-                                ঢাকার বাইরে
+                                Outside Dhaka
                               </FormLabel>
                             </FormItem>
                           </RadioGroup>
@@ -792,9 +792,9 @@ function CheckoutContent() {
                     name="street"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>সম্পূর্ণ ঠিকানা</FormLabel>
+                        <FormLabel>Full Address</FormLabel>
                         <FormControl>
-                          <Input placeholder="গ্রাম/বাসা নং, রোড নং, এলাকা, থানা, জেলা" {...field} className="h-11 focus-visible:ring-primary/20" />
+                          <Input placeholder="House/Street, Road, Area, Thana, District" {...field} className="h-11 focus-visible:ring-primary/20" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -1033,11 +1033,11 @@ function CheckoutContent() {
                     disabled={loading || !isFormValid || syncData?.hasInsufficientStock || isPendingOrderBlocked}
                   >
                     {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <CheckCircle2 className="mr-2 h-5 w-5" />}
-                    {isPendingOrderBlocked ? 'পেন্ডিং অর্ডার রয়েছে' : syncData?.hasInsufficientStock ? 'পর্যাপ্ত স্টক নেই' : 'অর্ডার নিশ্চিত করুন'}
+                    {isPendingOrderBlocked ? 'Pending Order Exists' : syncData?.hasInsufficientStock ? 'Insufficient Stock' : 'Confirm Order'}
                   </Button>
                   {!isFormValid && (
                     <p className="text-[10px] font-bold text-muted-foreground text-center w-full uppercase tracking-widest">
-                      অর্ডার সম্পন্ন করতে ডেলিভারি তথ্য পূরণ করুন
+                      Please fill in delivery details to complete order
                     </p>
                   )}
                 </CardFooter>
@@ -1108,16 +1108,16 @@ function CheckoutContent() {
 
             {/* Instruction Panel */}
             <div className="bg-slate-50 dark:bg-zinc-950 rounded-xl p-3 border border-slate-200 dark:border-zinc-800 space-y-1.5">
-              <p className="text-[10px] font-black text-slate-700 dark:text-zinc-300 uppercase tracking-wider">পেমেন্ট নির্দেশিকা (পড়ুন):</p>
+              <p className="text-[10px] font-black text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Payment Instructions:</p>
               <div className="max-h-24 overflow-y-auto pr-1 space-y-1 text-[9px] leading-relaxed text-slate-600 dark:text-zinc-400 font-medium">
-                <p>১. আপনার <strong>{selectedMethod?.id === 'bkash' ? 'বিকাশ' : selectedMethod?.id === 'nagad' ? 'নগদ' : selectedMethod?.id === 'rocket' ? 'রকেট' : 'মোবাইল'}</strong> অ্যাপে যান অথবা USSD ডায়াল করে <strong>"Send Money"</strong> অপশন সিলেক্ট করুন।</p>
+                <p>1. Open your <strong>{selectedMethod?.id === 'bkash' ? 'bKash' : selectedMethod?.id === 'nagad' ? 'Nagad' : selectedMethod?.id === 'rocket' ? 'Rocket' : 'Mobile Banking'}</strong> app or dial USSD and choose <strong>"Send Money"</strong>.</p>
                 {selectedMethod?.id !== 'banglaQr' ? (
-                  <p>২. উপরে দেওয়া <strong>Personal</strong> নম্বরটি কপি করে প্রাপক হিসেবে দিন।</p>
+                  <p>2. Copy the <strong>Personal</strong> number shown above and use it as recipient.</p>
                 ) : (
-                  <p>২. উপরে দেওয়া <strong>Bangla QR</strong> কোডটি আপনার ব্যাংক বা পেমেন্ট অ্যাপ দিয়ে স্ক্যান করুন।</p>
+                  <p>2. Scan the <strong>Bangla QR</strong> code shown above using your bank or payment app.</p>
                 )}
-                <p>৩. মোট পেমেন্ট অ্যামাউন্ট <strong>৳{Math.round(totalAmount + (deliveryCharge || 0) - couponDiscount - (useWallet ? walletAmountToUse : 0))}</strong> সেন্ড মানি করুন।</p>
-                <p>৪. সফলভাবে টাকা পাঠানোর পর নিচের ট্যাব থেকে <strong>মোবাইল নম্বর</strong> অথবা <strong>TrxID</strong> যেকোনো একটি তথ্য দিয়ে পেমেন্ট নিশ্চিত করুন।</p>
+                <p>3. Send the exact total payment amount of <strong>৳{Math.round(totalAmount + (deliveryCharge || 0) - couponDiscount - (useWallet ? walletAmountToUse : 0))}</strong>.</p>
+                <p>4. After sending money, confirm payment below using your <strong>Mobile Number</strong> or <strong>TrxID</strong>.</p>
               </div>
             </div>
 
@@ -1131,7 +1131,7 @@ function CheckoutContent() {
                     : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-zinc-200'
                   }`}
               >
-                {selectedMethod?.id === 'bkash' ? 'বিকাশ' : selectedMethod?.id === 'nagad' ? 'নগদ' : selectedMethod?.id === 'rocket' ? 'রকেট' : 'মোবাইল'} নম্বর দিয়ে
+                Via Sender Phone
               </button>
               <button
                 type="button"
@@ -1141,7 +1141,7 @@ function CheckoutContent() {
                     : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-zinc-200'
                   }`}
               >
-                ট্রানজেকশন আইডি (TrxID) দিয়ে
+                Via Transaction ID (TrxID)
               </button>
             </div>
 
@@ -1149,9 +1149,9 @@ function CheckoutContent() {
             <div className="space-y-3 pt-1">
               {paymentDetailTab === 'phone' ? (
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase opacity-60">আপনার {selectedMethod?.id === 'bkash' ? 'বিকাশ' : selectedMethod?.id === 'nagad' ? 'নগদ' : selectedMethod?.id === 'rocket' ? 'রকেট' : 'মোবাইল'} নম্বর</Label>
+                  <Label className="text-[10px] font-black uppercase opacity-60">Sender Phone Number</Label>
                   <Input
-                    placeholder="যে নম্বর থেকে টাকা পাঠিয়েছেন (যেমন: 017XXXXXXXX)"
+                    placeholder="Number money was sent from (e.g. 017XXXXXXXX)"
                     value={manualDetails.senderNumber}
                     onChange={(e) => setManualDetails({ ...manualDetails, senderNumber: e.target.value })}
                     className="h-10 rounded-lg text-xs focus:ring-primary/20 bg-background"
@@ -1159,9 +1159,9 @@ function CheckoutContent() {
                 </div>
               ) : (
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase opacity-60">ট্রানজেকশন আইডি (TrxID)</Label>
+                  <Label className="text-[10px] font-black uppercase opacity-60">Transaction ID (TrxID)</Label>
                   <Input
-                    placeholder="যেমন: 8N7A6D5C"
+                    placeholder="e.g. 8N7A6D5C"
                     value={manualDetails.transactionId}
                     onChange={(e) => setManualDetails({ ...manualDetails, transactionId: e.target.value.toUpperCase() })}
                     className="h-10 rounded-lg text-xs focus:ring-primary/20 bg-background"
@@ -1173,14 +1173,14 @@ function CheckoutContent() {
             {settings?.manualPaymentConfig?.instructions && (
               <div className="p-3 bg-muted/30 rounded-lg">
                 <p className="text-[9px] leading-relaxed text-muted-foreground italic">
-                  <strong>নির্দেশনা:</strong> {settings.manualPaymentConfig.instructions}
+                  <strong>Instructions:</strong> {settings.manualPaymentConfig.instructions}
                 </p>
               </div>
             )}
           </div>
 
           <DialogFooter className="p-4 bg-muted/20 border-t flex flex-row gap-3 shrink-0">
-            <Button variant="outline" onClick={() => setShowPaymentModal(false)} className="rounded-full h-10 flex-1 font-bold text-xs bg-background">বাতিল করুন</Button>
+            <Button variant="outline" onClick={() => setShowPaymentModal(false)} className="rounded-full h-10 flex-1 font-bold text-xs bg-background">Cancel</Button>
             <Button
               disabled={
                 paymentDetailTab === 'phone'
@@ -1195,12 +1195,12 @@ function CheckoutContent() {
                   await form.handleSubmit(onSubmit)();
                 } else {
                   setShowPaymentModal(false);
-                  toast.error('দয়া করে ডেলিভারি তথ্য সম্পূর্ণ করুন!');
+                  toast.error('Please complete delivery information first!');
                 }
               }}
               className="rounded-full h-10 flex-1 font-black uppercase tracking-widest text-xs shadow-md shadow-primary/10"
             >
-              পেমেন্ট নিশ্চিত করুন
+              Confirm Payment
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1222,9 +1222,9 @@ function CheckoutContent() {
 
             {/* Text */}
             <div className="space-y-2">
-              <h2 className="text-2xl font-black tracking-tight">অর্ডার সফল হয়েছে!</h2>
+              <h2 className="text-2xl font-black tracking-tight">Order Successful!</h2>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করবো।
+                Your order has been placed successfully. We will contact you soon.
               </p>
               {successOrderId && (
                 <p className="text-xs font-mono bg-muted px-3 py-1.5 rounded-full inline-block text-muted-foreground">
@@ -1240,14 +1240,14 @@ function CheckoutContent() {
                 className="w-full h-11 rounded-full font-bold shadow-lg shadow-primary/20"
               >
                 <ShoppingBag className="w-4 h-4 mr-2" />
-                শপিং চালিয়ে যান
+                Continue Shopping
               </Button>
               <Button
                 variant="outline"
                 onClick={() => { setShowSuccessModal(false); router.push('/dashboard'); }}
                 className="w-full h-11 rounded-full font-bold"
               >
-                আমার অর্ডার দেখুন
+                View My Orders
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
@@ -1266,9 +1266,9 @@ function CheckoutContent() {
 
             {/* Text */}
             <div className="space-y-2">
-              <h2 className="text-2xl font-black tracking-tight text-destructive">পেমেন্ট ব্যর্থ হয়েছে</h2>
+              <h2 className="text-2xl font-black tracking-tight text-destructive">Payment Failed</h2>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                আপনার পেমেন্ট সম্পন্ন হয়নি। পুনরায় চেষ্টা করুন অথবা COD পেমেন্ট বেছে নিন।
+                Your payment was not completed. Please try again or choose Cash on Delivery.
               </p>
             </div>
 
@@ -1278,14 +1278,14 @@ function CheckoutContent() {
                 onClick={() => setShowFailModal(false)}
                 className="w-full h-11 rounded-full font-bold"
               >
-                পুনরায় চেষ্টা করুন
+                Try Again
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => { setShowFailModal(false); router.push('/shop'); }}
                 className="w-full h-11 rounded-full font-bold"
               >
-                শপে ফিরে যান
+                Return to Shop
               </Button>
             </div>
           </div>
