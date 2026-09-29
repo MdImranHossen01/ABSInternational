@@ -8,6 +8,7 @@ import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Logo } from '@/components/ui/logo';
 import { CosmicAuthBackground } from '@/components/layout/CosmicAuthBackground';
+import { AuthHeaderActions } from '@/components/layout/AuthHeaderActions';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -86,6 +87,9 @@ export default function LoginPage() {
     <div className="min-h-screen relative flex flex-col text-slate-100 overflow-x-hidden">
       {/* Background Graphic Elements */}
       <CosmicAuthBackground />
+
+      {/* Top Right Header Actions (Theme Toggle & Profile Dropdown) */}
+      <AuthHeaderActions />
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col items-center px-4 pt-10 pb-24 md:pt-14 md:pb-32">
