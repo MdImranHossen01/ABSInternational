@@ -242,25 +242,43 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
       {/* ─── Navigation Tabs ────────────────────────────────────────── */}
       <section className="container mx-auto px-4 mt-8 max-w-6xl">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="overflow-x-auto pb-2 scrollbar-none">
-            <TabsList className="h-auto p-1.5 bg-muted/60 rounded-2xl flex w-full min-w-[620px] justify-between border border-border/50">
-              <TabsTrigger value="overview" className="rounded-xl py-2.5 px-3 text-xs sm:text-sm font-bold flex items-center gap-2">
-                <PieChart className="h-4 w-4" /> Member Plan
-              </TabsTrigger>
-              <TabsTrigger value="generation" className="rounded-xl py-2.5 px-3 text-xs sm:text-sm font-bold flex items-center gap-2">
-                <Network className="h-4 w-4" /> Generation System
-              </TabsTrigger>
-              <TabsTrigger value="profile" className="rounded-xl py-2.5 px-3 text-xs sm:text-sm font-bold flex items-center gap-2">
-                <Wallet className="h-4 w-4" /> Profile &amp; Wallets
-              </TabsTrigger>
-              <TabsTrigger value="reward" className="rounded-xl py-2.5 px-3 text-xs sm:text-sm font-bold flex items-center gap-2">
-                <Gift className="h-4 w-4" /> Reward System
-              </TabsTrigger>
-              <TabsTrigger value="rank" className="rounded-xl py-2.5 px-3 text-xs sm:text-sm font-bold flex items-center gap-2">
-                <Trophy className="h-4 w-4" /> Rank System
-              </TabsTrigger>
-            </TabsList>
-          </div>
+          <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 w-full h-auto p-1.5 bg-muted/80 dark:bg-muted/40 rounded-2xl border border-border/50">
+            <TabsTrigger
+              value="overview"
+              className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
+            >
+              <PieChart className="h-4 w-4 shrink-0" />
+              <span>Member Plan</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="generation"
+              className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
+            >
+              <Network className="h-4 w-4 shrink-0" />
+              <span>Generation</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="profile"
+              className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
+            >
+              <Wallet className="h-4 w-4 shrink-0" />
+              <span>Wallets &amp; KYC</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="reward"
+              className="rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
+            >
+              <Gift className="h-4 w-4 shrink-0" />
+              <span>Rewards</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="rank"
+              className="col-span-2 sm:col-span-1 rounded-xl py-2.5 px-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-center transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm"
+            >
+              <Trophy className="h-4 w-4 shrink-0" />
+              <span>9 Ranks</span>
+            </TabsTrigger>
+          </TabsList>
 
           {/* ══════════════════════════════════════════════════════════════
               TAB 1: MEMBER PLAN & PACKAGES OVERVIEW
@@ -792,16 +810,22 @@ export default function PlanClient({ brandName = 'ABS International' }: PlanClie
             <p className="text-xs sm:text-sm opacity-90 leading-relaxed">
               Register your account today, activate your ৳1,500 Premium Membership, and join thousands of empowered leaders building sustainable financial freedom.
             </p>
-            <div className="pt-4 flex flex-wrap justify-center gap-3">
+            <div className="pt-4 flex flex-wrap justify-center gap-3 sm:gap-4">
               <Link href="/register">
-                <Button size="lg" className="rounded-full bg-white text-slate-900 hover:bg-slate-100 font-bold px-8 shadow-md">
+                <Button
+                  size="lg"
+                  className="rounded-full bg-white text-slate-900 hover:bg-slate-100 font-bold px-8 shadow-md transition-all"
+                >
                   Register Now
                 </Button>
               </Link>
               <Link href="/contact">
-                <Button size="lg" variant="outline" className="rounded-full border-white/40 text-white hover:bg-white/10 font-bold px-8">
+                <button
+                  type="button"
+                  className="h-10 px-8 rounded-full border-2 border-white/90 bg-emerald-950/30 hover:bg-white text-white hover:text-slate-900 font-bold text-sm shadow-sm backdrop-blur-xs transition-all flex items-center justify-center cursor-pointer"
+                >
                   Contact Support
-                </Button>
+                </button>
               </Link>
             </div>
           </div>
