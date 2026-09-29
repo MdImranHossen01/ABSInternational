@@ -100,9 +100,6 @@ export const sendWelcomeRegistrationEmail = async ({
       console.warn('Neither custom SMTP nor Gmail credentials configured. Skipping registration email.');
       return;
     }
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const loginUrl = `${baseUrl}/login`;
-
     const safeName = escapeHtml(name);
     const safeMemberId = escapeHtml(memberId);
     const safeUsername = username ? escapeHtml(username) : '';
@@ -123,31 +120,31 @@ export const sendWelcomeRegistrationEmail = async ({
       to: email,
       subject: `Welcome to ABS International - Account Details (${memberId})`,
       html: `
-        <div style="font-family: Arial, Helvetica, sans-serif; max-width: 640px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #1e293b;">
+        <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #1e293b;">
           
-          <!-- Header -->
-          <div style="text-align: center; padding-bottom: 20px; border-bottom: 2px solid #0d9488;">
-            <h1 style="color: #0d9488; margin: 0 0 6px 0; font-size: 26px; font-weight: 700; letter-spacing: 0.5px;">ABS International</h1>
-            <p style="color: #64748b; font-size: 13px; margin: 0; font-weight: 500;">Health, Beauty & Global Prosperity</p>
+          <!-- Brand Header -->
+          <div style="text-align: center; padding-bottom: 18px; border-bottom: 2px solid #0d9488;">
+            <h1 style="color: #0d9488; margin: 0 0 6px 0; font-size: 24px; font-weight: 700; letter-spacing: 0.5px;">ABS INTERNATIONAL LTD.</h1>
+            <p style="color: #64748b; font-size: 13px; margin: 0; font-weight: 500;">Health, Beauty &amp; Global Prosperity</p>
           </div>
 
           <!-- Greeting -->
-          <div style="padding: 20px 0 10px 0;">
+          <div style="padding: 18px 0 12px 0;">
             <p style="font-size: 16px; margin: 0 0 8px 0;">Dear <strong>${safeName}</strong>,</p>
             <p style="font-size: 14px; color: #334155; line-height: 1.6; margin: 0;">
-              Congratulations and welcome to <strong>ABS International</strong>! Your registration has been completed successfully. Here are your complete account credentials and profile details:
+              Congratulations and welcome to <strong>ABS International</strong>! Your membership registration is successful. Below are your official account details and credentials:
             </p>
           </div>
 
-          <!-- Account & Login Credentials Box -->
-          <div style="background-color: #f0fdfa; border: 1px solid #99f6e4; border-radius: 10px; padding: 18px; margin: 16px 0;">
-            <div style="font-size: 15px; font-weight: 700; color: #0f766e; margin-bottom: 12px; border-bottom: 1px solid #ccfbf1; padding-bottom: 6px;">
-              🔐 Login &amp; Account Credentials
+          <!-- 1. Account & Login Credentials Box -->
+          <div style="background-color: #f0fdfa; border: 1px solid #99f6e4; border-radius: 8px; padding: 16px; margin: 14px 0;">
+            <div style="font-size: 14px; font-weight: 700; color: #0f766e; margin-bottom: 10px; border-bottom: 1px solid #ccfbf1; padding-bottom: 6px;">
+              🔐 Account &amp; Credentials
             </div>
             <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
               <tr>
-                <td style="padding: 6px 0; color: #475569; width: 42%;">Member ID / Ref Code:</td>
-                <td style="padding: 6px 0; font-weight: 700; color: #0d9488; font-family: monospace; font-size: 16px;">${safeMemberId}</td>
+                <td style="padding: 6px 0; color: #475569; width: 44%;">Member ID / Ref Code:</td>
+                <td style="padding: 6px 0; font-weight: 700; color: #0d9488; font-family: monospace; font-size: 15px;">${safeMemberId}</td>
               </tr>
               ${safeUsername ? `
               <tr>
@@ -158,24 +155,20 @@ export const sendWelcomeRegistrationEmail = async ({
               ${safePassword ? `
               <tr>
                 <td style="padding: 6px 0; color: #475569;">Password:</td>
-                <td style="padding: 6px 0; font-weight: 700; color: #0f172a; font-family: monospace; font-size: 15px; background-color: #ffffff; padding-left: 8px; border-radius: 4px; display: inline-block;">${safePassword}</td>
+                <td style="padding: 6px 0;"><span style="font-weight: 700; color: #0f172a; font-family: monospace; font-size: 14px; background-color: #ffffff; padding: 3px 8px; border-radius: 4px; border: 1px solid #cbd5e1; display: inline-block;">${safePassword}</span></td>
               </tr>
               ` : ''}
-              <tr>
-                <td style="padding: 6px 0; color: #475569;">Login Portal:</td>
-                <td style="padding: 6px 0;"><a href="${loginUrl}" style="color: #0d9488; font-weight: 600; text-decoration: underline;">${loginUrl}</a></td>
-              </tr>
             </table>
           </div>
 
-          <!-- Personal Profile Details -->
-          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin: 16px 0;">
-            <div style="font-size: 15px; font-weight: 700; color: #334155; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">
-              👤 Personal Profile Details
+          <!-- 2. Personal Information Box -->
+          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 14px 0;">
+            <div style="font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">
+              👤 Personal Information
             </div>
             <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
               <tr>
-                <td style="padding: 6px 0; color: #64748b; width: 42%;">Full Name:</td>
+                <td style="padding: 6px 0; color: #64748b; width: 44%;">Full Name:</td>
                 <td style="padding: 6px 0; font-weight: 600; color: #1e293b;">${safeName}</td>
               </tr>
               ${safePhone ? `
@@ -190,7 +183,7 @@ export const sendWelcomeRegistrationEmail = async ({
               </tr>
               ${safeNid ? `
               <tr>
-                <td style="padding: 6px 0; color: #64748b;">NID / ID Number:</td>
+                <td style="padding: 6px 0; color: #64748b;">NID Number:</td>
                 <td style="padding: 6px 0; font-weight: 600; color: #1e293b; font-family: monospace;">${safeNid}</td>
               </tr>
               ` : ''}
@@ -202,23 +195,23 @@ export const sendWelcomeRegistrationEmail = async ({
               ` : ''}
               ${safeJoiningDate ? `
               <tr>
-                <td style="padding: 6px 0; color: #64748b;">Joining Date:</td>
+                <td style="padding: 6px 0; color: #64748b;">Registration Date:</td>
                 <td style="padding: 6px 0; font-weight: 600; color: #1e293b;">${safeJoiningDate}</td>
               </tr>
               ` : ''}
             </table>
           </div>
 
-          <!-- Sponsor & Placement Details -->
+          <!-- 3. Sponsor & Network Details Box -->
           ${(safeSponsorId || safePlacementId) ? `
-          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin: 16px 0;">
-            <div style="font-size: 15px; font-weight: 700; color: #334155; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">
-              🤝 Referral &amp; Network Placement
+          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 14px 0;">
+            <div style="font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">
+              🤝 Referral &amp; Placement Information
             </div>
             <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
               ${safeSponsorId ? `
               <tr>
-                <td style="padding: 6px 0; color: #64748b; width: 42%;">Sponsor ID:</td>
+                <td style="padding: 6px 0; color: #64748b; width: 44%;">Sponsor ID:</td>
                 <td style="padding: 6px 0; font-weight: 700; color: #0d9488; font-family: monospace;">${safeSponsorId}</td>
               </tr>
               ` : ''}
@@ -250,25 +243,18 @@ export const sendWelcomeRegistrationEmail = async ({
           </div>
           ` : ''}
 
-          <!-- Action Button -->
-          <div style="text-align: center; margin: 28px 0 20px 0;">
-            <a href="${loginUrl}" style="background-color: #0d9488; color: #ffffff; padding: 13px 32px; text-decoration: none; font-weight: 700; font-size: 15px; border-radius: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(13, 148, 136, 0.2);">
-              Login to Your Dashboard
-            </a>
-          </div>
-
-          <!-- Security & Referral Note -->
-          <div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; padding: 12px 16px; margin: 20px 0;">
+          <!-- Security Notice -->
+          <div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; padding: 12px 16px; margin: 16px 0;">
             <p style="font-size: 13px; color: #92400e; margin: 0; line-height: 1.5;">
-              ⚠️ <strong>Security Notice:</strong> Please keep your password and account credentials private and never share them with anyone. Your <strong>Member ID (${safeMemberId})</strong> is your official sponsor code — you can share it with others to register them under your team.
+              ⚠️ <strong>Important:</strong> Please store your Member ID and Password safely. Your Member ID (<strong>${safeMemberId}</strong>) is also your reference code for introducing new members to your team.
             </p>
           </div>
 
-          <!-- Footer -->
-          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0 16px 0;" />
-          <div style="text-align: center; font-size: 12px; color: #94a3b8; line-height: 1.6;">
-            <p style="margin: 0 0 4px 0;">ABS International Ltd. | Dhaka, Bangladesh</p>
-            <p style="margin: 0 0 4px 0;">Need assistance? Contact us at <a href="mailto:info@absinternationalltd.com" style="color: #0d9488; text-decoration: none;">info@absinternationalltd.com</a></p>
+          <!-- Footer (Plain text, no links) -->
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0 14px 0;" />
+          <div style="text-align: center; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+            <p style="margin: 0 0 3px 0; font-weight: 600; color: #64748b;">ABS International Ltd. | Dhaka, Bangladesh</p>
+            <p style="margin: 0 0 3px 0;">Support: info@absinternationalltd.com</p>
             <p style="margin: 0;">&copy; 2026 ABS International. All rights reserved.</p>
           </div>
 
