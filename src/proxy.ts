@@ -18,7 +18,7 @@ export const proxy = auth(async (req) => {
     if (role === "admin" || role === "super_admin" || role === "manager") {
       return NextResponse.redirect(new URL("/admin/dashboard", nextUrl));
     }
-    return NextResponse.redirect(new URL("/", nextUrl));
+    return NextResponse.redirect(new URL("/dashboard", nextUrl));
   }
 
   // 2. Protection for Admin routes

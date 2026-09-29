@@ -23,7 +23,7 @@ export default function LoginPage() {
   async function loginWithGoogle() {
     setIsGoogleLoading(true);
     try {
-      await signIn('google', { callbackUrl: searchParams.get('callbackUrl') || '/dashboard' });
+      await signIn('google', { callbackUrl: searchParams.get('callbackUrl') || '/login' });
     } catch {
       setIsGoogleLoading(false);
       toast.error('Failed to sign in with Google.');
@@ -68,6 +68,27 @@ export default function LoginPage() {
       } else {
         toast.success('Signed in successfully!');
         const callbackUrl = searchParams.get('callbackUrl');
+
+        try {
+          const sessionRes = await fetch('/api/auth/session');
+          const sessionData = await sessionRes.json().catch(() => null);
+          const role = (sessionData?.user as any)?.role;
+          const isAdmin = role === 'admin' || role === 'super_admin' || role === 'manager';
+
+          // If there is a specific callbackUrl (e.g. /admin/orders or /shop), follow it unless it was generic /dashboard for an admin
+          if (callbackUrl && !callbackUrl.includes('/login') && (!isAdmin || callbackUrl !== '/dashboard')) {
+            window.location.replace(callbackUrl);
+            return;
+          }
+
+          if (isAdmin) {
+            window.location.replace('/admin/dashboard');
+            return;
+          }
+        } catch (err) {
+          console.error('Session role check error:', err);
+        }
+
         if (callbackUrl && !callbackUrl.includes('/login')) {
           window.location.replace(callbackUrl);
         } else {
