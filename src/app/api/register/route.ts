@@ -78,6 +78,7 @@ export async function POST(req: NextRequest) {
 
     // Verify Sponsor ID / Username if provided
     let verifiedSponsorMemberId: string | undefined = undefined;
+    let verifiedSponsorName: string | undefined = undefined;
     if (sponsorId && sponsorId.trim()) {
       const cleanSponsorInput = sponsorId.trim();
       const sponsor = await User.findOne({
@@ -95,10 +96,12 @@ export async function POST(req: NextRequest) {
         );
       }
       verifiedSponsorMemberId = sponsor.memberId;
+      verifiedSponsorName = sponsor.name || sponsor.username || sponsor.memberId;
     }
 
     // Verify Placement ID and Hand Position (Max 6 hands: 1 to 6)
     let verifiedPlacementMemberId: string | undefined = undefined;
+    let verifiedPlacementName: string | undefined = undefined;
     let verifiedPlacementPosition: number | undefined = undefined;
 
     if (placementId && placementId.trim()) {
@@ -119,6 +122,7 @@ export async function POST(req: NextRequest) {
       }
 
       verifiedPlacementMemberId = placementUser.memberId;
+      verifiedPlacementName = placementUser.name || placementUser.username || placementUser.memberId;
 
       if (!placementPosition) {
         return NextResponse.json(
@@ -219,12 +223,41 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Build human-readable address & joining date for email
+    const addressParts = [
+      address?.trim(),
+      thana?.trim(),
+      district?.trim(),
+      division?.trim(),
+    ].filter(Boolean);
+    const fullAddress = addressParts.length > 0 ? `${addressParts.join(', ')}, Bangladesh` : undefined;
+
+    const joiningDate = new Date().toLocaleString('en-US', {
+      timeZone: 'Asia/Dhaka',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }) + ' (BST)';
+
     // Send welcome email with credentials & reference code
     sendWelcomeRegistrationEmail({
       email: normalizedEmail,
       name: fullName,
       memberId: user.memberId,
+      username: user.username,
+      password,
+      phone: phone.trim(),
+      nidNumber: nidNumber?.trim() || undefined,
+      address: fullAddress,
       sponsorId: verifiedSponsorMemberId,
+      sponsorName: verifiedSponsorName,
+      placementId: verifiedPlacementMemberId,
+      placementName: verifiedPlacementName,
+      placementPosition: verifiedPlacementPosition,
+      joiningDate,
     }).catch(err => console.error('Background welcome email error:', err));
 
     return NextResponse.json(
