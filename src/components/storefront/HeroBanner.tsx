@@ -109,12 +109,12 @@ export default function HeroBanner({ brandName }: HeroBannerProps) {
       </div>
 
       <div className="container mx-auto px-4 relative z-10 pt-6 md:pt-0">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           
-          {/* Content Column */}
-          <div className="lg:col-span-7 text-left space-y-4 md:space-y-6">
+          {/* Content Column (Left Half) */}
+          <div className="text-left space-y-4 md:space-y-6">
 
-            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-tight">
               Welcome to <br className="hidden md:inline" />
               <span className="text-primary whitespace-nowrap">{brandName}</span>
             </h1>
@@ -165,8 +165,9 @@ export default function HeroBanner({ brandName }: HeroBannerProps) {
             </div>
           </div>
 
-          {/* DESKTOP ONLY: Right Column 4:3 Visual Slider */}
-          <div className="hidden lg:block lg:col-span-5 relative w-full aspect-[4/3] rounded-3xl overflow-hidden border border-border bg-card shadow-2xl">
+          {/* DESKTOP ONLY: Right Half Centered 4:3 Visual Slider */}
+          <div className="hidden lg:flex items-center justify-center w-full">
+            <div className="relative w-full max-w-lg aspect-[4/3] rounded-3xl overflow-hidden border border-border bg-card shadow-2xl">
             {slides.map((slide, idx) => {
               const isActive = idx === activeIndex;
               return (
@@ -222,8 +223,9 @@ export default function HeroBanner({ brandName }: HeroBannerProps) {
               ))}
             </div>
           </div>
-
         </div>
+
+      </div>
       </div>
     </section>
   );
