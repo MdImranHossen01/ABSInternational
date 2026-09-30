@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
+import { createNotification } from '@/lib/notifications';
 
 export async function GET(req: NextRequest) {
   try {
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     // Find users with nidStatus not 'Not Submitted'
     const users = await User.find({ nidStatus: { $ne: 'Not Submitted' } })
-      .select('name email memberId nidNumber nidFrontImage nidBackImage nidStatus')
+      .select('name email phone memberId nidNumber nidFrontImage nidBackImage nidStatus kycFullName kycDateOfBirth kycFatherName kycMotherName kycPresentAddress kycPermanentAddress kycOwnerPhoto nidRejectionReason updatedAt createdAt')
       .sort({ updatedAt: -1 });
 
     return NextResponse.json(users);
@@ -46,6 +47,16 @@ export async function PUT(req: NextRequest) {
 
     user.nidStatus = status;
     await user.save();
+
+    await createNotification({
+      userId: user._id,
+      title: status === 'Approved' ? 'KYC Verification Approved' : 'KYC Verification Rejected',
+      message: status === 'Approved'
+        ? 'Congratulations! Your national identity (NID) KYC verification has been reviewed and approved.'
+        : 'Your national identity (NID) KYC application was rejected. Please review your submitted documents and re-upload valid photos.',
+      type: 'seba',
+      link: '/dashboard/profile',
+    });
 
     return NextResponse.json({ message: `KYC application ${status.toLowerCase()} successfully.` });
   } catch (error: any) {

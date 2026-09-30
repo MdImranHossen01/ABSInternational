@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
 import WalletTransaction from '@/models/WalletTransaction';
+import { createNotification, createAdminNotification } from '@/lib/notifications';
 import { auth } from '@/auth';
 import bcrypt from 'bcryptjs';
 
@@ -52,6 +53,23 @@ export async function POST(req: NextRequest) {
       status: 'pending',
       description: `Withdrawal request to ${paymentMethod.toUpperCase()} (${accountNumber})`,
     });
+
+    // Notify Admin and User
+    await Promise.all([
+      createAdminNotification({
+        title: 'New Withdrawal Request',
+        message: `Member ${user.name} (${user.memberId}) requested withdrawal of ৳${amount.toLocaleString()} to ${paymentMethod.toUpperCase()} (${accountNumber}).`,
+        type: 'withdrawal',
+        link: '/admin/withdrawals',
+      }),
+      createNotification({
+        userId: user._id,
+        title: 'Withdrawal Request Submitted',
+        message: `Your withdrawal request of ৳${amount.toLocaleString()} via ${paymentMethod.toUpperCase()} has been submitted and is pending admin approval.`,
+        type: 'wallet',
+        link: '/dashboard/wallet',
+      }),
+    ]);
 
     return NextResponse.json({
       message: 'Withdrawal request submitted successfully! Pending approval.',

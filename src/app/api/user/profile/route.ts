@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
+import { createAdminNotification } from '@/lib/notifications';
 
 
 export async function GET(req: NextRequest) {
@@ -69,6 +70,14 @@ export async function PUT(req: NextRequest) {
       nidNumber,
       nidFrontImage,
       nidBackImage,
+      kycFullName,
+      kycDateOfBirth,
+      kycFatherName,
+      kycMotherName,
+      kycPresentAddress,
+      kycPermanentAddress,
+      kycOwnerPhoto,
+      isKycSubmit,
       bkashNo,
       nagadNo,
       rocketNo,
@@ -103,22 +112,67 @@ export async function PUT(req: NextRequest) {
     if (image !== undefined) user.image = image;
     if (phone !== undefined) user.phone = phone;
 
-    // Handle KYC NID changes
-    if (nidFrontImage || nidBackImage) {
-      if (!nidNumber || nidNumber.trim().length < 10) {
-        return NextResponse.json({ message: 'Valid NID Number (minimum 10 digits) is required for KYC submission' }, { status: 400 });
-      }
-    }
-
+    // Handle KYC fields
+    if (kycFullName !== undefined) user.kycFullName = kycFullName;
+    if (kycDateOfBirth !== undefined) user.kycDateOfBirth = kycDateOfBirth;
+    if (kycFatherName !== undefined) user.kycFatherName = kycFatherName;
+    if (kycMotherName !== undefined) user.kycMotherName = kycMotherName;
+    if (kycPresentAddress !== undefined) user.kycPresentAddress = kycPresentAddress;
+    if (kycPermanentAddress !== undefined) user.kycPermanentAddress = kycPermanentAddress;
+    if (kycOwnerPhoto !== undefined) user.kycOwnerPhoto = kycOwnerPhoto;
     if (nidNumber !== undefined) user.nidNumber = nidNumber;
     if (nidFrontImage !== undefined) user.nidFrontImage = nidFrontImage;
     if (nidBackImage !== undefined) user.nidBackImage = nidBackImage;
-    
-    // Automatically flag as Pending for admin review only when both NID number and photos are provided
-    if (nidNumber && (nidFrontImage || nidBackImage)) {
-      if (user.nidStatus === 'Not Submitted' || user.nidStatus === 'Rejected') {
-        user.nidStatus = 'Pending';
+
+    // Strict validation if user is explicitly submitting KYC
+    if (isKycSubmit) {
+      const missingFields: string[] = [];
+      if (!user.phone && !phone) missingFields.push('Owner Mobile Number');
+      if (!user.kycFullName && !name) missingFields.push('Full Name');
+      if (!user.nidNumber || user.nidNumber.trim().length < 10) missingFields.push('Valid NID Number (min 10 digits)');
+      if (!user.kycDateOfBirth) missingFields.push('Date of Birth');
+      if (!user.kycFatherName) missingFields.push("Father's Name");
+      if (!user.kycMotherName) missingFields.push("Mother's Name");
+      if (!user.kycPresentAddress) missingFields.push('Present Address');
+      if (!user.kycPermanentAddress) missingFields.push('Permanent Address');
+      if (!user.nidFrontImage) missingFields.push('NID Front Photo');
+      if (!user.nidBackImage) missingFields.push('NID Back Photo');
+      if (!user.kycOwnerPhoto) missingFields.push('Owner Photo');
+
+      if (missingFields.length > 0) {
+        return NextResponse.json(
+          {
+            message: `Please fill in all mandatory KYC fields: ${missingFields.join(', ')}`,
+            missingFields,
+          },
+          { status: 400 }
+        );
       }
+
+      // Mark as Pending
+      user.nidStatus = 'Pending';
+      user.nidRejectionReason = undefined;
+
+      await createAdminNotification({
+        title: 'New KYC Verification Submitted',
+        message: `Member ${user.name} (${user.memberId}) submitted complete National ID (KYC) documents for verification.`,
+        type: 'kyc',
+        link: '/admin/kyc',
+      });
+    } else if (
+      user.nidNumber &&
+      user.nidFrontImage &&
+      user.nidBackImage &&
+      user.kycOwnerPhoto &&
+      (user.nidStatus === 'Not Submitted' || user.nidStatus === 'Rejected')
+    ) {
+      user.nidStatus = 'Pending';
+      await createAdminNotification({
+        title: 'New KYC Verification Submitted',
+        message: `Member ${user.name} (${user.memberId}) submitted NID verification documents for review.`,
+        type: 'kyc',
+        link: '/admin/kyc',
+      });
     }
 
     // Handle Payment Credentials

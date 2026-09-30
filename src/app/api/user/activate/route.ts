@@ -1,22 +1,24 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
 import WalletTransaction from '@/models/WalletTransaction';
 import MlmFundPool from '@/models/MlmFundPool';
+import { createNotification } from '@/lib/notifications';
 import { auth } from '@/auth';
 
 // ─── Distribution Constants (out of 1500 BDT — 55% Allocation) ────────────────
-const PACKAGE_PRICE     = 1500;
-const SPONSOR_BONUS     = 225;   // 1. Refer Bonus (15%)
-const GEN_POOL_TOTAL    = 105;   // 2. Generation Bonus (7%)
-const AUTO_PROFIT       = 52.5;  // 3. Auto Club (3.5%)
-const INCENTIVE_FUND    = 30;    // 4. Incentive Fund (2%)
-const RANK_DEV_FUND     = 37.5;  // 5. Rank Development Fund (2.5%)
-const GLOBAL_PROFIT     = 30;    // 6. Global Fund (2%)
-const ROYALTY_FUND      = 30;    // 7. Royalty Fund (2%)
-const TOUR_FUND         = 75;    // 8. Tour Fund (5%)
-const COMMUNITY_FUND    = 225;   // 9. Community Fund (15%)
-const CHARITY_FUND      = 15;    // 10. Charity Fund (1%)
+const PACKAGE_PRICE = 1500;
+const SPONSOR_BONUS = 225;   // 1. Refer Bonus (15%)
+const GEN_POOL_TOTAL = 105;   // 2. Generation Bonus (7%)
+const AUTO_PROFIT = 52.5;  // 3. Auto Club (3.5%)
+const INCENTIVE_FUND = 30;    // 4. Incentive Fund (2%)
+const RANK_DEV_FUND = 37.5;  // 5. Rank Development Fund (2.5%)
+const GLOBAL_PROFIT = 30;    // 6. Global Fund (2%)
+const ROYALTY_FUND = 30;    // 7. Royalty Fund (2%)
+const TOUR_FUND = 75;    // 8. Tour Fund (5%)
+const COMMUNITY_FUND = 225;   // 9. Community Fund (15%)
+const CHARITY_FUND = 15;    // 10. Charity Fund (1%)
 // Total Allocation: 55% (825 BDT). Company Net Revenue: 45% (675 BDT)
 
 // Generation bonus split (100% of GEN_POOL_TOTAL)
@@ -42,7 +44,7 @@ async function checkAutoProfitTier(member: any, joinerName: string, joinerId: st
       // Deduct the tier payout from pool
       member.autoProfitPool -= nextTierAmount;
       member.autoProfitTier += 1;
-      member.bonusWallet    += nextTierAmount;
+      member.bonusWallet += nextTierAmount;
 
       tierPayouts.push({ tier: member.autoProfitTier, amount: nextTierAmount });
 
@@ -75,9 +77,9 @@ async function checkRankPromotions(user: any) {
     visited.add(currentUser.memberId);
     depth++;
 
-    const downlines     = await User.find({ sponsorId: currentUser.memberId });
-    const activeDown    = downlines.filter((d: any) => d.isSubscriptionActive);
-    let newRank         = currentUser.rank;
+    const downlines = await User.find({ sponsorId: currentUser.memberId });
+    const activeDown = downlines.filter((d: any) => d.isSubscriptionActive);
+    let newRank = currentUser.rank;
 
     if (currentUser.rank === 'user' && currentUser.isSubscriptionActive) {
       newRank = 'Premium Member';
@@ -88,7 +90,7 @@ async function checkRankPromotions(user: any) {
       const cnt = activeDown.filter((d: any) => d.rank !== 'user').length;
       if (cnt >= 6) {
         newRank = 'Team Manager';
-        currentUser.bonusWallet     += 200;
+        currentUser.bonusWallet += 200;
         currentUser.isSebaCardGenerated = true;
         if (!currentUser.sebaCardNo) {
           currentUser.sebaCardNo = `ABS-SEBA-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -101,7 +103,7 @@ async function checkRankPromotions(user: any) {
     } else if (currentUser.rank === 'Team Manager') {
       // Team Manager → Royal Manager (6 Team Managers)
       const cnt = activeDown.filter((d: any) =>
-        ['Team Manager','Royal Manager','Silver Manager','Gold Manager','Diamond Manager','Crown Manager','Director'].includes(d.rank)
+        ['Team Manager', 'Royal Manager', 'Silver Manager', 'Gold Manager', 'Diamond Manager', 'Crown Manager', 'Director'].includes(d.rank)
       ).length;
       if (cnt >= 6) {
         newRank = 'Royal Manager';
@@ -114,7 +116,7 @@ async function checkRankPromotions(user: any) {
     } else if (currentUser.rank === 'Royal Manager') {
       // Royal Manager → Silver Manager (6 Royal Managers)
       const cnt = activeDown.filter((d: any) =>
-        ['Royal Manager','Silver Manager','Gold Manager','Diamond Manager','Crown Manager','Director'].includes(d.rank)
+        ['Royal Manager', 'Silver Manager', 'Gold Manager', 'Diamond Manager', 'Crown Manager', 'Director'].includes(d.rank)
       ).length;
       if (cnt >= 6) {
         newRank = 'Silver Manager';
@@ -127,7 +129,7 @@ async function checkRankPromotions(user: any) {
     } else if (currentUser.rank === 'Silver Manager') {
       // Silver Manager → Gold Manager (6 Silver Managers)
       const cnt = activeDown.filter((d: any) =>
-        ['Silver Manager','Gold Manager','Diamond Manager','Crown Manager','Director'].includes(d.rank)
+        ['Silver Manager', 'Gold Manager', 'Diamond Manager', 'Crown Manager', 'Director'].includes(d.rank)
       ).length;
       if (cnt >= 6) {
         newRank = 'Gold Manager';
@@ -140,7 +142,7 @@ async function checkRankPromotions(user: any) {
     } else if (currentUser.rank === 'Gold Manager') {
       // Gold Manager → Diamond Manager (6 Gold Managers)
       const cnt = activeDown.filter((d: any) =>
-        ['Gold Manager','Diamond Manager','Crown Manager','Director'].includes(d.rank)
+        ['Gold Manager', 'Diamond Manager', 'Crown Manager', 'Director'].includes(d.rank)
       ).length;
       if (cnt >= 6) {
         newRank = 'Diamond Manager';
@@ -154,7 +156,7 @@ async function checkRankPromotions(user: any) {
     } else if (currentUser.rank === 'Diamond Manager') {
       // Diamond Manager → Crown Manager (6 Diamond Managers)
       const cnt = activeDown.filter((d: any) =>
-        ['Diamond Manager','Crown Manager','Director'].includes(d.rank)
+        ['Diamond Manager', 'Crown Manager', 'Director'].includes(d.rank)
       ).length;
       if (cnt >= 6) {
         newRank = 'Crown Manager';
@@ -168,7 +170,7 @@ async function checkRankPromotions(user: any) {
     } else if (currentUser.rank === 'Crown Manager') {
       // Crown Manager → Director (6 Crown Managers)
       const cnt = activeDown.filter((d: any) =>
-        ['Crown Manager','Director'].includes(d.rank)
+        ['Crown Manager', 'Director'].includes(d.rank)
       ).length;
       if (cnt >= 6) {
         newRank = 'Director';
@@ -240,6 +242,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Your membership is already active.' }, { status: 400 });
     }
 
+    // ── Strict KYC Approval Requirement ─────────────────────────────────────
+    if (user.nidStatus !== 'Approved') {
+      return NextResponse.json(
+        {
+          message:
+            user.nidStatus === 'Pending'
+              ? 'Your National ID (KYC) verification is currently under review by admin. You can activate Premium Membership once it is approved.'
+              : 'KYC Verification Required. Please complete and get your National ID (KYC) verification approved before activating Premium Membership.',
+          nidStatus: user.nidStatus,
+          requiresKyc: true,
+        },
+        { status: 403 }
+      );
+    }
+
     if (user.depositWallet < PACKAGE_PRICE) {
       return NextResponse.json(
         { message: `Insufficient balance. Minimum ${PACKAGE_PRICE} BDT required in Deposit Wallet.` },
@@ -248,11 +265,11 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Step 1: Deduct package price & activate ───────────────────────────────
-    user.depositWallet      -= PACKAGE_PRICE;
+    user.depositWallet -= PACKAGE_PRICE;
     user.isSubscriptionActive = true;
-    user.rank               = 'Premium Member';
-    user.isSebaCardGenerated  = true;
-    user.sebaCardNo           = `ABS-SEBA-${Math.floor(100000 + Math.random() * 900000)}`;
+    user.rank = 'Premium Member';
+    user.isSebaCardGenerated = true;
+    user.sebaCardNo = `ABS-SEBA-${Math.floor(100000 + Math.random() * 900000)}`;
     await user.save();
 
     await WalletTransaction.create({
@@ -269,7 +286,7 @@ export async function POST(req: NextRequest) {
     if (user.sponsorId) {
       const sponsor = await User.findOne({ memberId: user.sponsorId });
       if (sponsor) {
-        sponsor.bonusWallet   += SPONSOR_BONUS;
+        sponsor.bonusWallet += SPONSOR_BONUS;
         sponsor.personalSales += PACKAGE_PRICE;
         await sponsor.save();
 
@@ -279,6 +296,14 @@ export async function POST(req: NextRequest) {
           type: 'earned',
           status: 'completed',
           description: `Sponsor Bonus (15%) from ${user.name} (${user.memberId})`,
+        });
+
+        await createNotification({
+          userId: sponsor._id,
+          title: 'Sponsor Bonus Earned',
+          message: `You earned ৳${SPONSOR_BONUS} sponsor bonus from ${user.name} (${user.memberId}) activating their Premium Membership!`,
+          type: 'bonus',
+          link: '/dashboard/wallet',
         });
 
         // ── Step 2b: Auto Profit Matrix — 52 BDT to sponsor's personal pool ──
@@ -326,20 +351,28 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    fundPool.autoProfit          += AUTO_PROFIT;      // 3.5% = 52.5 BDT → Auto Club pool
-    fundPool.globalProfit        += GLOBAL_PROFIT + unallocatedBonus; // 2% = 30 BDT + any unallocated
-    fundPool.incentiveFund       += INCENTIVE_FUND;   // 2%   = 30 BDT → rank reward pool
+    fundPool.autoProfit += AUTO_PROFIT;      // 3.5% = 52.5 BDT → Auto Club pool
+    fundPool.globalProfit += GLOBAL_PROFIT + unallocatedBonus; // 2% = 30 BDT + any unallocated
+    fundPool.incentiveFund += INCENTIVE_FUND;   // 2%   = 30 BDT → rank reward pool
     fundPool.rankDevelopmentFund += RANK_DEV_FUND;   // 2.5% = 37.5 BDT → rank promotion bonus pool
-    fundPool.royaltyFund         += ROYALTY_FUND;     // 2%   = 30 BDT → Diamond/Crown/Director royalties
-    fundPool.tourFund             = (fundPool.tourFund || 0) + TOUR_FUND;           // 5%   = 75 BDT → Tour Fund
-    fundPool.communityFund        = (fundPool.communityFund || 0) + COMMUNITY_FUND; // 15%  = 225 BDT → Community Fund
-    fundPool.charityFund         += CHARITY_FUND;     // 1%   = 15 BDT → charity
-    fundPool.totalActivations    += 1;
-    fundPool.lastUpdated          = new Date();
+    fundPool.royaltyFund += ROYALTY_FUND;     // 2%   = 30 BDT → Diamond/Crown/Director royalties
+    fundPool.tourFund = (fundPool.tourFund || 0) + TOUR_FUND;           // 5%   = 75 BDT → Tour Fund
+    fundPool.communityFund = (fundPool.communityFund || 0) + COMMUNITY_FUND; // 15%  = 225 BDT → Community Fund
+    fundPool.charityFund += CHARITY_FUND;     // 1%   = 15 BDT → charity
+    fundPool.totalActivations += 1;
+    fundPool.lastUpdated = new Date();
     await fundPool.save();
 
     // ── Step 5: Rank Promotion Check ─────────────────────────────────────────
     await checkRankPromotions(user);
+
+    await createNotification({
+      userId: user._id,
+      title: 'Premium Membership Activated!',
+      message: `Congratulations ${user.name}! Your account is now active as Premium Member. Your Digital Seba Health Card (${user.sebaCardNo}) is ready.`,
+      type: 'rank',
+      link: '/dashboard/seba-card',
+    });
 
     const hasValidSponsor = user.sponsorId && unallocatedBonus === 0;
 

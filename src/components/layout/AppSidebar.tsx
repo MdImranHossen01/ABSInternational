@@ -66,6 +66,10 @@ const data = {
           title: "Support Tickets",
           url: "/admin/support",
         },
+        {
+          title: "Notifications",
+          url: "/admin/notifications",
+        },
       ],
     },
     {

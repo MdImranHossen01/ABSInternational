@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import WalletTransaction from '@/models/WalletTransaction';
+import { createNotification, createAdminNotification } from '@/lib/notifications';
 import { auth } from '@/auth';
 
 export async function POST(req: NextRequest) {
@@ -25,6 +26,22 @@ export async function POST(req: NextRequest) {
       status: 'pending',
       description: `Deposit request via ${paymentMethod.toUpperCase()} (Sender: ${senderNumber}, TxID: ${transactionId})`,
     });
+
+    await Promise.all([
+      createAdminNotification({
+        title: 'New Deposit Request',
+        message: `Deposit request of ৳${amount.toLocaleString()} submitted via ${paymentMethod.toUpperCase()} (Sender: ${senderNumber}, TxID: ${transactionId}).`,
+        type: 'deposit',
+        link: '/admin/deposits',
+      }),
+      createNotification({
+        userId: (session.user as any).id,
+        title: 'Deposit Request Submitted',
+        message: `Your deposit request of ৳${amount.toLocaleString()} via ${paymentMethod.toUpperCase()} has been submitted and is pending verification.`,
+        type: 'wallet',
+        link: '/dashboard/wallet',
+      }),
+    ]);
 
     return NextResponse.json({
       message: 'Deposit request submitted successfully! Pending admin approval.',

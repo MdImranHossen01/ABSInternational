@@ -8,6 +8,7 @@ import GlobalSettings from '@/models/GlobalSettings';
 import WalletTransaction from '@/models/WalletTransaction';
 import Coupon from '@/models/Coupon';
 import { auth } from '@/auth';
+import { createNotification, createAdminNotification } from '@/lib/notifications';
 
 import { z } from 'zod';
 import mongoose from 'mongoose';
@@ -467,6 +468,25 @@ export async function POST(req: NextRequest) {
     } catch (e) {
       console.error('Failed to delete matching abandoned cart:', e);
     }
+
+    // Trigger Admin and Customer notifications
+    await Promise.all([
+      createAdminNotification({
+        title: 'New Order Received',
+        message: `Order #${newOrder.shortId} placed by ${shippingAddress?.fullName || 'Customer'} for ৳${newOrder.totalAmount.toLocaleString()} (${newOrder.paymentMethod}).`,
+        type: 'order',
+        link: '/admin/orders',
+      }),
+      user?._id
+        ? createNotification({
+            userId: user._id,
+            title: 'Order Placed Successfully',
+            message: `Your order #${newOrder.shortId} of ৳${newOrder.totalAmount.toLocaleString()} was placed successfully and is pending confirmation.`,
+            type: 'system',
+            link: '/dashboard/orders',
+          })
+        : Promise.resolve(null),
+    ]);
 
     // Revalidate products cache to reflect new stock levels across the site
     try {

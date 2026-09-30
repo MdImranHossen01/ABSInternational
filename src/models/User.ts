@@ -36,6 +36,14 @@ export interface IUser extends Document {
   nidFrontImage?: string;
   nidBackImage?: string;
   nidStatus: 'Not Submitted' | 'Pending' | 'Approved' | 'Rejected';
+  nidRejectionReason?: string;
+  kycFullName?: string;
+  kycDateOfBirth?: string;
+  kycFatherName?: string;
+  kycMotherName?: string;
+  kycPresentAddress?: string;
+  kycPermanentAddress?: string;
+  kycOwnerPhoto?: string;
   bkashNo?: string;
   nagadNo?: string;
   rocketNo?: string;
@@ -119,6 +127,14 @@ const UserSchema: Schema<IUser> = new Schema(
       enum: ['Not Submitted', 'Pending', 'Approved', 'Rejected'], 
       default: 'Not Submitted' 
     },
+    nidRejectionReason: { type: String },
+    kycFullName: { type: String },
+    kycDateOfBirth: { type: String },
+    kycFatherName: { type: String },
+    kycMotherName: { type: String },
+    kycPresentAddress: { type: String },
+    kycPermanentAddress: { type: String },
+    kycOwnerPhoto: { type: String },
     bkashNo: { type: String },
     nagadNo: { type: String },
     rocketNo: { type: String },

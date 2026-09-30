@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
 import WalletTransaction from '@/models/WalletTransaction';
+import { createNotification } from '@/lib/notifications';
 
 export async function GET(req: NextRequest) {
   try {
@@ -59,6 +60,21 @@ export async function PUT(req: NextRequest) {
         user.depositWallet += tx.amount;
         await user.save();
       }
+      await createNotification({
+        userId: tx.userId,
+        title: 'Deposit Approved',
+        message: `Your deposit request of ৳${tx.amount.toLocaleString()} has been approved and credited to your Deposit Wallet.`,
+        type: 'wallet',
+        link: '/dashboard/wallet',
+      });
+    } else if (status === 'failed') {
+      await createNotification({
+        userId: tx.userId,
+        title: 'Deposit Rejected',
+        message: `Your deposit request of ৳${tx.amount.toLocaleString()} was rejected. Please review transaction details or contact support.`,
+        type: 'wallet',
+        link: '/dashboard/wallet',
+      });
     }
 
     return NextResponse.json({ message: `Deposit request ${status === 'completed' ? 'approved' : 'rejected'} successfully.` });

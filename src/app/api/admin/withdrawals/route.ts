@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
 import WalletTransaction from '@/models/WalletTransaction';
+import { createNotification } from '@/lib/notifications';
 
 export async function GET(req: NextRequest) {
   try {
@@ -67,7 +68,23 @@ export async function PUT(req: NextRequest) {
           status: 'completed',
           description: `Refund for rejected withdrawal request #${tx._id.toString().slice(-8).toUpperCase()}`,
         });
+
+        await createNotification({
+          userId: user._id,
+          title: 'Withdrawal Request Rejected',
+          message: `Your withdrawal request of ৳${tx.amount.toLocaleString()} was rejected and the amount has been refunded back to your Withdrawal Wallet.`,
+          type: 'wallet',
+          link: '/dashboard/wallet',
+        });
       }
+    } else if (status === 'completed') {
+      await createNotification({
+        userId: tx.userId,
+        title: 'Withdrawal Payout Approved',
+        message: `Your withdrawal payout of ৳${tx.amount.toLocaleString()} has been processed and approved successfully.`,
+        type: 'wallet',
+        link: '/dashboard/wallet',
+      });
     }
 
     return NextResponse.json({ message: `Withdrawal request ${status === 'completed' ? 'approved' : 'rejected'} successfully.` });

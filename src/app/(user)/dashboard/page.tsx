@@ -73,6 +73,36 @@ export default function UserDashboard() {
   const handleActivate = async () => {
     if (!profile) return;
 
+    if (profile.nidStatus !== 'Approved') {
+      Swal.fire({
+        title: 'KYC Verification Required',
+        html: `
+          <div class="text-left space-y-2 text-sm text-gray-600">
+            <p>
+              ${
+                profile.nidStatus === 'Pending'
+                  ? 'Your National ID (KYC) verification is currently <strong>Under Review</strong> by admin. You can activate Premium Membership once your documents are approved.'
+                  : 'You must complete and get your <strong>National ID (KYC)</strong> verified by admin before activating Premium Membership.'
+              }
+            </p>
+            <p class="text-xs text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
+              Current status: <strong>${profile.nidStatus || 'Not Submitted'}</strong>
+            </p>
+          </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Go to KYC Verification',
+        cancelButtonText: 'Later',
+        confirmButtonColor: 'var(--primary)',
+      }).then((res) => {
+        if (res.isConfirmed) {
+          router.push('/dashboard/profile');
+        }
+      });
+      return;
+    }
+
     const result = await Swal.fire({
       title: 'Activate Account?',
       html: `

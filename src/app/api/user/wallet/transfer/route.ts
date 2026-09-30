@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
 import WalletTransaction from '@/models/WalletTransaction';
+import { createNotification } from '@/lib/notifications';
 import { auth } from '@/auth';
 import bcrypt from 'bcryptjs';
 
@@ -82,6 +83,24 @@ export async function POST(req: NextRequest) {
         status: 'completed',
         description: `Received ৳${numAmount} from member ${sender.memberId} (${sender.name})`,
       }
+    ]);
+
+    // Send notifications
+    await Promise.all([
+      createNotification({
+        userId: sender._id,
+        title: 'Fund Transferred',
+        message: `You transferred ৳${numAmount.toLocaleString()} to ${recipient.name} (${targetMemberId}).`,
+        type: 'wallet',
+        link: '/dashboard/wallet',
+      }),
+      createNotification({
+        userId: recipient._id,
+        title: 'Fund Received',
+        message: `You received ৳${numAmount.toLocaleString()} from ${sender.name} (${sender.memberId}) into your Deposit Wallet.`,
+        type: 'wallet',
+        link: '/dashboard/wallet',
+      }),
     ]);
 
     return NextResponse.json({

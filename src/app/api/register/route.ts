@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
 import { sendWelcomeRegistrationEmail } from '@/lib/mail';
+import { createNotification } from '@/lib/notifications';
 
 export async function POST(req: NextRequest) {
   try {
@@ -215,6 +216,16 @@ export async function POST(req: NextRequest) {
           { $inc: { teamCount: 1 } },
           { new: true }
         );
+        if (i === 0 && parent) {
+          // Direct sponsor notification
+          await createNotification({
+            userId: parent._id,
+            title: 'New Downline Member Joined',
+            message: `New member ${user.name} (${user.memberId}) registered in your team network under sponsor ID ${verifiedSponsorMemberId}.`,
+            type: 'network',
+            link: '/dashboard/tree',
+          });
+        }
         if (parent && parent.sponsorId) {
           currentSponsorId = parent.sponsorId;
         } else {
@@ -222,6 +233,15 @@ export async function POST(req: NextRequest) {
         }
       }
     }
+
+    // Welcome notification for new user
+    await createNotification({
+      userId: user._id,
+      title: 'Welcome to ABS International',
+      message: `Welcome ${user.name}! Your account has been registered successfully with Member ID: ${user.memberId}.`,
+      type: 'system',
+      link: '/dashboard',
+    });
 
     // Build human-readable address & joining date for email
     const addressParts = [
