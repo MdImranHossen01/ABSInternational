@@ -36,7 +36,8 @@ import {
   Trophy,
   Shield,
   Wallet,
-  ExternalLink
+  ExternalLink,
+  Award
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
@@ -294,6 +295,50 @@ export function UsersManagementView({
     }
   };
 
+  const handleMakePremium = async (userId: string, userName: string) => {
+    const result = await Swal.fire({
+      title: 'Make Premium Member?',
+      html: `
+        <div class="text-left space-y-2.5 text-xs sm:text-sm">
+          <p class="text-slate-700">Are you sure you want to upgrade <b>${userName}</b> to <b>Premium Member</b>?</p>
+          <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs space-y-1">
+            <span class="font-bold block">MLM Package Fund Disbursement:</span>
+            <span>It will be assumed that the member has paid <b>৳1,500</b>. The 1,500 BDT Joining Package will be fully disbursed across all funds (Sponsor Bonus 225 BDT, Generation Bonus 105 BDT, Auto Club, Community, Charity, etc.) exactly like a manual activation.</span>
+          </div>
+        </div>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#f59e0b',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Yes, Make Premium!',
+      customClass: {
+        popup: 'rounded-3xl',
+        confirmButton: 'rounded-xl font-bold px-6 py-3',
+        cancelButton: 'rounded-xl font-bold px-6 py-3'
+      }
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, action: 'make_premium' }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to upgrade user');
+
+      toast.success(data.message);
+      fetchUsers();
+    } catch (error: any) {
+      console.error('Make Premium Error:', error);
+      toast.error(error.message || 'Failed to upgrade user');
+    }
+  };
+
   const pageHeadings: Record<string, { title: string; desc: string }> = {
     all: {
       title: 'All Registered Users',
@@ -519,6 +564,15 @@ export function UsersManagementView({
                           <DropdownMenuGroup>
                             <DropdownMenuLabel className="text-[10px] font-black uppercase text-muted-foreground px-2 py-1.5">Management</DropdownMenuLabel>
                             
+                            {!user.isSubscriptionActive && (
+                              <DropdownMenuItem 
+                                onClick={() => handleMakePremium(user._id, user.name)}
+                                className="cursor-pointer text-amber-600 hover:text-amber-700 hover:bg-amber-50 font-bold text-xs"
+                              >
+                                <Award className="mr-2 h-4 w-4 text-amber-500" /> Make Premium Member
+                              </DropdownMenuItem>
+                            )}
+
                             {user.role !== 'admin' && (
                               <DropdownMenuItem 
                                 onClick={() => handleUpdateRole(user._id, 'admin')}
@@ -634,6 +688,16 @@ export function UsersManagementView({
                     >
                       <Eye className="h-3.5 w-3.5" /> Quick View
                     </Button>
+                    {!user.isSubscriptionActive && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handleMakePremium(user._id, user.name)}
+                        className="h-8 rounded-lg text-xs font-bold text-amber-700 border-amber-300 hover:bg-amber-50 gap-1"
+                      >
+                        <Award className="h-3.5 w-3.5 text-amber-600" /> Premium
+                      </Button>
+                    )}
                   </div>
 
                   <Button
@@ -755,6 +819,20 @@ export function UsersManagementView({
                   </div>
                 </div>
               </div>
+
+              {!selectedUser.isSubscriptionActive && (
+                <div className="pt-3 border-t flex justify-end">
+                  <Button
+                    onClick={() => {
+                      setIsDetailsOpen(false);
+                      handleMakePremium(selectedUser._id, selectedUser.name);
+                    }}
+                    className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs gap-1.5 rounded-xl shadow-sm"
+                  >
+                    <Award className="h-4 w-4" /> Upgrade to Premium Member
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </DialogContent>

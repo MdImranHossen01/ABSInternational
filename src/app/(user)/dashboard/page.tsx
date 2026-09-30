@@ -24,7 +24,9 @@ import {
   ShieldCheck,
   Sparkles,
   ChevronRight,
-  Layers
+  Layers,
+  CheckCircle2,
+  Clock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -103,15 +105,16 @@ export default function UserDashboard() {
       return;
     }
 
+    const currentSponsor = profile.sponsorId || 'None';
+
     const result = await Swal.fire({
       title: 'Activate Account?',
       html: `
         <div class="text-left space-y-3">
           <p class="text-sm text-gray-600">This will purchase the Joining Package for 1,500 BDT from your Deposit Wallet. You will become a Premium Member and receive Seba health benefits.</p>
-          <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">Sponsor ID (Optional)</label>
-            <input id="swal-sponsor-id" class="swal2-input !m-0 !w-full text-sm font-mono" placeholder="Enter Sponsor ID (e.g. ABS123456)" value="${(profile.sponsorId || '').replace(/"/g, '&quot;')}" />
-            <p class="text-[11px] text-gray-500 mt-1">If someone referred you, enter their Member ID above. Leave blank if none.</p>
+          <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
+            <span class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">Assigned Sponsor ID</span>
+            <span class="text-sm font-mono font-bold text-gray-900">${currentSponsor.replace(/"/g, '&quot;')}</span>
           </div>
         </div>
       `,
@@ -121,22 +124,16 @@ export default function UserDashboard() {
       cancelButtonText: 'Cancel',
       confirmButtonColor: 'var(--primary)',
       background: 'white',
-      preConfirm: () => {
-        const el = document.getElementById('swal-sponsor-id') as HTMLInputElement;
-        return el ? el.value.trim() : '';
-      }
     });
 
     if (!result.isConfirmed) return;
-
-    const sponsorIdInput = result.value;
 
     setActivating(true);
     try {
       const res = await fetch('/api/user/activate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sponsorId: sponsorIdInput })
+        body: JSON.stringify({ sponsorId: profile.sponsorId || '' })
       });
       const data = await res.json();
 
@@ -213,16 +210,35 @@ export default function UserDashboard() {
       {/* 1. Welcome Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-linear-to-r from-primary via-primary/90 to-emerald-800 text-white shadow-lg">
         <div>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
             <Badge className="bg-white/20 text-white border-0 text-[10px]">
               {profile?.isSubscriptionActive ? 'Active Member' : 'Free Member'}
             </Badge>
             <Badge className="bg-amber-400 text-amber-950 font-bold border-0 text-[10px] flex items-center gap-1">
               <Trophy className="h-3 w-3" /> {profile?.rank || 'user'}
             </Badge>
+            {profile?.nidStatus === 'Approved' ? (
+              <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold border-0 text-[10px] flex items-center gap-1 shadow-sm">
+                <CheckCircle2 className="h-3 w-3" /> KYC Verified
+              </Badge>
+            ) : profile?.nidStatus === 'Pending' ? (
+              <Badge className="bg-amber-400/30 text-amber-100 border border-amber-300/40 text-[10px] flex items-center gap-1">
+                <Clock className="h-3 w-3" /> KYC Pending
+              </Badge>
+            ) : (
+              <Badge className="bg-white/10 text-white/80 border border-white/20 text-[10px] flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" /> KYC Required
+              </Badge>
+            )}
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-black">
-            Welcome, {profile?.name}!
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black flex items-center gap-2 flex-wrap">
+            <span>Welcome, {profile?.name}!</span>
+            {profile?.nidStatus === 'Approved' && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-white text-emerald-700 shadow-sm" title="KYC Verified Account">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                Verified
+              </span>
+            )}
           </h1>
           <p className="text-xs sm:text-sm opacity-90 mt-1">
             Welcome to ABS International — your trusted partner in health, beauty and wellness.

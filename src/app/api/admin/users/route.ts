@@ -181,10 +181,10 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { userId, role } = await req.json();
+    const { userId, role, action } = await req.json();
 
-    if (!userId || !['user', 'admin', 'manager'].includes(role)) {
-      return NextResponse.json({ message: 'Invalid data' }, { status: 400 });
+    if (!userId) {
+      return NextResponse.json({ message: 'User ID is required' }, { status: 400 });
     }
 
     await connectToDatabase();
@@ -194,6 +194,29 @@ export async function PATCH(req: NextRequest) {
 
     if (!userToUpdate) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    }
+
+    // Handle Admin Manual Premium Activation
+    if (action === 'make_premium' || action === 'activate_premium') {
+      if (userToUpdate.isSubscriptionActive) {
+        return NextResponse.json({ message: 'User is already a Premium Member.' }, { status: 400 });
+      }
+
+      const { executePremiumActivation } = await import('@/lib/mlm-activation');
+      const result = await executePremiumActivation(userToUpdate, {
+        isManualAdmin: true,
+        adminName: session.user?.name || 'Admin',
+        bypassBalanceDeduction: true,
+      });
+
+      return NextResponse.json({ 
+        message: `${userToUpdate.name} has been upgraded to Premium Member! 1,500 BDT package funds distributed across all MLM accounts and funds.`,
+        distribution: result.distribution 
+      });
+    }
+
+    if (!role || !['user', 'admin', 'manager'].includes(role)) {
+      return NextResponse.json({ message: 'Invalid data' }, { status: 400 });
     }
 
     // Prevent changing role of super_admin
