@@ -181,7 +181,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { userId, role, action } = await req.json();
+    const { userId, role, action, newSponsorId } = await req.json();
 
     if (!userId) {
       return NextResponse.json({ message: 'User ID is required' }, { status: 400 });
@@ -202,6 +202,35 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ message: 'User is already a Premium Member.' }, { status: 400 });
       }
 
+      // If admin provided a new sponsor ID, validate and assign it
+      if (newSponsorId && newSponsorId.trim()) {
+        const cleanSponsor = newSponsorId.trim();
+        const sponsorUser = await User.findOne({
+          $or: [
+            { memberId: cleanSponsor.toUpperCase() },
+            { phone: cleanSponsor },
+            { username: cleanSponsor.toLowerCase() },
+          ]
+        });
+
+        if (!sponsorUser) {
+          return NextResponse.json(
+            { message: `Sponsor "${cleanSponsor}" not found. Please provide a valid Member ID, phone number, or username.` },
+            { status: 400 }
+          );
+        }
+
+        if (sponsorUser._id.toString() === userToUpdate._id.toString()) {
+          return NextResponse.json(
+            { message: 'A user cannot be their own sponsor.' },
+            { status: 400 }
+          );
+        }
+
+        userToUpdate.sponsorId = sponsorUser.memberId;
+        await userToUpdate.save();
+      }
+
       const { executePremiumActivation } = await import('@/lib/mlm-activation');
       const result = await executePremiumActivation(userToUpdate, {
         isManualAdmin: true,
@@ -209,8 +238,14 @@ export async function PATCH(req: NextRequest) {
         bypassBalanceDeduction: true,
       });
 
+      const sponsorMsg = newSponsorId
+        ? ` Sponsor set to ${userToUpdate.sponsorId}.`
+        : userToUpdate.sponsorId
+          ? ` Existing sponsor (${userToUpdate.sponsorId}) used.`
+          : ' No sponsor — funds redirected to Global Pool.';
+
       return NextResponse.json({ 
-        message: `${userToUpdate.name} has been upgraded to Premium Member! 1,500 BDT package funds distributed across all MLM accounts and funds.`,
+        message: `${userToUpdate.name} has been upgraded to Premium Member! 1,500 BDT package funds distributed.${sponsorMsg}`,
         distribution: result.distribution 
       });
     }

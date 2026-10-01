@@ -295,15 +295,28 @@ export function UsersManagementView({
     }
   };
 
-  const handleMakePremium = async (userId: string, userName: string) => {
+  const handleMakePremium = async (userId: string, userName: string, currentSponsorId?: string) => {
     const result = await Swal.fire({
       title: 'Make Premium Member?',
       html: `
-        <div class="text-left space-y-2.5 text-xs sm:text-sm">
+        <div class="text-left space-y-3 text-xs sm:text-sm">
           <p class="text-slate-700">Are you sure you want to upgrade <b>${userName}</b> to <b>Premium Member</b>?</p>
+
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-slate-600">Sponsor ID / Member ID (Optional)</label>
+            <input
+              id="swal-sponsor-input"
+              type="text"
+              placeholder="e.g. ABS-123456, phone number or username"
+              value="${currentSponsorId || ''}"
+              class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white text-slate-800"
+            />
+            <p class="text-xs text-slate-400">If no sponsor is provided, bonus funds will be redirected to the Global Profit Pool.</p>
+          </div>
+
           <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs space-y-1">
             <span class="font-bold block">MLM Package Fund Disbursement:</span>
-            <span>It will be assumed that the member has paid <b>৳1,500</b>. The 1,500 BDT Joining Package will be fully disbursed across all funds (Sponsor Bonus 225 BDT, Generation Bonus 105 BDT, Auto Club, Community, Charity, etc.) exactly like a manual activation.</span>
+            <span>The 1,500 BDT Joining Package will be fully disbursed across all funds — Sponsor Bonus 225 BDT, Generation Bonus 105 BDT, Auto Club, Community, Charity, etc.</span>
           </div>
         </div>
       `,
@@ -316,16 +329,22 @@ export function UsersManagementView({
         popup: 'rounded-3xl',
         confirmButton: 'rounded-xl font-bold px-6 py-3',
         cancelButton: 'rounded-xl font-bold px-6 py-3'
+      },
+      preConfirm: () => {
+        const sponsorInput = (document.getElementById('swal-sponsor-input') as HTMLInputElement)?.value?.trim();
+        return { sponsorId: sponsorInput || null };
       }
     });
 
     if (!result.isConfirmed) return;
 
+    const newSponsorId = result.value?.sponsorId || null;
+
     try {
       const response = await fetch('/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, action: 'make_premium' }),
+        body: JSON.stringify({ userId, action: 'make_premium', newSponsorId }),
       });
 
       const data = await response.json();
@@ -566,7 +585,7 @@ export function UsersManagementView({
                             
                             {!user.isSubscriptionActive && (
                               <DropdownMenuItem 
-                                onClick={() => handleMakePremium(user._id, user.name)}
+                                onClick={() => handleMakePremium(user._id, user.name, user.sponsorId)}
                                 className="cursor-pointer text-amber-600 hover:text-amber-700 hover:bg-amber-50 font-bold text-xs"
                               >
                                 <Award className="mr-2 h-4 w-4 text-amber-500" /> Make Premium Member
