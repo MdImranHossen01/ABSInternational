@@ -14,6 +14,7 @@ export default {
         session.user.id = token.id as string;
         (session.user as any).role = token.role ?? 'user';
         (session.user as any).phone = token.phone as string;
+        (session.user as any).memberId = token.memberId as string;
         if (token.image) {
           session.user.image = token.image as string;
         }
@@ -24,6 +25,7 @@ export default {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role ?? 'user';
+        token.memberId = (user as any).memberId;
         token.image = user.image || token.picture;
       }
 

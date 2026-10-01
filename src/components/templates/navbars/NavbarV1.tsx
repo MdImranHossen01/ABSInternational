@@ -18,6 +18,8 @@ import {
   LogIn,
   UserPlus,
   X,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import { toast } from 'sonner';
@@ -70,6 +72,18 @@ export default function Navbar() {
 
   const [categories, setCategories] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
+  const [copiedMemberId, setCopiedMemberId] = useState(false);
+
+  const handleCopyMemberId = async (id: string) => {
+    if (!id) return;
+    try {
+      await navigator.clipboard.writeText(id);
+      setCopiedMemberId(true);
+      setTimeout(() => setCopiedMemberId(false), 2000);
+    } catch {
+      // silent fallback
+    }
+  };
 
 
   useEffect(() => {
@@ -422,13 +436,45 @@ export default function Navbar() {
                     <DropdownMenuContent align="end" className="w-56 mt-2">
                       <DropdownMenuGroup>
                         <DropdownMenuLabel className="font-serif">
-                          <div className="flex flex-col">
-                            <span>{session.user?.name}</span>
+                          <div className="flex flex-col space-y-1">
+                            <span className="font-bold text-sm text-foreground">{session.user?.name}</span>
                             <span className="text-xs font-normal text-muted-foreground truncate">{session.user?.email}</span>
                             {profile && (
-                              <div className="mt-1.5 flex items-center gap-1.5 bg-primary/10 px-2 py-0.5 rounded-full w-fit border border-primary/20">
+                              <div className="mt-1 flex items-center gap-1.5 bg-primary/10 px-2 py-0.5 rounded-full w-fit border border-primary/20">
                                 <Package className="h-3 w-3 text-primary" />
                                 <span className="text-[10px] font-bold text-primary">৳{profile.walletBalance || 0} Tokens</span>
+                              </div>
+                            )}
+                            {(profile?.memberId || (session.user as any)?.memberId) && (
+                              <div className="flex items-center justify-between gap-1.5 mt-2 pt-2 border-t border-border/60">
+                                <div className="flex items-center gap-1 text-[11px] font-mono">
+                                  <span className="text-muted-foreground font-sans">ID:</span>
+                                  <span className="font-bold text-foreground">
+                                    {profile?.memberId || (session.user as any)?.memberId}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleCopyMemberId(profile?.memberId || (session.user as any)?.memberId);
+                                  }}
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-secondary hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
+                                  title="Copy Member ID"
+                                >
+                                  {copiedMemberId ? (
+                                    <>
+                                      <Check className="h-3 w-3 text-emerald-500" />
+                                      <span className="text-emerald-500 font-semibold">Copied</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="h-3 w-3 text-muted-foreground" />
+                                      <span>Copy</span>
+                                    </>
+                                  )}
+                                </button>
                               </div>
                             )}
                           </div>

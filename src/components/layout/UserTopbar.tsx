@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
-import { User, LogOut, Bell, ShieldCheck, Menu, UserPlus } from 'lucide-react';
+import { User, LogOut, Bell, ShieldCheck, Menu, UserPlus, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -22,24 +22,49 @@ export default function UserTopbar() {
   const { data: session } = useSession();
   const isAdmin = (session?.user as any)?.role === 'admin' || (session?.user as any)?.role === 'super_admin';
   const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [profile, setProfile] = useState<any>(null);
+  const [copiedId, setCopiedId] = useState(false);
 
   useEffect(() => {
     if (!session?.user) return;
-    async function fetchUnread() {
+
+    let isMounted = true;
+    async function fetchUserData() {
       try {
-        const res = await fetch('/api/user/notifications?limit=1');
-        if (res.ok) {
-          const data = await res.json();
+        const [notifRes, profileRes] = await Promise.all([
+          fetch('/api/user/notifications?limit=1'),
+          fetch('/api/user/profile')
+        ]);
+        if (isMounted && notifRes.ok) {
+          const data = await notifRes.json();
           setUnreadCount(typeof data.unreadCount === 'number' ? data.unreadCount : 0);
+        }
+        if (isMounted && profileRes.ok) {
+          const pData = await profileRes.json();
+          setProfile(pData);
         }
       } catch {
         // silent fallback
       }
     }
-    fetchUnread();
-    const interval = setInterval(fetchUnread, 45000);
-    return () => clearInterval(interval);
+    fetchUserData();
+    const interval = setInterval(fetchUserData, 45000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [session?.user]);
+
+  const handleCopyId = async (id: string) => {
+    if (!id) return;
+    try {
+      await navigator.clipboard.writeText(id);
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2000);
+    } catch {
+      // silent fallback
+    }
+  };
 
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 justify-between sticky top-0 z-30">
@@ -95,6 +120,38 @@ export default function UserTopbar() {
                     <p className="text-xs leading-none text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis">
                       {session.user.email}
                     </p>
+                    {(profile?.memberId || (session.user as any)?.memberId) && (
+                      <div className="flex items-center justify-between gap-1.5 mt-2 pt-2 border-t border-border/60">
+                        <div className="flex items-center gap-1 text-[11px] font-mono">
+                          <span className="text-muted-foreground font-sans">ID:</span>
+                          <span className="font-bold text-foreground">
+                            {profile?.memberId || (session.user as any)?.memberId}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleCopyId(profile?.memberId || (session.user as any)?.memberId);
+                          }}
+                          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-secondary hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
+                          title="Copy Member ID"
+                        >
+                          {copiedId ? (
+                            <>
+                              <Check className="h-3 w-3 text-emerald-500" />
+                              <span className="text-emerald-500 font-semibold">Copied</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3 w-3 text-muted-foreground" />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </DropdownMenuLabel>
               </DropdownMenuGroup>

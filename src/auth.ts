@@ -67,6 +67,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           image: user.image,
           role: user.role,
           phone: user.phone,
+          memberId: user.memberId,
         };
       },
     }),
@@ -93,6 +94,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               token.id = dbUser._id.toString();
               token.role = dbUser.role ?? 'user';
               token.phone = dbUser.phone;
+              token.memberId = dbUser.memberId;
               token.image = dbUser.image || user.image || token.picture;
             }
           }

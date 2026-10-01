@@ -26,7 +26,9 @@ import {
   ChevronRight,
   Layers,
   CheckCircle2,
-  Clock
+  Clock,
+  Copy,
+  Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -42,6 +44,21 @@ export default function UserDashboard() {
   const [fundsData, setFundsData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activating, setActivating] = useState(false);
+  const [copiedField, setCopiedField] = useState<'member' | 'sponsor' | null>(null);
+
+  const handleCopy = async (text?: string, field?: 'member' | 'sponsor') => {
+    if (!text || text === 'N/A' || text === 'None') return;
+    try {
+      await navigator.clipboard.writeText(text);
+      if (field) setCopiedField(field);
+      toast.success(`${field === 'member' ? 'Member ID' : 'Sponsor ID'} copied!`);
+      setTimeout(() => {
+        setCopiedField(null);
+      }, 2000);
+    } catch {
+      toast.error('Failed to copy');
+    }
+  };
 
   useEffect(() => {
     async function loadData() {
@@ -243,9 +260,45 @@ export default function UserDashboard() {
           <p className="text-xs sm:text-sm opacity-90 mt-1">
             Welcome to ABS International — your trusted partner in health, beauty and wellness.
           </p>
-          <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-1 sm:gap-y-2 mt-3 sm:mt-4 text-[11px] sm:text-xs font-mono bg-white/10 p-2.5 sm:p-3 rounded-lg w-full sm:w-fit border border-white/15">
-            <div>Member ID: <span className="font-bold">{profile?.memberId || 'N/A'}</span></div>
-            <div>Sponsor ID: <span className="font-bold">{profile?.sponsorId || 'None'}</span></div>
+          <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 mt-3 sm:mt-4 text-[11px] sm:text-xs font-mono bg-white/10 p-2 sm:p-2.5 px-3 rounded-lg w-full sm:w-fit border border-white/15">
+            <div className="flex items-center gap-1.5">
+              <span className="opacity-80">Member ID:</span>
+              <span className="font-bold tracking-wide">{profile?.memberId || 'N/A'}</span>
+              {profile?.memberId && (
+                <button
+                  type="button"
+                  onClick={() => handleCopy(profile.memberId, 'member')}
+                  className="p-1 hover:bg-white/20 rounded transition-colors text-white/90 hover:text-white"
+                  title="Copy Member ID"
+                  aria-label="Copy Member ID"
+                >
+                  {copiedField === 'member' ? (
+                    <Check className="h-3.5 w-3.5 text-emerald-300" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="opacity-80">Sponsor ID:</span>
+              <span className="font-bold tracking-wide">{profile?.sponsorId || 'None'}</span>
+              {profile?.sponsorId && profile.sponsorId !== 'None' && (
+                <button
+                  type="button"
+                  onClick={() => handleCopy(profile.sponsorId, 'sponsor')}
+                  className="p-1 hover:bg-white/20 rounded transition-colors text-white/90 hover:text-white"
+                  title="Copy Sponsor ID"
+                  aria-label="Copy Sponsor ID"
+                >
+                  {copiedField === 'sponsor' ? (
+                    <Check className="h-3.5 w-3.5 text-emerald-300" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
 

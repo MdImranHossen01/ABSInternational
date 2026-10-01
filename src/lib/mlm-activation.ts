@@ -278,6 +278,14 @@ export async function executePremiumActivation(user: any, options: ActivationOpt
           description: `Generation ${i + 1} Bonus from ${user.name} (${user.memberId})`,
         });
 
+        await createNotification({
+          userId: currentParent._id,
+          title: `Generation ${i + 1} Bonus Earned`,
+          message: `You earned ৳${payout} Generation ${i + 1} bonus from ${user.name} (${user.memberId}) activating their Premium Membership!`,
+          type: 'bonus',
+          link: '/dashboard/wallet',
+        });
+
         if (!currentParent.sponsorId) break;
         const nextParent = await User.findOne({ memberId: currentParent.sponsorId });
         if (!nextParent) break;
