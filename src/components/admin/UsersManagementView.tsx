@@ -303,7 +303,7 @@ export function UsersManagementView({
           <p class="text-slate-700">Are you sure you want to upgrade <b>${userName}</b> to <b>Premium Member</b>?</p>
 
           <div class="space-y-1">
-            <label class="block text-xs font-semibold text-slate-600">Sponsor ID / Member ID (Optional)</label>
+            <label class="block text-xs font-semibold text-slate-600">Sponsor ID (Optional)</label>
             <input
               id="swal-sponsor-input"
               type="text"
