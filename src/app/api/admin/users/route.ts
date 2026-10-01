@@ -19,6 +19,10 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search') || '';
 
     const type = searchParams.get('type') || 'all';
+    const statusFilter = searchParams.get('status') || 'all';
+    const roleFilter = searchParams.get('role') || 'all';
+    const rankFilter = searchParams.get('rank') || 'all';
+    const sortBy = searchParams.get('sortBy') || 'newest';
 
     await connectToDatabase();
 
@@ -41,29 +45,90 @@ export async function GET(req: NextRequest) {
       matchQuery.role = { $ne: 'super_admin' as const };
     }
 
+    // Explicit Status Filter
+    if (statusFilter === 'active') {
+      matchQuery.isSubscriptionActive = true;
+    } else if (statusFilter === 'free') {
+      matchQuery.isSubscriptionActive = false;
+    }
+
+    // Explicit Role Filter
+    if (roleFilter && roleFilter !== 'all') {
+      matchQuery.role = roleFilter;
+    }
+
+    // Explicit Rank Filter
+    if (rankFilter && rankFilter !== 'all') {
+      if (rankFilter === 'General' || rankFilter === 'user') {
+        matchQuery.$or = [
+          { rank: 'user' },
+          { rank: 'General' },
+          { rank: null },
+          { rank: '' },
+          { rank: { $exists: false } }
+        ];
+      } else {
+        matchQuery.rank = rankFilter;
+      }
+    }
+
     if (search) {
-      matchQuery.$or = [
+      const searchOr = [
         { name: { $regex: search, $options: 'i' } },
         { email: { $regex: search, $options: 'i' } },
         { phone: { $regex: search, $options: 'i' } },
         { memberId: { $regex: search, $options: 'i' } },
         { sponsorId: { $regex: search, $options: 'i' } },
       ];
+      if (matchQuery.$or) {
+        matchQuery.$and = [{ $or: matchQuery.$or }, { $or: searchOr }];
+        delete matchQuery.$or;
+      } else {
+        matchQuery.$or = searchOr;
+      }
     }
     const totalCount = await User.countDocuments(matchQuery);
 
-    // Aggregate users with their order stats (efficiently skip/limit before lookup)
-    const users = await User.aggregate([
-      { $match: matchQuery },
-      { $sort: { createdAt: -1 } },
-      { $skip: (page - 1) * limit },
-      { $limit: limit },
+    // Determine sort
+    let sortStage: any = { createdAt: -1 };
+    if (sortBy === 'oldest') {
+      sortStage = { createdAt: 1 };
+    } else if (sortBy === 'name_asc') {
+      sortStage = { name: 1 };
+    }
+
+    const isOrderSort = sortBy === 'orders_desc' || sortBy === 'spent_desc';
+
+    // Pipeline
+    const pipeline: any[] = [{ $match: matchQuery }];
+
+    if (!isOrderSort) {
+      pipeline.push({ $sort: sortStage });
+      pipeline.push({ $skip: (page - 1) * limit });
+      pipeline.push({ $limit: limit });
+    }
+
+    pipeline.push(
       {
         $lookup: {
           from: 'orders',
           localField: '_id',
           foreignField: 'user',
           as: 'userOrders'
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'sponsorId',
+          foreignField: 'memberId',
+          as: 'sponsorDoc'
+        }
+      },
+      {
+        $unwind: {
+          path: '$sponsorDoc',
+          preserveNullAndEmptyArrays: true
         }
       },
       {
@@ -78,6 +143,14 @@ export async function GET(req: NextRequest) {
           lastActive: 1,
           memberId: 1,
           sponsorId: 1,
+          sponsorName: {
+            $cond: {
+              if: { $in: ['$sponsorId', ['ABS-COMPANY', 'COMPANY']] },
+              then: 'ABS Company',
+              else: '$sponsorDoc.name'
+            }
+          },
+          sponsorPhone: '$sponsorDoc.phone',
           rank: 1,
           isSubscriptionActive: 1,
           depositWallet: 1,
@@ -91,7 +164,19 @@ export async function GET(req: NextRequest) {
           lastOrderDate: { $max: '$userOrders.createdAt' }
         }
       }
-    ]);
+    );
+
+    if (isOrderSort) {
+      if (sortBy === 'orders_desc') {
+        pipeline.push({ $sort: { totalOrders: -1, createdAt: -1 } });
+      } else if (sortBy === 'spent_desc') {
+        pipeline.push({ $sort: { totalSpent: -1, createdAt: -1 } });
+      }
+      pipeline.push({ $skip: (page - 1) * limit });
+      pipeline.push({ $limit: limit });
+    }
+
+    const users = await User.aggregate(pipeline);
 
     return NextResponse.json({
       users,

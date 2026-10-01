@@ -37,7 +37,13 @@ import {
   Shield,
   Wallet,
   ExternalLink,
-  Award
+  Award,
+  Copy,
+  Check,
+  RotateCcw,
+  X,
+  Filter,
+  SlidersHorizontal
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
@@ -72,6 +78,8 @@ export interface UserData {
   lastActive?: string;
   memberId?: string;
   sponsorId?: string;
+  sponsorName?: string;
+  sponsorPhone?: string;
   rank?: string;
   isSubscriptionActive?: boolean;
   depositWallet?: number;
@@ -139,6 +147,43 @@ export function UsersManagementView({
   const [adminImage, setAdminImage] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [isAssigning, setIsAssigning] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Filter & Sort States
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [rankFilter, setRankFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('newest');
+
+  const handleCopyText = async (text: string, idKey: string) => {
+    if (!text || text === 'N/A' || text === 'None') return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(idKey);
+      toast.success('Copied to clipboard!');
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      toast.error('Failed to copy');
+    }
+  };
+
+  const resetFilters = () => {
+    setSearchTerm('');
+    setDebouncedSearchTerm('');
+    setStatusFilter('all');
+    setRoleFilter('all');
+    setRankFilter('all');
+    setSortBy('newest');
+    setCurrentPage(1);
+  };
+
+  const hasActiveFilters = Boolean(
+    searchTerm.trim() ||
+    statusFilter !== 'all' ||
+    roleFilter !== 'all' ||
+    rankFilter !== 'all' ||
+    sortBy !== 'newest'
+  );
 
   const { data: session } = useSession();
   const isSuperAdmin = (session?.user as any)?.role === 'super_admin';
@@ -146,7 +191,17 @@ export function UsersManagementView({
   const fetchUsers = async (page = currentPage) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/admin/users?page=${page}&limit=20&search=${encodeURIComponent(debouncedSearchTerm)}&type=${type}`);
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: '20',
+        search: debouncedSearchTerm,
+        type,
+        status: statusFilter,
+        role: roleFilter,
+        rank: rankFilter,
+        sortBy
+      });
+      const response = await fetch(`/api/admin/users?${params.toString()}`);
       if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
       setUsers(data.users || []);
@@ -162,7 +217,7 @@ export function UsersManagementView({
 
   useEffect(() => {
     fetchUsers(currentPage);
-  }, [currentPage, debouncedSearchTerm, type]);
+  }, [currentPage, debouncedSearchTerm, type, statusFilter, roleFilter, rankFilter, sortBy]);
 
   useEffect(() => {
     const pageFromParams = Math.max(1, parseInt(searchParams.get('page') || '1'));
@@ -418,23 +473,124 @@ export function UsersManagementView({
         </div>
       </div>
 
-      {/* Search Input */}
-      <div className="relative w-full max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input 
-          placeholder="Search by name, email, phone, or Member ID..." 
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-9 h-11 bg-white rounded-xl border border-slate-200 shadow-2xs font-medium text-xs sm:text-sm"
-        />
-        {searchTerm && (
-          <button 
-            onClick={() => setSearchTerm('')} 
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground font-bold"
-          >
-            Clear
-          </button>
-        )}
+      {/* Search & Filter Controls */}
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 justify-between">
+          {/* Search Input */}
+          <div className="relative flex-1 min-w-[260px] max-w-xl">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search by name, email, phone, or Member ID..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9.5 pr-9 h-10 bg-white rounded-xl border border-slate-200 shadow-2xs font-medium text-xs sm:text-sm"
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm('')} 
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground font-bold p-1"
+                aria-label="Clear search"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Filters Row */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Status Filter */}
+            <div className="flex items-center">
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  if (currentPage > 1) setCurrentPage(1);
+                }}
+                className="h-10 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 shadow-2xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+                aria-label="Filter by Status"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active (Premium)</option>
+                <option value="free">Free Member</option>
+              </select>
+            </div>
+
+            {/* Role Filter */}
+            <div className="flex items-center">
+              <select
+                value={roleFilter}
+                onChange={(e) => {
+                  setRoleFilter(e.target.value);
+                  if (currentPage > 1) setCurrentPage(1);
+                }}
+                className="h-10 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 shadow-2xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+                aria-label="Filter by Role"
+              >
+                <option value="all">All Roles</option>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+              </select>
+            </div>
+
+            {/* Rank Filter */}
+            <div className="flex items-center">
+              <select
+                value={rankFilter}
+                onChange={(e) => {
+                  setRankFilter(e.target.value);
+                  if (currentPage > 1) setCurrentPage(1);
+                }}
+                className="h-10 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 shadow-2xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+                aria-label="Filter by Rank"
+              >
+                <option value="all">All Ranks</option>
+                <option value="General">General</option>
+                <option value="Premium Member">Premium Member</option>
+                <option value="Team Manager">Team Manager</option>
+                <option value="Royal Manager">Royal Manager</option>
+                <option value="Silver Manager">Silver Manager</option>
+                <option value="Gold Manager">Gold Manager</option>
+                <option value="Diamond Manager">Diamond Manager</option>
+                <option value="Crown Manager">Crown Manager</option>
+                <option value="Director">Director</option>
+              </select>
+            </div>
+
+            {/* Sort Filter */}
+            <div className="flex items-center">
+              <select
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value);
+                  if (currentPage > 1) setCurrentPage(1);
+                }}
+                className="h-10 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 shadow-2xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+                aria-label="Sort users"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="orders_desc">Most Orders</option>
+                <option value="spent_desc">Highest Spent</option>
+                <option value="name_asc">Name (A-Z)</option>
+              </select>
+            </div>
+
+            {/* Reset Filter Button */}
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={resetFilters}
+                className="h-10 px-3 rounded-xl text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 transition-colors gap-1.5"
+                title="Reset all active filters"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                <span>Reset</span>
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Table Card */}
@@ -445,8 +601,8 @@ export function UsersManagementView({
             <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead className="w-[60px]">Avatar</TableHead>
-                <TableHead className="font-bold">Member & Sponsor</TableHead>
-                <TableHead className="font-bold">Contact Info</TableHead>
+                <TableHead className="font-bold min-w-[200px]">Member</TableHead>
+                <TableHead className="font-bold min-w-[190px]">Sponsor</TableHead>
                 <TableHead className="font-bold">MLM Rank & Status</TableHead>
                 <TableHead className="font-bold">Orders / Spent</TableHead>
                 <TableHead className="font-bold">Role</TableHead>
@@ -491,28 +647,73 @@ export function UsersManagementView({
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col space-y-0.5">
                         <Link 
                           href={`/admin/users/${user._id}`}
                           className="font-bold text-slate-900 hover:text-primary transition-colors text-left text-xs sm:text-sm hover:underline"
                         >
                           {user.name}
                         </Link>
-                        <div className="flex items-center gap-1.5 mt-0.5 font-mono text-[11px] text-muted-foreground">
+                        <div className="flex items-center gap-1 font-mono text-[11px]">
                           <span className="font-bold text-primary">{user.memberId || 'N/A'}</span>
-                          {user.sponsorId && (
-                            <>
-                              <span>•</span>
-                              <span>Sponsor: {user.sponsorId}</span>
-                            </>
+                          {user.memberId && (
+                            <button
+                              type="button"
+                              onClick={() => handleCopyText(user.memberId!, `user-${user._id}`)}
+                              className="p-0.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                              title="Copy Member ID"
+                              aria-label="Copy Member ID"
+                            >
+                              {copiedId === `user-${user._id}` ? (
+                                <Check className="h-3 w-3 text-emerald-600" />
+                              ) : (
+                                <Copy className="h-3 w-3" />
+                              )}
+                            </button>
                           )}
                         </div>
+                        <div className="text-[11px] text-slate-500 font-medium truncate max-w-[200px]">{user.email}</div>
+                        {user.phone && (
+                          <div className="text-[11px] text-slate-500 font-mono">
+                            {user.phone}
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col text-xs text-slate-600">
-                        <span className="font-medium">{user.email}</span>
-                        {user.phone && <span className="text-[11px] text-slate-400">{user.phone}</span>}
+                      <div className="flex flex-col space-y-0.5">
+                        {user.sponsorId ? (
+                          <>
+                            <span className="font-bold text-xs text-slate-800">
+                              {user.sponsorName || (user.sponsorId === 'ABS-COMPANY' ? 'ABS Company' : 'Unknown')}
+                            </span>
+                            <div className="flex items-center gap-1 font-mono text-[11px]">
+                              <span className="text-slate-600 font-semibold">{user.sponsorId}</span>
+                              {user.sponsorId !== 'ABS-COMPANY' && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyText(user.sponsorId!, `sponsor-${user._id}`)}
+                                  className="p-0.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                                  title="Copy Sponsor ID"
+                                  aria-label="Copy Sponsor ID"
+                                >
+                                  {copiedId === `sponsor-${user._id}` ? (
+                                    <Check className="h-3 w-3 text-emerald-600" />
+                                  ) : (
+                                    <Copy className="h-3 w-3" />
+                                  )}
+                                </button>
+                              )}
+                            </div>
+                            {user.sponsorPhone && (
+                              <div className="text-[11px] text-slate-500 font-mono">
+                                {user.sponsorPhone}
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-xs text-muted-foreground italic">None / Direct</span>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -650,22 +851,61 @@ export function UsersManagementView({
             users.map((user) => (
               <div key={user._id} className="p-4 space-y-3 bg-white hover:bg-slate-50/50 transition-colors">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex items-start gap-3 min-w-0">
                     <div className="h-10 w-10 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                       <UserIcon className="h-4 w-4" />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <Link 
                         href={`/admin/users/${user._id}`}
                         className="font-bold text-slate-900 hover:text-primary transition-colors text-left text-sm truncate block hover:underline"
                       >
                         {user.name}
                       </Link>
-                      <div className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
+                      <div className="flex items-center gap-1 font-mono text-[11px] mt-0.5">
                         <span className="font-bold text-primary">{user.memberId || 'N/A'}</span>
-                        {user.sponsorId && <span>• {user.sponsorId}</span>}
+                        {user.memberId && (
+                          <button
+                            type="button"
+                            onClick={() => handleCopyText(user.memberId!, `m-user-${user._id}`)}
+                            className="p-0.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition-colors"
+                            title="Copy Member ID"
+                          >
+                            {copiedId === `m-user-${user._id}` ? (
+                              <Check className="h-3 w-3 text-emerald-600" />
+                            ) : (
+                              <Copy className="h-3 w-3" />
+                            )}
+                          </button>
+                        )}
                       </div>
                       <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                      {user.phone && <p className="text-[11px] text-slate-500 font-mono">{user.phone}</p>}
+                      
+                      {user.sponsorId && (
+                        <div className="mt-1.5 pt-1.5 border-t border-slate-100 text-[11px] text-slate-600">
+                          <span className="text-muted-foreground font-semibold">Sponsor: </span>
+                          <span className="font-bold text-slate-800">{user.sponsorName || (user.sponsorId === 'ABS-COMPANY' ? 'ABS Company' : user.sponsorId)}</span>
+                          <div className="flex items-center gap-1 font-mono text-slate-500">
+                            <span>{user.sponsorId}</span>
+                            {user.sponsorId !== 'ABS-COMPANY' && (
+                              <button
+                                type="button"
+                                onClick={() => handleCopyText(user.sponsorId!, `m-sponsor-${user._id}`)}
+                                className="p-0.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition-colors"
+                                title="Copy Sponsor ID"
+                              >
+                                {copiedId === `m-sponsor-${user._id}` ? (
+                                  <Check className="h-3 w-3 text-emerald-600" />
+                                ) : (
+                                  <Copy className="h-3 w-3" />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                          {user.sponsorPhone && <div className="text-slate-500 font-mono">{user.sponsorPhone}</div>}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <Badge 
