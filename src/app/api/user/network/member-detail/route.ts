@@ -43,35 +43,49 @@ export async function GET(req: NextRequest) {
     }
 
     const callerMemberId = callerUser.memberId?.trim().toUpperCase();
+
+    // Check if caller is viewing their own profile
     const isSelf =
-      callerUser._id.toString() === targetUser._id.toString() ||
-      (callerMemberId && targetUser.memberId?.trim().toUpperCase() === callerMemberId);
+      callerUser._id.toString() === (targetUser as any)._id.toString() ||
+      (callerMemberId && (targetUser as any).memberId?.trim().toUpperCase() === callerMemberId);
 
     let isAuthorized = false;
+
     if (isSelf || callerUser.role === 'admin' || callerUser.role === 'super_admin') {
       isAuthorized = true;
-    } else if (callerMemberId) {
-      let currentSponsorId = targetUser.sponsorId?.trim();
+    } else {
+      // Walk up the target's sponsor chain to see if caller is an ancestor
+      let currentSponsorId = (targetUser as any).sponsorId?.trim();
       const visited = new Set<string>();
 
       while (currentSponsorId && !visited.has(currentSponsorId.toUpperCase())) {
-        if (currentSponsorId.toUpperCase() === callerMemberId) {
+        const upperSponsor = currentSponsorId.toUpperCase();
+
+        // Match by memberId
+        if (callerMemberId && upperSponsor === callerMemberId) {
           isAuthorized = true;
           break;
         }
-        visited.add(currentSponsorId.toUpperCase());
+
+        visited.add(upperSponsor);
 
         if (
-          currentSponsorId.toUpperCase() === 'ABS-COMPANY' ||
-          currentSponsorId.toUpperCase() === 'COMPANY' ||
+          upperSponsor === 'ABS-COMPANY' ||
+          upperSponsor === 'COMPANY' ||
           visited.size > 20
         ) {
           break;
         }
 
         const parentUser: any = await User.findOne({ memberId: currentSponsorId })
-          .select('sponsorId memberId')
+          .select('sponsorId memberId _id')
           .lean();
+
+        // Fallback: match by _id in case memberId is missing
+        if (parentUser && parentUser._id.toString() === callerUser._id.toString()) {
+          isAuthorized = true;
+          break;
+        }
 
         currentSponsorId = parentUser?.sponsorId?.trim();
       }

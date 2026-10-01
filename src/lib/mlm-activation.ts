@@ -188,6 +188,20 @@ export interface ActivationOptions {
 }
 
 export async function executePremiumActivation(user: any, options: ActivationOptions = {}) {
+  // 0. Auto-assign memberId if missing (e.g. admin-created users)
+  if (!user.memberId) {
+    let isUnique = false;
+    while (!isUnique) {
+      const rand = Math.floor(100000 + Math.random() * 900000);
+      const candidate = `ABS-${rand}`;
+      const duplicate = await User.findOne({ memberId: candidate });
+      if (!duplicate) {
+        user.memberId = candidate;
+        isUnique = true;
+      }
+    }
+  }
+
   // 1. Mark subscription active & rank
   user.isSubscriptionActive = true;
   user.rank = 'Premium Member';
@@ -221,6 +235,7 @@ export async function executePremiumActivation(user: any, options: ActivationOpt
     if (sponsor) {
       sponsor.bonusWallet += SPONSOR_BONUS;
       sponsor.personalSales += PACKAGE_PRICE;
+      sponsor.teamCount = (sponsor.teamCount || 0) + 1; // direct downline count
       await sponsor.save();
 
       await WalletTransaction.create({
@@ -243,11 +258,16 @@ export async function executePremiumActivation(user: any, options: ActivationOpt
       await checkAutoProfitTier(sponsor, user.name, user.memberId);
 
       // 3. Generation Bonus (7% = 105 BDT across 10 generations)
+      // Also increment teamCount for all upline ancestors (up to 10 levels)
       let currentParent = sponsor;
       for (let i = 0; i < 10; i++) {
         currentParent.teamSales += PACKAGE_PRICE;
         const payout = Math.round(GEN_POOL_TOTAL * GEN_PERCENTAGES[i] * 100) / 100;
         currentParent.bonusWallet += payout;
+        // teamCount already incremented for sponsor (i=0); increment upline ancestors
+        if (i > 0) {
+          currentParent.teamCount = (currentParent.teamCount || 0) + 1;
+        }
         await currentParent.save();
 
         await WalletTransaction.create({

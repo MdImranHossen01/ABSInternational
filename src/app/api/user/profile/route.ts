@@ -39,12 +39,39 @@ export async function GET(req: NextRequest) {
         });
         const userObj = newUser.toObject();
         delete userObj.password;
-        return NextResponse.json(userObj, { status: 200 });
+        return NextResponse.json({ ...userObj, directCount: 0 }, { status: 200 });
       }
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json(user, { status: 200 });
+    // Count active direct downlines (level 1 only) for rank progress
+    // Also auto-assign memberId if missing (e.g. admin-created premium users)
+    let memberIdForCount = (user as any).memberId;
+
+    if (!memberIdForCount && (user as any).isSubscriptionActive) {
+      // Generate a unique memberId for this premium user
+      const userDoc = await User.findOne(session.user.id ? { _id: session.user.id } : { email: session.user.email?.toLowerCase() });
+      if (userDoc && !userDoc.memberId) {
+        let isUnique = false;
+        while (!isUnique) {
+          const rand = Math.floor(100000 + Math.random() * 900000);
+          const candidate = `ABS-${rand}`;
+          const duplicate = await User.findOne({ memberId: candidate });
+          if (!duplicate) {
+            userDoc.memberId = candidate;
+            await userDoc.save();
+            memberIdForCount = candidate;
+            isUnique = true;
+          }
+        }
+      }
+    }
+
+    const directCount = memberIdForCount
+      ? await User.countDocuments({ sponsorId: memberIdForCount, isSubscriptionActive: true })
+      : 0;
+
+    return NextResponse.json({ ...user, memberId: memberIdForCount || (user as any).memberId, directCount }, { status: 200 });
   } catch (error) {
     console.error('Error fetching profile:', error);
     return NextResponse.json({ message: 'Failed to fetch profile' }, { status: 500 });

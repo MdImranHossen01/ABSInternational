@@ -170,8 +170,8 @@ export default function UserDashboard() {
     if (!profile) return 0;
     switch (profile.rank) {
       case 'user': return 0;
-      case 'Premium Member': return Math.min(100, Math.round(((profile.teamCount || 0) / 6) * 100));
-      default: return Math.min(100, Math.round(((profile.teamCount || 0) / 6) * 100));
+      case 'Premium Member': return Math.min(100, Math.round(((profile.directCount || 0) / 6) * 100));
+      default: return Math.min(100, Math.round(((profile.directCount || 0) / 6) * 100));
     }
   };
 
@@ -471,7 +471,7 @@ export default function UserDashboard() {
             <div className="space-y-1.5">
               <Progress value={getRankProgress()} className="h-3" />
               <div className="flex justify-between text-[11px] text-muted-foreground">
-                <span>{profile?.teamCount || 0} / 6 Active Direct Downlines</span>
+                <span>{profile?.directCount || 0} / 6 Active Direct Downlines</span>
                 <span className="font-bold text-foreground">{getRankProgress()}% Completed</span>
               </div>
             </div>
