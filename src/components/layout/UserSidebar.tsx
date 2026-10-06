@@ -40,6 +40,10 @@ import {
   HelpCircle,
   LogOut,
   X,
+  ShoppingBag,
+  Heart,
+  Wallet,
+  Activity,
 } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 import {
@@ -79,6 +83,9 @@ const serialNavItems = [
   { title: "Product Story",        href: "/dashboard/product-story",   icon: BookOpen,        exact: false },
   { title: "Product Categories",   href: "/dashboard/product-categories", icon: Tag,          exact: false },
   { title: "Packages (Basic/VIP)", href: "/dashboard/packages",        icon: Package,         exact: false },
+  { title: "My Orders",            href: "/dashboard/orders",          icon: ShoppingBag,     exact: false },
+  { title: "Wishlist",             href: "/dashboard/wishlist",        icon: Heart,           exact: false },
+  { title: "My Wallet",            href: "/dashboard/wallet",          icon: Wallet,          exact: false },
   { title: "Deposit",              href: "/dashboard/deposit",         icon: ArrowUpCircle,   exact: false },
   { title: "Deposit History",      href: "/dashboard/deposit-history", icon: History,         exact: false },
   { title: "Withdraw",             href: "/dashboard/withdraw",        icon: ArrowDownCircle, exact: false },
@@ -90,6 +97,8 @@ const serialNavItems = [
   { title: "Rank Reward",          href: "/dashboard/rank-reward",     icon: Gem,             exact: false },
   { title: "Achievement Photo",    href: "/dashboard/achievement-photo", icon: Camera,        exact: false },
   { title: "Reward History",       href: "/dashboard/reward-history",  icon: History,         exact: false },
+  { title: "Seba Health Card",     href: "/dashboard/seba",            icon: Activity,        exact: false },
+  { title: "Guidelines & Policy",  href: "/dashboard/guidelines",      icon: FileText,        exact: false },
   { title: "Notifications",        href: "/dashboard/notifications",   icon: Bell,            exact: false },
   { title: "Change Password",      href: "/dashboard/change-password", icon: Lock,            exact: false },
   { title: "Support Ticket",       href: "/dashboard/support",         icon: HelpCircle,      exact: false },
