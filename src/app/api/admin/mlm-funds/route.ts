@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import User from '@/models/User';
 import WalletTransaction from '@/models/WalletTransaction';
 import MlmFundPool from '@/models/MlmFundPool';
+import { checkAndAutoConvertBonus } from '@/lib/wallet';
 
 /**
  * GET /api/admin/mlm-funds
@@ -75,6 +76,7 @@ export async function POST(req: NextRequest) {
       for (const member of activeMembers) {
         member.bonusWallet += perMember;
         await member.save();
+        await checkAndAutoConvertBonus(member);
         transactions.push({
           userId: member._id,
           amount: perMember,

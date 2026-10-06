@@ -684,12 +684,17 @@ export default function WalletPage() {
         <TabsContent value="convert">
           <Card className="max-w-xl border-blue-500/20">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <RefreshCw className="h-5 w-5 text-blue-600" />
-                Bonus → Withdrawal Convert
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <RefreshCw className="h-5 w-5 text-blue-600" />
+                  Bonus → Withdrawal Convert
+                </CardTitle>
+                <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold">
+                  ⚡ Auto-Convert Active (≥ ৳500)
+                </Badge>
+              </div>
               <CardDescription>
-                Transfer funds from Bonus Wallet to Withdrawal Wallet, then cashout via bKash, Nagad, or Bank.
+                Bonuses reaching ৳500+ automatically move to your Withdrawal Wallet. You can cashout immediately via bKash, Nagad, Rocket, or Bank Wire.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">

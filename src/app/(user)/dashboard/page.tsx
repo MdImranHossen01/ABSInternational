@@ -377,74 +377,84 @@ export default function UserDashboard() {
       {/* Financial Wallets & Income Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Total Income */}
-        <Card className="border border-primary/20 bg-linear-to-b from-primary/5 to-transparent">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase text-primary font-bold tracking-wider flex items-center justify-between">
-              <span>Total Income</span>
-              <TrendingUp className="h-4 w-4 text-primary" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-foreground">৳{totalEarned.toLocaleString()}</div>
-            <p className="text-[10px] text-muted-foreground mt-1">Lifetime total earnings</p>
-          </CardContent>
-        </Card>
+        <Link href="/dashboard/total-income" className="block group">
+          <Card className="h-full border border-primary/20 bg-linear-to-b from-primary/5 to-transparent transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:border-primary/40 cursor-pointer">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-xs uppercase text-primary font-bold tracking-wider flex items-center justify-between">
+                <span>Total Income</span>
+                <TrendingUp className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl sm:text-3xl font-black text-foreground">৳{totalEarned.toLocaleString()}</div>
+              <p className="text-[10px] text-muted-foreground mt-1">Lifetime total earnings</p>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Total Bonus */}
-        <Card className="border border-blue-500/20 bg-linear-to-b from-blue-500/5 to-transparent">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase text-blue-700 dark:text-blue-400 font-bold tracking-wider flex items-center justify-between">
-              <span>Total Bonus</span>
-              <Coins className="h-4 w-4 text-blue-600" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-blue-900 dark:text-blue-300">৳{totalBonus.toLocaleString()}</div>
-            <p className="text-[10px] text-muted-foreground mt-1">Available in bonus wallet</p>
-          </CardContent>
-        </Card>
+        <Link href="/dashboard/total-bonus" className="block group">
+          <Card className="h-full border border-blue-500/20 bg-linear-to-b from-blue-500/5 to-transparent transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:border-blue-500/40 cursor-pointer">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-xs uppercase text-blue-700 dark:text-blue-400 font-bold tracking-wider flex items-center justify-between">
+                <span>Total Bonus</span>
+                <Coins className="h-4 w-4 text-blue-600 transition-transform group-hover:scale-110" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl sm:text-3xl font-black text-blue-900 dark:text-blue-300">৳{totalBonus.toLocaleString()}</div>
+              <p className="text-[10px] text-muted-foreground mt-1">Available in bonus wallet</p>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Deposit Wallet */}
-        <Card className="border border-emerald-500/20 bg-linear-to-b from-emerald-500/5 to-transparent">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase text-emerald-700 dark:text-emerald-400 font-bold tracking-wider flex items-center justify-between">
-              <span>Deposit Wallet</span>
-              <Wallet className="h-4 w-4 text-emerald-600" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-emerald-950 dark:text-emerald-300">৳{(profile?.depositWallet || 0).toLocaleString()}</div>
-            <p className="text-[10px] text-muted-foreground mt-1">For joining & packages</p>
-          </CardContent>
-        </Card>
+        <Link href="/dashboard/deposit" className="block group">
+          <Card className="h-full border border-emerald-500/20 bg-linear-to-b from-emerald-500/5 to-transparent transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:border-emerald-500/40 cursor-pointer">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-xs uppercase text-emerald-700 dark:text-emerald-400 font-bold tracking-wider flex items-center justify-between">
+                <span>Deposit Wallet</span>
+                <Wallet className="h-4 w-4 text-emerald-600 transition-transform group-hover:scale-110" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl sm:text-3xl font-black text-emerald-950 dark:text-emerald-300">৳{(profile?.depositWallet || 0).toLocaleString()}</div>
+              <p className="text-[10px] text-muted-foreground mt-1">For joining & packages</p>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Available Bonus Wallet */}
-        <Card className="border border-amber-500/20 bg-linear-to-b from-amber-500/5 to-transparent">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase text-amber-700 dark:text-amber-400 font-bold tracking-wider flex items-center justify-between">
-              <span>Bonus Wallet</span>
-              <Award className="h-4 w-4 text-amber-600" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-amber-950 dark:text-amber-300">৳{(profile?.bonusWallet || 0).toLocaleString()}</div>
-            <p className="text-[10px] text-muted-foreground mt-1">Ready for withdrawal/transfer</p>
-          </CardContent>
-        </Card>
+        <Link href="/dashboard/total-bonus" className="block group">
+          <Card className="h-full border border-amber-500/20 bg-linear-to-b from-amber-500/5 to-transparent transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:border-amber-500/40 cursor-pointer">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-xs uppercase text-amber-700 dark:text-amber-400 font-bold tracking-wider flex items-center justify-between">
+                <span>Bonus Wallet</span>
+                <Award className="h-4 w-4 text-amber-600 transition-transform group-hover:scale-110" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl sm:text-3xl font-black text-amber-950 dark:text-amber-300">৳{(profile?.bonusWallet || 0).toLocaleString()}</div>
+              <p className="text-[10px] text-muted-foreground mt-1">Ready for withdrawal/transfer</p>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Withdrawal Wallet */}
-        <Card className="border border-purple-500/20 bg-linear-to-b from-purple-500/5 to-transparent">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase text-purple-700 dark:text-purple-400 font-bold tracking-wider flex items-center justify-between">
-              <span>Withdrawal Wallet</span>
-              <TrendingUp className="h-4 w-4 text-purple-600" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-purple-950 dark:text-purple-300">৳{(profile?.withdrawalWallet || 0).toLocaleString()}</div>
-            <p className="text-[10px] text-muted-foreground mt-1">Bank / bKash / Nagad</p>
-          </CardContent>
-        </Card>
+        <Link href="/dashboard/withdraw" className="block group">
+          <Card className="h-full border border-purple-500/20 bg-linear-to-b from-purple-500/5 to-transparent transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:border-purple-500/40 cursor-pointer">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-xs uppercase text-purple-700 dark:text-purple-400 font-bold tracking-wider flex items-center justify-between">
+                <span>Withdrawal Wallet</span>
+                <TrendingUp className="h-4 w-4 text-purple-600 transition-transform group-hover:scale-110" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl sm:text-3xl font-black text-purple-950 dark:text-purple-300">৳{(profile?.withdrawalWallet || 0).toLocaleString()}</div>
+              <p className="text-[10px] text-muted-foreground mt-1">Bank / bKash / Nagad</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Team Performance & Rank Progress */}

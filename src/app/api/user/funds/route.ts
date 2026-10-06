@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import User from '@/models/User';
 import MlmFundPool from '@/models/MlmFundPool';
 import WalletTransaction from '@/models/WalletTransaction';
+import { checkAndAutoConvertBonus } from '@/lib/wallet';
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,6 +30,9 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
+
+    // Auto-convert bonus to withdrawal wallet if >= 500
+    await checkAndAutoConvertBonus(user);
 
     // Get live global fund pool
     let fundPool = await MlmFundPool.findOne().lean();

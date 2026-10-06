@@ -72,16 +72,16 @@ export default function TotalBonusPage() {
         <Card className="border hover:border-primary/50 transition-all">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <RefreshCw className="h-5 w-5 text-blue-600" />
-              <Badge variant="secondary">Convert</Badge>
+              <RefreshCw className="h-5 w-5 text-emerald-600" />
+              <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/30">Auto (≥ ৳500)</Badge>
             </div>
-            <CardTitle className="text-base font-bold mt-2">Convert to Withdrawal</CardTitle>
-            <CardDescription className="text-xs">Convert bonus balance directly to withdrawal wallet for cashout.</CardDescription>
+            <CardTitle className="text-base font-bold mt-2">Withdrawal Wallet</CardTitle>
+            <CardDescription className="text-xs">Bonus ≥ ৳500 is auto-converted to Withdrawal Wallet for instant cashout.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/dashboard/wallet?tab=convert">
-              <Button size="sm" className="w-full font-bold">
-                Convert Funds <ArrowRight className="h-4 w-4 ml-1.5" />
+            <Link href="/dashboard/withdraw">
+              <Button size="sm" className="w-full font-bold bg-purple-600 hover:bg-purple-700 text-white">
+                Withdraw Funds <ArrowRight className="h-4 w-4 ml-1.5" />
               </Button>
             </Link>
           </CardContent>

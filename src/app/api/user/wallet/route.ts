@@ -3,6 +3,7 @@ import connectToDatabase from '@/lib/db';
 import WalletTransaction from '@/models/WalletTransaction';
 import User from '@/models/User';
 import { auth } from '@/auth';
+import { checkAndAutoConvertBonus } from '@/lib/wallet';
 
 const AUTO_PROFIT_TIERS = [240, 720, 2160, 7776, 46656, 233280, 1399680, 5038848, 30233088, 120932352];
 
@@ -29,6 +30,10 @@ export async function GET(req: NextRequest) {
       user = await User.findOne({ email: session.user.email.toLowerCase() }).select(
         'depositWallet bonusWallet withdrawalWallet walletBalance autoProfitPool autoProfitTier'
       );
+    }
+
+    if (user) {
+      await checkAndAutoConvertBonus(user);
     }
 
     const userId = user?._id || (session.user as any).id;

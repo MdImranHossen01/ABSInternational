@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
 import { createAdminNotification } from '@/lib/notifications';
+import { checkAndAutoConvertBonus } from '@/lib/wallet';
 
 
 export async function GET(req: NextRequest) {
@@ -65,6 +66,13 @@ export async function GET(req: NextRequest) {
           }
         }
       }
+    }
+
+    // Auto-convert bonus to withdrawal wallet if >= 500 (in multiples of 500)
+    const autoConv = await checkAndAutoConvertBonus(user._id);
+    if (autoConv.converted) {
+      user.bonusWallet = Math.round(((user.bonusWallet || 0) - autoConv.amount) * 100) / 100;
+      user.withdrawalWallet = (user.withdrawalWallet || 0) + autoConv.amount;
     }
 
     const directCount = memberIdForCount

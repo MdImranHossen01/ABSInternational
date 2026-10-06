@@ -3,6 +3,7 @@ import User from '@/models/User';
 import WalletTransaction from '@/models/WalletTransaction';
 import MlmFundPool from '@/models/MlmFundPool';
 import { createNotification } from '@/lib/notifications';
+import { checkAndAutoConvertBonus } from '@/lib/wallet';
 
 // ─── Distribution Constants (out of 1500 BDT — 55% Allocation) ────────────────
 export const PACKAGE_PRICE = 1500;
@@ -48,6 +49,9 @@ export async function checkAutoProfitTier(member: any, joinerName: string, joine
       break;
     }
   }
+
+  // Check auto-conversion threshold (≥ 500 BDT)
+  await checkAndAutoConvertBonus(member);
 }
 
 // ─── Rank Promotion Engine ────────────────────────────────────────────────────
@@ -172,6 +176,9 @@ export async function checkRankPromotions(user: any) {
       await currentUser.save();
     }
 
+    // Check auto-conversion threshold (≥ 500 BDT)
+    await checkAndAutoConvertBonus(currentUser);
+
     if (currentUser.sponsorId) {
       currentUser = await User.findOne({ memberId: currentUser.sponsorId });
     } else {
@@ -257,6 +264,9 @@ export async function executePremiumActivation(user: any, options: ActivationOpt
       // 2b: Auto Profit Matrix contribution
       await checkAutoProfitTier(sponsor, user.name, user.memberId);
 
+      // Auto-convert sponsor bonus if eligible
+      await checkAndAutoConvertBonus(sponsor);
+
       // 3. Generation Bonus (7% = 105 BDT across 10 generations)
       // Also increment teamCount for all upline ancestors (up to 10 levels)
       let currentParent = sponsor;
@@ -285,6 +295,9 @@ export async function executePremiumActivation(user: any, options: ActivationOpt
           type: 'bonus',
           link: '/dashboard/wallet',
         });
+
+        // Auto-convert generation bonus if eligible
+        await checkAndAutoConvertBonus(currentParent);
 
         if (!currentParent.sponsorId) break;
         const nextParent = await User.findOne({ memberId: currentParent.sponsorId });
