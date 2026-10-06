@@ -30,15 +30,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           query = { email: inputIdentifier.toLowerCase() };
         } else {
           const normalizedPhone = normalizePhoneNumber(inputIdentifier);
-          query = {
-            $or: [
-              { username: inputIdentifier.toLowerCase() },
-              { memberId: inputIdentifier.toUpperCase() },
-              { memberId: inputIdentifier },
-              { phone: normalizedPhone },
-              { phone: inputIdentifier }
-            ]
-          };
+          const orConditions: any[] = [
+            { username: inputIdentifier.toLowerCase() },
+            { memberId: inputIdentifier.toUpperCase() },
+            { memberId: inputIdentifier },
+          ];
+
+          // Only search by phone if identifier actually contains digits
+          if (normalizedPhone && normalizedPhone.length >= 6) {
+            orConditions.push({ phone: normalizedPhone });
+            orConditions.push({ phone: inputIdentifier });
+          }
+
+          query = { $or: orConditions };
         }
 
         await connectToDatabase();
@@ -48,17 +52,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        // If user has a password set, verify it
-        if (user.password) {
-          if (!credentials?.password) {
-            return null;
-          }
-          const isPasswordValid = await bcrypt.compare(credentials.password as string, user.password);
-          if (!isPasswordValid) {
-            return null;
-          }
+        // Credentials login requires an existing password
+        if (!user.password) {
+          throw new Error('This account was created via Google. Please use Google Login or set a password.');
         }
-        // If user has NO password set, allow login without password
+
+        if (!credentials?.password) {
+          return null;
+        }
+
+        const isPasswordValid = await bcrypt.compare(credentials.password as string, user.password);
+        if (!isPasswordValid) {
+          return null;
+        }
 
         return {
           id: user._id.toString(),
