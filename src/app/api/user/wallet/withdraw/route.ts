@@ -42,6 +42,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Insufficient balance in Withdrawal Wallet.' }, { status: 400 });
     }
 
+    // Calculate 10% Community Fund deduction & 90% Net Payout
+    const communityFee = Math.round(amount * 0.10 * 100) / 100;
+    const netPayout = Math.round((amount - communityFee) * 100) / 100;
+
     // Deduct immediately to prevent double spending
     user.withdrawalWallet -= amount;
     await user.save();
@@ -51,29 +55,31 @@ export async function POST(req: NextRequest) {
       amount,
       type: 'withdrawal',
       status: 'pending',
-      description: `Withdrawal request to ${paymentMethod.toUpperCase()} (${accountNumber})`,
+      description: `Withdrawal request to ${paymentMethod.toUpperCase()} (${accountNumber}) — Net: ৳${netPayout.toLocaleString()} (10% Community Fund: ৳${communityFee.toLocaleString()})`,
     });
 
     // Notify Admin and User
     await Promise.all([
       createAdminNotification({
         title: 'New Withdrawal Request',
-        message: `Member ${user.name} (${user.memberId}) requested withdrawal of ৳${amount.toLocaleString()} to ${paymentMethod.toUpperCase()} (${accountNumber}).`,
+        message: `Member ${user.name} (${user.memberId}) requested withdrawal of ৳${amount.toLocaleString()} (Net Payable: ৳${netPayout.toLocaleString()}, Community Fund: ৳${communityFee.toLocaleString()}) to ${paymentMethod.toUpperCase()} (${accountNumber}).`,
         type: 'withdrawal',
         link: '/admin/withdrawals',
       }),
       createNotification({
         userId: user._id,
         title: 'Withdrawal Request Submitted',
-        message: `Your withdrawal request of ৳${amount.toLocaleString()} via ${paymentMethod.toUpperCase()} has been submitted and is pending admin approval.`,
+        message: `Your withdrawal request of ৳${amount.toLocaleString()} via ${paymentMethod.toUpperCase()} has been submitted. You will receive ৳${netPayout.toLocaleString()} (10% Community Fund contribution: ৳${communityFee.toLocaleString()}) upon admin approval.`,
         type: 'wallet',
         link: '/dashboard/wallet',
       }),
     ]);
 
     return NextResponse.json({
-      message: 'Withdrawal request submitted successfully! Pending approval.',
+      message: `Withdrawal request of ৳${amount.toLocaleString()} submitted! Net payable: ৳${netPayout.toLocaleString()} (10% Community Fund fee: ৳${communityFee.toLocaleString()}).`,
       transaction: withdrawTx,
+      netPayout,
+      communityFee,
       withdrawalWallet: user.withdrawalWallet
     }, { status: 201 });
   } catch (error: any) {

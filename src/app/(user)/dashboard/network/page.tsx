@@ -149,12 +149,13 @@ export default function NetworkPage() {
                       <TableHead>Contact</TableHead>
                       <TableHead>Rank</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Bonus Received</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredDirects.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                        <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                           No direct referrals found.
                         </TableCell>
                       </TableRow>
@@ -175,6 +176,15 @@ export default function NetworkPage() {
                               <Badge className="bg-emerald-500 text-white font-bold gap-1"><UserCheck className="h-3 w-3" /> Active</Badge>
                             ) : (
                               <Badge className="bg-slate-300 text-slate-800 font-bold gap-1"><UserX className="h-3 w-3" /> Inactive</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right font-mono font-bold text-xs">
+                            {member.earnedAmount > 0 ? (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                                +৳{member.earnedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground text-xs">৳0.00</span>
                             )}
                           </TableCell>
                         </TableRow>
@@ -212,6 +222,13 @@ export default function NetworkPage() {
                           <Award className="h-3 w-3 text-primary" /> {member.rank || 'user'}
                         </Badge>
                       </div>
+
+                      <div className="flex items-center justify-between text-xs pt-1 border-t border-dashed">
+                        <span className="text-muted-foreground">Earned Bonus:</span>
+                        <span className="font-bold font-mono text-emerald-600">
+                          {member.earnedAmount > 0 ? `+৳${member.earnedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '৳0.00'}
+                        </span>
+                      </div>
                     </div>
                   ))
                 )}
@@ -239,10 +256,16 @@ export default function NetworkPage() {
                       </div>
                       <div className="text-left">
                         <div className="font-bold text-xs sm:text-sm">Generation {gen.level}</div>
-                        <div className="text-[11px] text-muted-foreground">{gen.members?.length || 0} Members</div>
+                        <div className="text-[11px] text-muted-foreground">{gen.members?.length || 0} Members • {gen.activeCount || 0} Active</div>
                       </div>
                     </div>
-                    {openGen === gen.level ? <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />}
+                    <div className="flex items-center gap-3">
+                      <div className="text-right hidden sm:block">
+                        <div className="text-[10px] uppercase font-bold text-muted-foreground">Earnings</div>
+                        <div className="text-xs font-bold text-emerald-600 font-mono">৳{(gen.totalEarned || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                      </div>
+                      {openGen === gen.level ? <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />}
+                    </div>
                   </button>
                   
                   {openGen === gen.level && (
@@ -263,6 +286,7 @@ export default function NetworkPage() {
                                   <TableHead>Sponsor ID</TableHead>
                                   <TableHead>Rank</TableHead>
                                   <TableHead>Status</TableHead>
+                                  <TableHead className="text-right">Bonus Received</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
@@ -277,6 +301,15 @@ export default function NetworkPage() {
                                         <Badge className="bg-emerald-500 text-white text-[10px] py-0.5 px-2">Active</Badge>
                                       ) : (
                                         <Badge className="bg-slate-300 text-slate-800 text-[10px] py-0.5 px-2">Inactive</Badge>
+                                      )}
+                                    </TableCell>
+                                    <TableCell className="text-right font-mono font-bold text-xs">
+                                      {member.earnedAmount > 0 ? (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                                          +৳{member.earnedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                        </span>
+                                      ) : (
+                                        <span className="text-muted-foreground text-xs font-mono">৳0.00</span>
                                       )}
                                     </TableCell>
                                   </TableRow>
@@ -300,6 +333,12 @@ export default function NetworkPage() {
                                 <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono">
                                   <span>ID: {member.memberId}</span>
                                   <span>Sponsor: {member.sponsorId || 'None'}</span>
+                                </div>
+                                <div className="flex items-center justify-between text-xs pt-1 border-t border-dashed">
+                                  <span className="text-muted-foreground">Earned Bonus:</span>
+                                  <span className="font-bold font-mono text-emerald-600">
+                                    {member.earnedAmount > 0 ? `+৳${member.earnedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '৳0.00'}
+                                  </span>
                                 </div>
                               </div>
                             ))}

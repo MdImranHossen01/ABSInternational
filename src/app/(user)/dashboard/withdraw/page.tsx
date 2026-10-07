@@ -50,6 +50,9 @@ export default function WithdrawPage() {
   }, [session]);
 
   const withdrawableBalance = wallet?.balances?.withdrawalWallet || 0;
+  const numAmount = Number(amount) || 0;
+  const communityFee = Math.round(numAmount * 0.10 * 100) / 100;
+  const netPayout = Math.max(0, Math.round((numAmount - communityFee) * 100) / 100);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +61,6 @@ export default function WithdrawPage() {
       return;
     }
 
-    const numAmount = Number(amount);
     if (!Number.isFinite(numAmount) || numAmount < 500) {
       toast.error('Minimum withdrawal amount is ৳500');
       return;
@@ -85,7 +87,16 @@ export default function WithdrawPage() {
       if (res.ok) {
         Swal.fire({
           title: 'Withdrawal Submitted',
-          text: data.message || 'Withdrawal request submitted successfully.',
+          html: `
+            <div class="text-left space-y-2 text-sm">
+              <p>Your withdrawal request has been submitted successfully.</p>
+              <div class="p-3 bg-slate-50 rounded-lg border space-y-1 font-mono text-xs">
+                <div class="flex justify-between"><span>Requested Amount:</span><b>৳${numAmount.toLocaleString()}</b></div>
+                <div class="flex justify-between text-indigo-600"><span>10% Community Fund:</span><b>-৳${communityFee.toLocaleString()}</b></div>
+                <div class="flex justify-between text-emerald-600 font-bold border-t pt-1"><span>Net Payout (আপনি পাবেন):</span><b>৳${netPayout.toLocaleString()}</b></div>
+              </div>
+            </div>
+          `,
           icon: 'success',
           confirmButtonColor: 'var(--primary)',
         });
@@ -154,12 +165,36 @@ export default function WithdrawPage() {
                     placeholder="Min 500"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="h-10 text-xs"
+                    className="h-10 text-xs font-mono"
                     min="500"
                     required
                   />
                 </div>
               </div>
+
+              {/* Live 10% Community Fund Calculation Box */}
+              {numAmount >= 500 && (
+                <div className="p-3.5 rounded-xl bg-linear-to-r from-indigo-50/70 via-purple-50/70 to-emerald-50/70 dark:from-indigo-950/40 dark:via-purple-950/40 dark:to-emerald-950/40 border border-indigo-200/60 dark:border-indigo-800/40 space-y-2">
+                  <div className="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide flex items-center justify-between">
+                    <span>Payout Breakdown</span>
+                    <Badge className="bg-indigo-600 text-white text-[10px] py-0">10% Community Fund Rule</Badge>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-xs pt-1 border-t border-slate-200/80 dark:border-slate-800">
+                    <div>
+                      <span className="text-[10px] text-muted-foreground block">Withdrawal Amount</span>
+                      <span className="font-bold font-mono text-slate-900 dark:text-slate-100">৳{numAmount.toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-indigo-600 dark:text-indigo-400 block font-medium">Community Fund (10%)</span>
+                      <span className="font-bold font-mono text-indigo-600 dark:text-indigo-400">-৳{communityFee.toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block font-bold">Net Payout (আপনি পাবেন)</span>
+                      <span className="font-black font-mono text-sm text-emerald-600 dark:text-emerald-400">৳{netPayout.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
@@ -202,10 +237,11 @@ export default function WithdrawPage() {
                 <ShieldAlert className="h-4 w-4 text-purple-600" /> Withdrawal Policy
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-xs text-muted-foreground leading-relaxed">
-              <p>• Minimum withdrawal amount is ৳500 BDT.</p>
-              <p>• Processed within 24-48 business hours.</p>
-              <p>• Please ensure NID KYC is verified on your profile.</p>
+            <CardContent className="space-y-2.5 text-xs text-muted-foreground leading-relaxed">
+              <p>• <strong>Minimum Cashout:</strong> ৳500 BDT.</p>
+              <p>• <strong>Community Fund (10%):</strong> ১০% কমিউনিটি ফান্ডে জমা হবে (যেমন: ১,০০০ টাকা উইথড্র করলে আপনি পাবেন ৯০০ টাকা এবং ১০০ টাকা কমিউনিটি ফান্ডে যাবে)।</p>
+              <p>• <strong>Processing Time:</strong> Processed within 24-48 business hours.</p>
+              <p>• <strong>Verification:</strong> Please ensure NID KYC is verified on your profile.</p>
             </CardContent>
           </Card>
 

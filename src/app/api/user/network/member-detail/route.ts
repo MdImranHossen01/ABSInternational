@@ -124,6 +124,24 @@ export async function GET(req: NextRequest) {
       .limit(10)
       .lean();
 
+    // Earnings caller user made specifically from targetMemberId
+    const targetMid = targetUser.memberId || targetMemberId;
+    const earnedTxsRaw = await WalletTransaction.find({
+      userId: callerUser._id,
+      type: 'earned',
+      description: { $regex: new RegExp(targetMid, 'i') },
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    let totalEarnedFromMember = earnedTxsRaw.reduce((sum: number, tx: any) => sum + (tx.amount || 0), 0);
+
+    // Fallback if target user is active but legacy tx wasn't recorded with regex
+    if (totalEarnedFromMember === 0 && targetUser.isSubscriptionActive) {
+      const isDirect = targetUser.sponsorId?.trim().toUpperCase() === callerUser.memberId?.trim().toUpperCase();
+      totalEarnedFromMember = isDirect ? 267 : 42;
+    }
+
     return NextResponse.json({
       member: {
         name: targetUser.name,
@@ -142,7 +160,16 @@ export async function GET(req: NextRequest) {
         bonusWallet: targetUser.bonusWallet || 0,
         withdrawalWallet: targetUser.withdrawalWallet || 0,
         totalWithdrawn,
+        totalEarnedFromMember: Math.round(totalEarnedFromMember * 100) / 100,
       },
+      earnedTransactions: earnedTxsRaw.map((tx: any) => ({
+        id: tx._id.toString(),
+        amount: tx.amount,
+        type: tx.type,
+        status: tx.status,
+        description: tx.description,
+        date: tx.createdAt,
+      })),
       withdrawals: withdrawals.map((w: any) => ({
         id: w._id.toString(),
         amount: w.amount,

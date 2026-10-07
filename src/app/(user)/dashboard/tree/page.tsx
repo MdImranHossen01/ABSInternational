@@ -12,6 +12,7 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Phone,
+  Coins,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -120,7 +121,7 @@ export default function MyTreePage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-black">My Tree (Genealogy Network)</h1>
             <p className="text-xs sm:text-sm opacity-90 mt-1">
-              Visual 10-level downline genealogy network. Click on any member to inspect their team count, sales volume, withdrawals, and deposit history.
+              Visual 10-level downline genealogy network. Click on any member to inspect their team count, sales volume, earned bonus, and transaction history.
             </p>
           </div>
           <div className="flex gap-2 bg-white/10 p-1.5 rounded-xl self-start sm:self-auto border border-white/20">
@@ -159,7 +160,7 @@ export default function MyTreePage() {
             <Network className="h-5 w-5 text-primary" /> 10-Level Downline Generation Tree
           </CardTitle>
           <CardDescription>
-            Click on any member in the table to inspect their team stats, sales, withdrawal history, and wallet deposit balances.
+            Click on any member in the table to inspect their earned bonuses, team stats, sales, withdrawal history, and wallet balances.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -175,14 +176,26 @@ export default function MyTreePage() {
                   </div>
                   <div className="text-left">
                     <div className="font-bold text-xs sm:text-sm">Generation {gen.level}</div>
-                    <div className="text-[11px] text-muted-foreground">{gen.members?.length || 0} Members</div>
+                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
+                      <span>{gen.members?.length || 0} Members</span>
+                      <span>•</span>
+                      <span className="text-emerald-600 font-semibold">{gen.activeCount || 0} Active</span>
+                    </div>
                   </div>
                 </div>
-                {openGen === gen.level ? (
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                ) : (
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                )}
+                <div className="flex items-center gap-4">
+                  <div className="text-right hidden sm:block">
+                    <div className="text-[10px] uppercase font-bold text-muted-foreground">Generation Earnings</div>
+                    <div className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400 font-mono">
+                      ৳{(gen.totalEarned || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </div>
+                  </div>
+                  {openGen === gen.level ? (
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </div>
               </button>
 
               {openGen === gen.level && (
@@ -203,6 +216,7 @@ export default function MyTreePage() {
                               <TableHead>Sponsor ID</TableHead>
                               <TableHead>Rank</TableHead>
                               <TableHead>Status</TableHead>
+                              <TableHead className="text-right">Bonus Received</TableHead>
                               <TableHead className="text-right">Action</TableHead>
                             </TableRow>
                           </TableHeader>
@@ -226,6 +240,15 @@ export default function MyTreePage() {
                                     <Badge className="bg-emerald-500 text-white text-[10px] py-0.5 px-2">Active</Badge>
                                   ) : (
                                     <Badge className="bg-slate-300 text-slate-800 text-[10px] py-0.5 px-2">Inactive</Badge>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-right font-mono font-bold text-xs">
+                                  {member.earnedAmount > 0 ? (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40">
+                                      +৳{member.earnedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    </span>
+                                  ) : (
+                                    <span className="text-muted-foreground text-xs font-mono">৳0.00</span>
                                   )}
                                 </TableCell>
                                 <TableCell className="text-right">
@@ -253,7 +276,7 @@ export default function MyTreePage() {
                           <div
                             key={member.memberId}
                             onClick={() => handleMemberClick(member.memberId)}
-                            className="p-3 space-y-2 active:bg-muted/50 transition-colors"
+                            className="p-3 space-y-2.5 active:bg-muted/50 transition-colors"
                           >
                             <div className="flex items-center justify-between gap-2">
                               <span className="font-mono text-xs font-bold text-primary">
@@ -275,6 +298,16 @@ export default function MyTreePage() {
                               <span className="capitalize text-xs font-semibold text-muted-foreground">
                                 {member.rank}
                               </span>
+                            </div>
+                            <div className="flex items-center justify-between pt-1.5 border-t border-dashed">
+                              <span className="text-[11px] text-muted-foreground font-medium">Earned Bonus:</span>
+                              {member.earnedAmount > 0 ? (
+                                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+                                  +৳{member.earnedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </span>
+                              ) : (
+                                <span className="text-xs text-muted-foreground font-mono">৳0.00</span>
+                              )}
                             </div>
                             <Button
                               size="sm"
@@ -299,7 +332,7 @@ export default function MyTreePage() {
         </CardContent>
       </Card>
 
-      {/* Member Details Modal (Team size, Sales, Withdrawals, Balances) */}
+      {/* Member Details Modal (Team size, Sales, Withdrawals, Balances, Earnings) */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto p-5 sm:p-6">
           <DialogHeader>
@@ -307,7 +340,7 @@ export default function MyTreePage() {
               <Users className="h-5 w-5 text-primary" /> Member Downline Profile
             </DialogTitle>
             <DialogDescription>
-              Detailed network statistics, sales volume, withdrawals, and wallet balance ledger.
+              Detailed network statistics, earned commissions, sales volume, withdrawals, and wallet balance ledger.
             </DialogDescription>
           </DialogHeader>
 
@@ -341,6 +374,26 @@ export default function MyTreePage() {
                       </div>
                     )}
                   </div>
+                </div>
+              </div>
+
+              {/* Earnings Received Highlight Card */}
+              <div className="p-3.5 rounded-xl bg-linear-to-r from-emerald-500/10 via-emerald-500/5 to-teal-500/10 border border-emerald-500/20 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-lg bg-emerald-600 text-white shadow-xs">
+                    <Coins className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wide">
+                      Your Earnings From This Member
+                    </div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Direct sponsor bonus & generation bonuses received
+                    </div>
+                  </div>
+                </div>
+                <div className="text-xl font-black text-emerald-700 dark:text-emerald-400 font-mono">
+                  +৳{(selectedMember.member.totalEarnedFromMember || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
               </div>
 
@@ -384,15 +437,88 @@ export default function MyTreePage() {
               </div>
 
               {/* Detailed History Tabs */}
-              <Tabs defaultValue="withdrawals" className="space-y-3">
-                <TabsList className="grid grid-cols-2 w-full max-w-sm">
+              <Tabs defaultValue="earnings" className="space-y-3">
+                <TabsList className="grid grid-cols-3 w-full">
+                  <TabsTrigger value="earnings" className="text-xs font-semibold flex items-center gap-1.5">
+                    <Coins className="h-3.5 w-3.5 text-emerald-600" /> Earnings Received ({selectedMember.earnedTransactions?.length || 0})
+                  </TabsTrigger>
                   <TabsTrigger value="withdrawals" className="text-xs font-semibold flex items-center gap-1.5">
-                    <ArrowDownLeft className="h-3.5 w-3.5 text-purple-600" /> Withdrawal History
+                    <ArrowDownLeft className="h-3.5 w-3.5 text-purple-600" /> Withdrawals
                   </TabsTrigger>
                   <TabsTrigger value="deposits" className="text-xs font-semibold flex items-center gap-1.5">
-                    <ArrowUpRight className="h-3.5 w-3.5 text-emerald-600" /> Deposit History
+                    <ArrowUpRight className="h-3.5 w-3.5 text-blue-600" /> Deposits
                   </TabsTrigger>
                 </TabsList>
+
+                {/* Tab: Earnings Received Breakdown */}
+                <TabsContent value="earnings" className="space-y-2">
+                  {(!selectedMember.earnedTransactions || selectedMember.earnedTransactions.length === 0) ? (
+                    <div className="p-6 text-center text-xs text-muted-foreground border rounded-lg bg-muted/20">
+                      {selectedMember.member.isSubscriptionActive ? (
+                        <div>
+                          <p className="font-semibold text-foreground">Standard Package Activation Earnings: +৳{selectedMember.member.totalEarnedFromMember}</p>
+                          <p className="text-[11px] text-muted-foreground mt-1">Pre-configured activation commission for this active member.</p>
+                        </div>
+                      ) : (
+                        'No direct earnings recorded from this member yet (Member is inactive).'
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      {/* Desktop Table View */}
+                      <div className="hidden md:block border rounded-lg overflow-x-auto max-h-56">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-muted/50">
+                              <TableHead className="text-xs">Date</TableHead>
+                              <TableHead className="text-xs">Amount</TableHead>
+                              <TableHead className="text-xs">Bonus Type / Details</TableHead>
+                              <TableHead className="text-xs text-right">Status</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {selectedMember.earnedTransactions.map((tx: any) => (
+                              <TableRow key={tx.id} className="text-xs">
+                                <TableCell className="font-mono text-[11px]">
+                                  {new Date(tx.date).toLocaleDateString()}
+                                </TableCell>
+                                <TableCell className="font-bold text-emerald-700 dark:text-emerald-400 font-mono">
+                                  +৳{tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </TableCell>
+                                <TableCell className="text-foreground font-medium">{tx.description}</TableCell>
+                                <TableCell className="text-right">
+                                  <Badge className="bg-emerald-500 text-white text-[10px]">
+                                    {tx.status}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+
+                      {/* Mobile Cards View */}
+                      <div className="md:hidden divide-y border rounded-lg max-h-56 overflow-y-auto">
+                        {selectedMember.earnedTransactions.map((tx: any) => (
+                          <div key={tx.id} className="p-2.5 bg-card space-y-1">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-bold text-emerald-700 dark:text-emerald-400 font-mono">
+                                +৳{tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                              </span>
+                              <Badge className="bg-emerald-500 text-white text-[10px] px-1.5 py-0">
+                                {tx.status}
+                              </Badge>
+                            </div>
+                            <p className="text-[11px] text-foreground font-medium leading-tight">{tx.description}</p>
+                            <div className="text-[10px] text-muted-foreground/80 font-mono">
+                              {new Date(tx.date).toLocaleDateString()}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </TabsContent>
 
                 {/* Tab: Withdrawal History */}
                 <TabsContent value="withdrawals" className="space-y-2">

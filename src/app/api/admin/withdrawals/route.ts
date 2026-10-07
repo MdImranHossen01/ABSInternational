@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
 import WalletTransaction from '@/models/WalletTransaction';
+import MlmFundPool from '@/models/MlmFundPool';
 import { createNotification } from '@/lib/notifications';
 
 export async function GET(req: NextRequest) {
@@ -53,7 +54,10 @@ export async function PUT(req: NextRequest) {
     tx.status = status;
     await tx.save();
 
-    // If rejected, refund the amount back to user's withdrawalWallet
+    const communityFee = Math.round(tx.amount * 0.10 * 100) / 100;
+    const netPayout = Math.round((tx.amount - communityFee) * 100) / 100;
+
+    // If rejected, refund the full amount back to user's withdrawalWallet
     if (status === 'failed') {
       const user = await User.findById(tx.userId);
       if (user) {
@@ -78,16 +82,35 @@ export async function PUT(req: NextRequest) {
         });
       }
     } else if (status === 'completed') {
+      // 1. Credit 10% fee to MlmFundPool.communityFund
+      let fundPool = await MlmFundPool.findOne();
+      if (!fundPool) {
+        fundPool = await MlmFundPool.create({
+          autoProfit: 0, globalProfit: 0, incentiveFund: 0,
+          rankDevelopmentFund: 0, royaltyFund: 0, tourFund: 0,
+          communityFund: 0, charityFund: 0,
+          totalActivations: 0,
+        });
+      }
+      fundPool.communityFund = (fundPool.communityFund || 0) + communityFee;
+      fundPool.lastUpdated = new Date();
+      await fundPool.save();
+
+      // 2. Notify user with net payout and community fund fee breakdown
       await createNotification({
         userId: tx.userId,
         title: 'Withdrawal Payout Approved',
-        message: `Your withdrawal payout of ৳${tx.amount.toLocaleString()} has been processed and approved successfully.`,
+        message: `Your withdrawal payout of ৳${netPayout.toLocaleString()} (after 10% Community Fund contribution: ৳${communityFee.toLocaleString()}) has been processed and approved successfully.`,
         type: 'wallet',
         link: '/dashboard/wallet',
       });
     }
 
-    return NextResponse.json({ message: `Withdrawal request ${status === 'completed' ? 'approved' : 'rejected'} successfully.` });
+    return NextResponse.json({
+      message: `Withdrawal request ${status === 'completed' ? 'approved' : 'rejected'} successfully.`,
+      netPayout,
+      communityFee
+    });
   } catch (error: any) {
     console.error('Error processing withdrawal:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
