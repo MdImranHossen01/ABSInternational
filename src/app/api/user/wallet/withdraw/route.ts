@@ -69,14 +69,14 @@ export async function POST(req: NextRequest) {
       createNotification({
         userId: user._id,
         title: 'Withdrawal Request Submitted',
-        message: `Your withdrawal request of ৳${amount.toLocaleString()} via ${paymentMethod.toUpperCase()} has been submitted. You will receive ৳${netPayout.toLocaleString()} (10% Community Fund contribution: ৳${communityFee.toLocaleString()}) upon admin approval.`,
+        message: `Your withdrawal request of ৳${amount.toLocaleString()} via ${paymentMethod.toUpperCase()} has been submitted. It will be processed upon approval.`,
         type: 'wallet',
         link: '/dashboard/wallet',
       }),
     ]);
 
     return NextResponse.json({
-      message: `Withdrawal request of ৳${amount.toLocaleString()} submitted! Net payable: ৳${netPayout.toLocaleString()} (10% Community Fund fee: ৳${communityFee.toLocaleString()}).`,
+      message: `Withdrawal request of ৳${amount.toLocaleString()} submitted successfully.`,
       transaction: withdrawTx,
       netPayout,
       communityFee,
