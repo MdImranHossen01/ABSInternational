@@ -13,32 +13,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { amount, pin } = await req.json();
+    const { amount } = await req.json();
 
     if (!amount || amount <= 0) {
       return NextResponse.json({ message: 'Invalid amount.' }, { status: 400 });
     }
 
-    if (!pin) {
-      return NextResponse.json({ message: 'Transaction PIN is required.' }, { status: 400 });
-    }
-
     await connectToDatabase();
-    const user = await User.findById((session.user as any).id).select('+transactionPin');
+    const user = await User.findById((session.user as any).id);
     if (!user) {
       return NextResponse.json({ message: 'User not found.' }, { status: 404 });
-    }
-
-    if (!user.transactionPin) {
-      return NextResponse.json(
-        { message: 'Please set a secure transaction PIN first.' },
-        { status: 400 }
-      );
-    }
-
-    const isPinValid = await bcrypt.compare(pin, user.transactionPin);
-    if (!isPinValid) {
-      return NextResponse.json({ message: 'Invalid transaction PIN.' }, { status: 400 });
     }
 
     if (user.bonusWallet < amount) {

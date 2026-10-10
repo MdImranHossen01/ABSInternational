@@ -61,14 +61,11 @@ export default function WalletPage() {
   const [transferAmount, setTransferAmount] = useState('');
   const [transferSource, setTransferSource] = useState('depositWallet');
   const [transferTarget, setTransferTarget] = useState('');
-  const [transferPin, setTransferPin] = useState('');
 
-  const [pinNew, setPinNew] = useState('');
-  const [pinOld, setPinOld] = useState('');
+
 
   // Convert form
   const [convertAmount, setConvertAmount] = useState('');
-  const [convertPin, setConvertPin] = useState('');
 
   async function fetchWalletData() {
     try {
@@ -131,7 +128,7 @@ export default function WalletPage() {
 
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!withdrawAmount || !withdrawAccount || !withdrawPin) {
+    if (!withdrawAmount || !withdrawAccount) {
       toast.error('All fields are required');
       return;
     }
@@ -144,8 +141,7 @@ export default function WalletPage() {
         body: JSON.stringify({
           amount: Number(withdrawAmount),
           paymentMethod: withdrawMethod,
-          accountNumber: withdrawAccount,
-          pin: withdrawPin
+          accountNumber: withdrawAccount
         })
       });
       const resData = await res.json();
@@ -153,7 +149,6 @@ export default function WalletPage() {
         Swal.fire('Success', resData.message, 'success');
         setWithdrawAmount('');
         setWithdrawAccount('');
-        setWithdrawPin('');
         fetchWalletData();
       } else {
         toast.error(resData.message || 'Withdrawal failed');
@@ -167,7 +162,7 @@ export default function WalletPage() {
 
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!transferAmount || !transferTarget || !transferPin) {
+    if (!transferAmount || !transferTarget) {
       toast.error('All fields are required');
       return;
     }
@@ -180,8 +175,7 @@ export default function WalletPage() {
         body: JSON.stringify({
           amount: Number(transferAmount),
           sourceWallet: transferSource,
-          targetMemberId: transferTarget,
-          pin: transferPin
+          targetMemberId: transferTarget
         })
       });
       const resData = await res.json();
@@ -189,7 +183,6 @@ export default function WalletPage() {
         Swal.fire('Success', resData.message, 'success');
         setTransferAmount('');
         setTransferTarget('');
-        setTransferPin('');
         fetchWalletData();
       } else {
         toast.error(resData.message || 'Transfer failed');
@@ -203,7 +196,7 @@ export default function WalletPage() {
 
   const handleConvert = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!convertAmount || !convertPin) {
+    if (!convertAmount) {
       toast.error('All fields are required');
       return;
     }
@@ -219,14 +212,12 @@ export default function WalletPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: Number(convertAmount),
-          pin: convertPin,
         }),
       });
       const resData = await res.json();
       if (res.ok) {
         Swal.fire('Success! 🎉', resData.message, 'success');
         setConvertAmount('');
-        setConvertPin('');
         fetchWalletData();
       } else {
         toast.error(resData.message || 'Conversion failed');
@@ -238,37 +229,7 @@ export default function WalletPage() {
     }
   };
 
-  const handleUpdatePin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!pinNew) {
-      toast.error('New PIN is required');
-      return;
-    }
 
-    setSubmitting(true);
-    try {
-      const res = await fetch('/api/user/wallet/pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pin: pinNew,
-          oldPin: pinOld || undefined
-        })
-      });
-      const resData = await res.json();
-      if (res.ok) {
-        Swal.fire('Success', resData.message, 'success');
-        setPinNew('');
-        setPinOld('');
-      } else {
-        toast.error(resData.message || 'Failed to update PIN');
-      }
-    } catch (err) {
-      toast.error('Network error');
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -416,7 +377,6 @@ export default function WalletPage() {
             <TabsTrigger value="withdraw" className="rounded-lg gap-1.5 text-xs sm:text-sm py-1.5"><ArrowDownCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Withdraw</TabsTrigger>
             <TabsTrigger value="convert" className="rounded-lg gap-1.5 text-blue-600 text-xs sm:text-sm py-1.5"><RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Convert</TabsTrigger>
             <TabsTrigger value="transfer" className="rounded-lg gap-1.5 text-xs sm:text-sm py-1.5"><Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Transfer</TabsTrigger>
-            <TabsTrigger value="pin" className="rounded-lg gap-1.5 text-xs sm:text-sm py-1.5"><Key className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> PIN</TabsTrigger>
           </TabsList>
         </div>
 
@@ -659,17 +619,7 @@ export default function WalletPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Secure Transaction PIN</Label>
-                  <Input 
-                    type="password" 
-                    placeholder="Enter transaction PIN" 
-                    value={withdrawPin} 
-                    onChange={(e) => setWithdrawPin(e.target.value)}
-                    maxLength={6}
-                    className="h-11 rounded-lg"
-                  />
-                </div>
+
 
                 <Button type="submit" disabled={submitting} className="w-full h-11 font-bold rounded-lg mt-2">
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -747,18 +697,7 @@ export default function WalletPage() {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Secure Transaction PIN</Label>
-                  <Input
-                    type="password"
-                    placeholder="Enter transaction PIN"
-                    value={convertPin}
-                    onChange={(e) => setConvertPin(e.target.value)}
-                    maxLength={6}
-                    className="h-11 rounded-lg"
-                  />
-                  <p className="text-xs text-muted-foreground">If PIN is not set yet, please set it from the &quot;Secure PIN&quot; tab first.</p>
-                </div>
+
 
                 <Button
                   type="submit"
@@ -821,16 +760,7 @@ export default function WalletPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Secure Transaction PIN</Label>
-                  <Input 
-                    type="password" 
-                    placeholder="Enter transaction PIN" 
-                    value={transferPin} 
-                    onChange={(e) => setTransferPin(e.target.value)}
-                    className="h-11 rounded-lg"
-                  />
-                </div>
+
 
                 <Button type="submit" disabled={submitting} className="w-full h-11 font-bold rounded-lg mt-2">
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -841,46 +771,7 @@ export default function WalletPage() {
           </Card>
         </TabsContent>
 
-        {/* Security PIN Change */}
-        <TabsContent value="pin">
-          <Card className="max-w-xl">
-            <CardHeader>
-              <CardTitle>Manage Secure Transaction PIN</CardTitle>
-              <CardDescription>Setup or update your 4-6 digit numeric PIN to authorize transfers & cashouts.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleUpdatePin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Old Transaction PIN (Leave blank if setting first time)</Label>
-                  <Input 
-                    type="password" 
-                    placeholder="Current PIN" 
-                    value={pinOld} 
-                    onChange={(e) => setPinOld(e.target.value)}
-                    className="h-11 rounded-lg"
-                  />
-                </div>
 
-                <div className="space-y-2">
-                  <Label>New Transaction PIN</Label>
-                  <Input 
-                    type="password" 
-                    placeholder="Enter new PIN" 
-                    value={pinNew} 
-                    onChange={(e) => setPinNew(e.target.value)}
-                    maxLength={6}
-                    className="h-11 rounded-lg"
-                  />
-                </div>
-
-                <Button type="submit" disabled={submitting} className="w-full h-11 font-bold rounded-lg mt-2">
-                  {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Set New PIN
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>
   );
