@@ -23,7 +23,6 @@ export interface IUser extends Document {
   placementId?: string;
   placementPosition?: number;
   rank: 'Premium Member' | 'Team Manager' | 'Royal Manager' | 'Silver Manager' | 'Gold Manager' | 'Diamond Manager' | 'Crown Manager' | 'Director' | 'user';
-  transactionPin?: string;
   depositWallet: number;
   bonusWallet: number;
   withdrawalWallet: number;
@@ -110,7 +109,6 @@ const UserSchema: Schema<IUser> = new Schema(
       enum: ['Premium Member', 'Team Manager', 'Royal Manager', 'Silver Manager', 'Gold Manager', 'Diamond Manager', 'Crown Manager', 'Director', 'user'], 
       default: 'user' 
     },
-    transactionPin: { type: String, select: false },
     depositWallet: { type: Number, default: 0 },
     bonusWallet: { type: Number, default: 0 },
     withdrawalWallet: { type: Number, default: 0 },

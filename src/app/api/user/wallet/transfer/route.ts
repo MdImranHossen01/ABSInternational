@@ -13,10 +13,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { amount, sourceWallet, targetMemberId, pin } = await req.json();
+    const { amount, sourceWallet, targetMemberId } = await req.json();
 
     const numAmount = Number(amount);
-    if (!Number.isFinite(numAmount) || numAmount < 50 || !sourceWallet || !targetMemberId || !pin) {
+    if (!Number.isFinite(numAmount) || numAmount < 50 || !sourceWallet || !targetMemberId) {
       return NextResponse.json({ message: 'Minimum transfer amount is ৳50 and all fields are required.' }, { status: 400 });
     }
 
@@ -27,22 +27,13 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
 
     // Check sender
-    const sender = await User.findById((session.user as any).id).select('+transactionPin');
+    const sender = await User.findById((session.user as any).id);
     if (!sender) {
       return NextResponse.json({ message: 'Sender not found.' }, { status: 404 });
     }
 
     if (sender.memberId === targetMemberId) {
       return NextResponse.json({ message: 'Cannot transfer funds to yourself.' }, { status: 400 });
-    }
-
-    if (!sender.transactionPin) {
-      return NextResponse.json({ message: 'Please set a secure transaction PIN first.' }, { status: 400 });
-    }
-
-    const isPinValid = await bcrypt.compare(pin, sender.transactionPin);
-    if (!isPinValid) {
-      return NextResponse.json({ message: 'Invalid transaction PIN.' }, { status: 400 });
     }
 
     const senderBalance = sourceWallet === 'depositWallet' ? sender.depositWallet : sender.bonusWallet;

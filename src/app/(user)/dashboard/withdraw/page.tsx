@@ -29,7 +29,6 @@ export default function WithdrawPage() {
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('bkash');
   const [accountNumber, setAccountNumber] = useState('');
-  const [pin, setPin] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const loadData = async () => {
@@ -52,8 +51,8 @@ export default function WithdrawPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !accountNumber || !pin) {
-      toast.error('All fields including Security PIN are required');
+    if (!amount || !accountNumber) {
+      toast.error('All fields are required');
       return;
     }
 
@@ -76,7 +75,6 @@ export default function WithdrawPage() {
           amount: numAmount,
           paymentMethod,
           accountNumber,
-          pin,
         }),
       });
       const data = await res.json();
@@ -97,7 +95,6 @@ export default function WithdrawPage() {
         });
         setAmount('');
         setAccountNumber('');
-        setPin('');
         loadData();
       } else {
         toast.error(data.message || 'Withdrawal failed');
@@ -117,7 +114,7 @@ export default function WithdrawPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-black">Withdraw Funds</h1>
             <p className="text-xs sm:text-sm opacity-90 mt-1 max-w-xl">
-              Cash out your earnings directly to your personal bKash, Nagad, Rocket, or Bank account safely with your 4-digit PIN.
+              Cash out your earnings directly to your personal bKash, Nagad, Rocket, or Bank account safely.
             </p>
           </div>
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl text-right shrink-0 border border-white/15">
@@ -133,7 +130,7 @@ export default function WithdrawPage() {
             <CardTitle className="text-base font-bold flex items-center gap-2">
               <ArrowDownCircle className="h-5 w-5 text-purple-600" /> New Withdrawal Request
             </CardTitle>
-            <CardDescription>Enter payout details and verify with your transaction PIN.</CardDescription>
+            <CardDescription>Enter payout details.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -167,26 +164,13 @@ export default function WithdrawPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-bold">Your Account / Mobile No</Label>
                   <Input
                     placeholder="e.g. 01712345678"
                     value={accountNumber}
                     onChange={(e) => setAccountNumber(e.target.value)}
-                    className="h-10 text-xs font-mono"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-bold">4-Digit Security PIN</Label>
-                  <Input
-                    type="password"
-                    maxLength={4}
-                    placeholder="Enter PIN"
-                    value={pin}
-                    onChange={(e) => setPin(e.target.value)}
                     className="h-10 text-xs font-mono"
                     required
                   />

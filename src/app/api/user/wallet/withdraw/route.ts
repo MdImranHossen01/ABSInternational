@@ -13,9 +13,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { amount, paymentMethod, accountNumber, pin } = await req.json();
+    const { amount, paymentMethod, accountNumber } = await req.json();
 
-    if (!amount || amount <= 0 || !paymentMethod || !accountNumber || !pin) {
+    if (!amount || amount <= 0 || !paymentMethod || !accountNumber) {
       return NextResponse.json({ message: 'Missing required withdrawal details.' }, { status: 400 });
     }
 
@@ -24,18 +24,9 @@ export async function POST(req: NextRequest) {
     }
 
     await connectToDatabase();
-    const user = await User.findById((session.user as any).id).select('+transactionPin');
+    const user = await User.findById((session.user as any).id);
     if (!user) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
-    }
-
-    if (!user.transactionPin) {
-      return NextResponse.json({ message: 'Please set a secure transaction PIN first.' }, { status: 400 });
-    }
-
-    const isPinValid = await bcrypt.compare(pin, user.transactionPin);
-    if (!isPinValid) {
-      return NextResponse.json({ message: 'Invalid transaction PIN.' }, { status: 400 });
     }
 
     if (user.withdrawalWallet < amount) {

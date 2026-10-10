@@ -125,12 +125,7 @@ export async function GET(req: NextRequest) {
           as: 'sponsorDoc'
         }
       },
-      {
-        $unwind: {
-          path: '$sponsorDoc',
-          preserveNullAndEmptyArrays: true
-        }
-      },
+
       {
         $project: {
           name: 1,
@@ -147,10 +142,10 @@ export async function GET(req: NextRequest) {
             $cond: {
               if: { $in: ['$sponsorId', ['ABS-COMPANY', 'COMPANY']] },
               then: 'ABS Company',
-              else: '$sponsorDoc.name'
+              else: { $arrayElemAt: ['$sponsorDoc.name', 0] }
             }
           },
-          sponsorPhone: '$sponsorDoc.phone',
+          sponsorPhone: { $arrayElemAt: ['$sponsorDoc.phone', 0] },
           rank: 1,
           isSubscriptionActive: 1,
           depositWallet: 1,

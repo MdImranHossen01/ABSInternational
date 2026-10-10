@@ -26,7 +26,6 @@ export default function TransferPage() {
   const [amount, setAmount] = useState('');
   const [sourceWallet, setSourceWallet] = useState('depositWallet');
   const [targetMemberId, setTargetMemberId] = useState('');
-  const [pin, setPin] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const loadData = async () => {
@@ -44,8 +43,8 @@ export default function TransferPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !targetMemberId || !pin) {
-      toast.error('All fields including Security PIN are required');
+    if (!amount || !targetMemberId) {
+      toast.error('All fields are required');
       return;
     }
 
@@ -70,7 +69,6 @@ export default function TransferPage() {
           amount: numAmount,
           sourceWallet,
           targetMemberId: targetMemberId.trim(),
-          pin,
         }),
       });
       const data = await res.json();
@@ -83,7 +81,6 @@ export default function TransferPage() {
         });
         setAmount('');
         setTargetMemberId('');
-        setPin('');
         loadData();
       } else {
         toast.error(data.message || 'Transfer failed');
@@ -150,31 +147,18 @@ export default function TransferPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-bold">Recipient Member ID</Label>
-                <Input
-                  placeholder="e.g. ABS123456"
-                  value={targetMemberId}
-                  onChange={(e) => setTargetMemberId(e.target.value)}
-                  className="h-10 text-xs font-mono uppercase"
-                  required
-                />
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-bold">Recipient Member ID</Label>
+                  <Input
+                    placeholder="e.g. ABS123456"
+                    value={targetMemberId}
+                    onChange={(e) => setTargetMemberId(e.target.value)}
+                    className="h-10 text-xs font-mono uppercase"
+                    required
+                  />
+                </div>
               </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs font-bold">4-Digit Security PIN</Label>
-                <Input
-                  type="password"
-                  maxLength={4}
-                  placeholder="Enter PIN"
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value)}
-                  className="h-10 text-xs font-mono"
-                  required
-                />
-              </div>
-            </div>
 
             <Button type="submit" disabled={submitting} className="w-full font-bold h-11 bg-blue-600 hover:bg-blue-700 text-white">
               {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
