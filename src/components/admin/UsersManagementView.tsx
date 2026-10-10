@@ -79,6 +79,7 @@ export interface UserData {
   memberId?: string;
   sponsorId?: string;
   sponsorName?: string;
+  sponsorObjectId?: string;
   sponsorPhone?: string;
   rank?: string;
   isSubscriptionActive?: boolean;
@@ -684,9 +685,18 @@ export function UsersManagementView({
                       <div className="flex flex-col space-y-0.5">
                         {user.sponsorId ? (
                           <>
-                            <span className="font-bold text-xs text-slate-800">
-                              {user.sponsorName || (user.sponsorId === 'ABS-COMPANY' ? 'ABS Company' : 'Unknown')}
-                            </span>
+                            {user.sponsorObjectId ? (
+                              <Link 
+                                href={`/admin/users/${user.sponsorObjectId}`}
+                                className="font-bold text-xs text-slate-800 hover:text-primary hover:underline transition-colors text-left"
+                              >
+                                {user.sponsorName || (user.sponsorId === 'ABS-COMPANY' ? 'ABS Company' : 'Unknown')}
+                              </Link>
+                            ) : (
+                              <span className="font-bold text-xs text-slate-800">
+                                {user.sponsorName || (user.sponsorId === 'ABS-COMPANY' ? 'ABS Company' : 'Unknown')}
+                              </span>
+                            )}
                             <div className="flex items-center gap-1 font-mono text-[11px]">
                               <span className="text-slate-600 font-semibold">{user.sponsorId}</span>
                               {user.sponsorId !== 'ABS-COMPANY' && (

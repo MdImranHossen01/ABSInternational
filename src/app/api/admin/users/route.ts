@@ -146,6 +146,7 @@ export async function GET(req: NextRequest) {
             }
           },
           sponsorPhone: { $arrayElemAt: ['$sponsorDoc.phone', 0] },
+          sponsorObjectId: { $arrayElemAt: ['$sponsorDoc._id', 0] },
           rank: 1,
           isSubscriptionActive: 1,
           depositWallet: 1,
