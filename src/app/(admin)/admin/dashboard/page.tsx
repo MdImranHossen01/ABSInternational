@@ -1321,17 +1321,76 @@ export default function AdminDashboard() {
             </div>
           </div>
 
+          {/* Executive 3-Way Financial Allocation Split Summary */}
           {fundPool?.totalActivations !== undefined && (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-muted-foreground gap-1 bg-muted/30 border rounded-xl px-4 py-2.5">
-              <p>
-                Total Package Activations: <strong className="text-foreground">{fundPool.totalActivations} members</strong> (৳{(fundPool.totalActivations * 1500).toLocaleString()})
-                {' · '}
-                Per activation: <strong className="text-primary">৳825 distributed across 10 funds (55%)</strong> + <strong className="text-emerald-600">৳675 company net (45%)</strong>
-              </p>
+            <div className="pt-2 border-t space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {/* 1. Total Package Inflow (100%) */}
+                <div className="p-3 rounded-xl border border-blue-500/20 bg-blue-500/5 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider">
+                      Total Package Inflow (100%)
+                    </span>
+                    <Badge variant="outline" className="text-[10px] bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-300 font-bold">
+                      ৳1,500 / act
+                    </Badge>
+                  </div>
+                  <div className="mt-2">
+                    <span className="text-xl sm:text-2xl font-black text-blue-950 dark:text-blue-100">
+                      ৳{(fundPool.totalActivations * 1500).toLocaleString()}
+                    </span>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      From {fundPool.totalActivations} active package memberships
+                    </p>
+                  </div>
+                </div>
+
+                {/* 2. Disbursed Across 10 Funds (55%) */}
+                <div className="p-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">
+                      10 Strategic Funds (55%)
+                    </span>
+                    <Badge variant="outline" className="text-[10px] bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-300 font-bold">
+                      ৳825 / act
+                    </Badge>
+                  </div>
+                  <div className="mt-2">
+                    <span className="text-xl sm:text-2xl font-black text-indigo-950 dark:text-indigo-100">
+                      ৳{(fundPool.totalActivations * 825).toLocaleString()}
+                    </span>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      Referral, Generation & 8 company reserve pools
+                    </p>
+                  </div>
+                </div>
+
+                {/* 3. Company Net Retained Profit (45% - Remaining Amount) */}
+                <div className="p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
+                      Company Net Retained (45%)
+                    </span>
+                    <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-300 font-bold">
+                      ৳675 / act
+                    </Badge>
+                  </div>
+                  <div className="mt-2">
+                    <span className="text-xl sm:text-2xl font-black text-emerald-950 dark:text-emerald-100">
+                      ৳{(fundPool.totalActivations * 675).toLocaleString()}
+                    </span>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      Direct retained gross revenue for company treasury
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {fundPool.lastUpdated && (
-                <p className="text-[10px] text-muted-foreground">
-                  Last updated: {new Date(fundPool.lastUpdated).toLocaleTimeString()}
-                </p>
+                <div className="flex items-center justify-between text-[10px] text-muted-foreground px-1">
+                  <span>Split Formula: 100% Inflow = 55% Distributed into 10 Funds + 45% Company Net Profit</span>
+                  <span>Last updated: {new Date(fundPool.lastUpdated).toLocaleTimeString()}</span>
+                </div>
               )}
             </div>
           )}
