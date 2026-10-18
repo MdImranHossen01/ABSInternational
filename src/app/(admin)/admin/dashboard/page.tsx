@@ -475,17 +475,17 @@ export default function AdminDashboard() {
   return (
     <div className="flex-1 space-y-6 py-4 md:py-6 max-w-7xl mx-auto">
       {/* ─── Top Header & Date Presets ────────────────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-card border rounded-2xl p-5 shadow-xs">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-card border rounded-2xl p-4 sm:p-5 shadow-xs">
         <div>
-          <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="h-10 w-10 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black mt-0.5 sm:mt-0 shadow-2xs">
               <Sparkles className="h-5 w-5" />
             </div>
-            <div>
-              <h1 className="text-xl md:text-2xl font-black tracking-tight flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-snug">
                 Executive Analytics Dashboard
               </h1>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5 leading-relaxed">
                 Real-time financial inflow, MLM rank metrics, product sales & graphical analytics.
               </p>
             </div>
@@ -493,53 +493,68 @@ export default function AdminDashboard() {
         </div>
 
         {/* Date Filter Controls */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Preset Buttons */}
-          <div className="inline-flex rounded-lg border bg-muted/40 p-1 text-xs">
-            <button
-              onClick={() => setPresetRange(7)}
-              className="px-2.5 py-1 rounded-md font-medium text-muted-foreground hover:text-foreground transition-colors hover:bg-background"
-            >
-              7D
-            </button>
-            <button
-              onClick={() => setPresetRange(30)}
-              className="px-2.5 py-1 rounded-md font-medium text-muted-foreground hover:text-foreground transition-colors hover:bg-background"
-            >
-              30D
-            </button>
-            <button
-              onClick={() => setPresetRange(90)}
-              className="px-2.5 py-1 rounded-md font-medium text-muted-foreground hover:text-foreground transition-colors hover:bg-background"
-            >
-              90D
-            </button>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 pt-1 lg:pt-0">
+          <div className="flex items-center justify-between sm:justify-start gap-2">
+            {/* Preset Buttons */}
+            <div className="inline-flex rounded-xl border bg-muted/40 p-1 text-xs">
+              <button
+                onClick={() => setPresetRange(7)}
+                className="px-2.5 py-1 rounded-lg font-bold text-muted-foreground hover:text-foreground transition-colors hover:bg-background cursor-pointer"
+              >
+                7D
+              </button>
+              <button
+                onClick={() => setPresetRange(30)}
+                className="px-2.5 py-1 rounded-lg font-bold text-muted-foreground hover:text-foreground transition-colors hover:bg-background cursor-pointer"
+              >
+                30D
+              </button>
+              <button
+                onClick={() => setPresetRange(90)}
+                className="px-2.5 py-1 rounded-lg font-bold text-muted-foreground hover:text-foreground transition-colors hover:bg-background cursor-pointer"
+              >
+                90D
+              </button>
+            </div>
+
+            {/* Mobile Refresh Button */}
+            <div className="sm:hidden">
+              <Button variant="outline" size="sm" onClick={fetchStats} className="h-8.5 px-3 gap-1.5 font-bold text-xs rounded-xl cursor-pointer">
+                {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                Refresh
+              </Button>
+            </div>
           </div>
 
           {/* Date Picker Input */}
-          <div className="flex items-center gap-1.5 bg-muted/50 p-1 rounded-lg border">
-            <Filter className="h-3.5 w-3.5 text-muted-foreground ml-1.5" />
-            <Input
-              type="date"
-              className="h-7 w-28 border-none bg-transparent focus-visible:ring-0 text-[11px] p-0 font-mono"
-              value={dateRange.from}
-              onChange={(e) => handleDateChange('from', e.target.value)}
-              max={format(new Date(), 'yyyy-MM-dd')}
-            />
-            <span className="text-muted-foreground text-[10px]">to</span>
-            <Input
-              type="date"
-              className="h-7 w-28 border-none bg-transparent focus-visible:ring-0 text-[11px] p-0 font-mono"
-              value={dateRange.to}
-              onChange={(e) => handleDateChange('to', e.target.value)}
-              max={format(new Date(), 'yyyy-MM-dd')}
-            />
+          <div className="flex items-center justify-between gap-1.5 bg-muted/40 px-2.5 py-1 rounded-xl border text-xs flex-1 sm:flex-initial">
+            <Filter className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <div className="flex items-center gap-1.5 flex-1 justify-center font-mono">
+              <Input
+                type="date"
+                className="h-7 w-[105px] sm:w-28 border-none bg-transparent focus-visible:ring-0 text-[11px] p-0 font-mono text-center"
+                value={dateRange.from}
+                onChange={(e) => handleDateChange('from', e.target.value)}
+                max={format(new Date(), 'yyyy-MM-dd')}
+              />
+              <span className="text-muted-foreground text-[10px] font-sans font-bold">to</span>
+              <Input
+                type="date"
+                className="h-7 w-[105px] sm:w-28 border-none bg-transparent focus-visible:ring-0 text-[11px] p-0 font-mono text-center"
+                value={dateRange.to}
+                onChange={(e) => handleDateChange('to', e.target.value)}
+                max={format(new Date(), 'yyyy-MM-dd')}
+              />
+            </div>
           </div>
 
-          <Button variant="outline" size="sm" onClick={fetchStats} className="h-9 px-3 gap-1.5 font-bold text-xs">
-            {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
-            Refresh
-          </Button>
+          {/* Desktop Refresh Button */}
+          <div className="hidden sm:block">
+            <Button variant="outline" size="sm" onClick={fetchStats} className="h-9 px-3 gap-1.5 font-bold text-xs rounded-xl cursor-pointer">
+              {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+              Refresh
+            </Button>
+          </div>
         </div>
       </div>
 
