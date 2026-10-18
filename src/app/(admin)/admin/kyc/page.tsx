@@ -39,6 +39,7 @@ import {
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function AdminKycPage() {
   const [users, setUsers] = useState<any[]>([]);
@@ -121,6 +122,35 @@ export default function AdminKycPage() {
     }
   };
 
+  const getRankBadge = (rank?: string) => {
+    if (!rank || rank === 'user') {
+      return (
+        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+          General
+        </span>
+      );
+    }
+
+    const rankColors: Record<string, string> = {
+      'Director': 'bg-purple-50 text-purple-700 border-purple-200',
+      'Crown Manager': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+      'Diamond Manager': 'bg-cyan-50 text-cyan-700 border-cyan-200',
+      'Gold Manager': 'bg-amber-50 text-amber-700 border-amber-200',
+      'Silver Manager': 'bg-slate-100 text-slate-700 border-slate-300',
+      'Royal Manager': 'bg-blue-50 text-blue-700 border-blue-200',
+      'Team Manager': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      'Premium Member': 'bg-amber-50 text-amber-800 border-amber-300',
+    };
+
+    const colorClass = rankColors[rank] || 'bg-amber-50 text-amber-800 border-amber-200';
+
+    return (
+      <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold border ${colorClass}`}>
+        {rank}
+      </span>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center p-20">
@@ -162,7 +192,7 @@ export default function AdminKycPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Member ID</TableHead>
+                    <TableHead>Member ID & Rank</TableHead>
                     <TableHead>Full Name / Contact</TableHead>
                     <TableHead>NID Number</TableHead>
                     <TableHead>Documents</TableHead>
@@ -173,12 +203,22 @@ export default function AdminKycPage() {
                 <TableBody>
                   {users.map((user: any) => (
                     <TableRow key={user._id}>
-                      <TableCell className="font-mono text-xs font-bold text-primary">
-                        {user.memberId || '—'}
+                      <TableCell>
+                        <div className="flex flex-col gap-1 items-start">
+                          <span className="font-mono text-xs font-bold text-primary">
+                            {user.memberId || '—'}
+                          </span>
+                          {getRankBadge(user.rank)}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="space-y-0.5">
-                          <p className="font-bold text-sm text-foreground">{user.kycFullName || user.name}</p>
+                          <Link 
+                            href={`/admin/users/${user._id}`}
+                            className="font-bold text-sm text-foreground hover:text-primary transition-colors hover:underline inline-block"
+                          >
+                            {user.kycFullName || user.name}
+                          </Link>
                           <p className="text-xs text-muted-foreground flex items-center gap-1 font-mono">
                             <Phone className="h-3 w-3" /> {user.phone || 'No phone'}
                           </p>
@@ -282,8 +322,16 @@ export default function AdminKycPage() {
                     <span>KYC Application Details</span>
                     {getStatusBadge(selectedUser.nidStatus)}
                   </DialogTitle>
-                  <DialogDescription className="text-xs">
-                    Member ID: <span className="font-mono font-bold text-primary">{selectedUser.memberId}</span>
+                  <DialogDescription className="text-xs flex items-center flex-wrap gap-2 mt-1">
+                    <span>Member ID: <span className="font-mono font-bold text-primary">{selectedUser.memberId}</span></span>
+                    {getRankBadge(selectedUser.rank)}
+                    <Link
+                      href={`/admin/users/${selectedUser._id}`}
+                      target="_blank"
+                      className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline font-bold ml-auto"
+                    >
+                      View Profile <ExternalLink className="h-3 w-3" />
+                    </Link>
                   </DialogDescription>
                 </div>
               </div>
@@ -315,7 +363,14 @@ export default function AdminKycPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <span className="text-muted-foreground block text-[11px]">Full Name:</span>
-                    <span className="font-bold text-foreground">{selectedUser.kycFullName || selectedUser.name}</span>
+                    <Link
+                      href={`/admin/users/${selectedUser._id}`}
+                      target="_blank"
+                      className="font-bold text-foreground hover:text-primary hover:underline inline-flex items-center gap-1"
+                    >
+                      {selectedUser.kycFullName || selectedUser.name}
+                      <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                    </Link>
                   </div>
                   <div>
                     <span className="text-muted-foreground block text-[11px]">NID Number:</span>

@@ -134,7 +134,7 @@ export default function AdminWithdrawalsPage() {
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="p-0 sm:p-6">
+        <CardContent className="p-0">
           {withdrawals.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground text-xs sm:text-sm font-medium">
               No withdrawals recorded in queue.
@@ -142,19 +142,19 @@ export default function AdminWithdrawalsPage() {
           ) : (
             <>
               {/* Desktop Table View */}
-              <div className="hidden md:block overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Member ID</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Details</TableHead>
-                      <TableHead>Requested</TableHead>
-                      <TableHead>Net Payout (90%)</TableHead>
-                      <TableHead>Community Fund (10%)</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+              <div className="hidden md:block w-full overflow-hidden">
+                <Table className="w-full table-fixed">
+                  <TableHeader className="bg-slate-50/80">
+                    <TableRow className="hover:bg-transparent border-b">
+                      <TableHead className="w-[9%] text-xs font-bold py-3 pl-3 pr-1 text-slate-700">Date</TableHead>
+                      <TableHead className="w-[11%] text-xs font-bold py-3 px-1 text-slate-700">Member ID</TableHead>
+                      <TableHead className="w-[13%] text-xs font-bold py-3 px-1 text-slate-700">Name</TableHead>
+                      <TableHead className="w-[22%] text-xs font-bold py-3 px-1 text-slate-700">Details</TableHead>
+                      <TableHead className="w-[9%] text-xs font-bold py-3 px-1 text-slate-700">Requested</TableHead>
+                      <TableHead className="w-[9%] text-xs font-bold py-3 px-1 text-slate-700">Net (90%)</TableHead>
+                      <TableHead className="w-[8%] text-xs font-bold py-3 px-1 text-slate-700">Community (10%)</TableHead>
+                      <TableHead className="w-[7%] text-xs font-bold py-3 px-1 text-center text-slate-700">Status</TableHead>
+                      <TableHead className="w-[12%] text-xs font-bold py-3 pl-1 pr-3 text-right text-slate-700">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -164,39 +164,55 @@ export default function AdminWithdrawalsPage() {
                       const net = Math.round((amount - fee) * 100) / 100;
 
                       return (
-                        <TableRow key={w._id}>
-                          <TableCell className="text-xs text-muted-foreground font-mono">{new Date(w.createdAt).toLocaleDateString()}</TableCell>
-                          <TableCell className="font-mono text-xs font-bold text-primary">{w.userId?.memberId || 'N/A'}</TableCell>
-                          <TableCell className="font-bold text-xs">{w.userId?.name || 'N/A'}</TableCell>
-                          <TableCell className="text-xs font-medium max-w-xs truncate">{w.description}</TableCell>
-                          <TableCell className="font-bold font-mono text-slate-900">৳{amount.toLocaleString()}</TableCell>
-                          <TableCell className="font-black font-mono text-emerald-600">৳{net.toLocaleString()}</TableCell>
-                          <TableCell className="font-bold font-mono text-indigo-600">৳{fee.toLocaleString()}</TableCell>
-                          <TableCell>
+                        <TableRow key={w._id} className="hover:bg-slate-50/60 border-b">
+                          <TableCell className="text-[11px] text-muted-foreground font-mono py-2.5 pl-3 pr-1">
+                            {new Date(w.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="font-mono text-xs font-bold text-primary py-2.5 px-1 truncate">
+                            {w.userId?.memberId || 'N/A'}
+                          </TableCell>
+                          <TableCell className="font-bold text-xs py-2.5 px-1 truncate">
+                            {w.userId?.name || 'N/A'}
+                          </TableCell>
+                          <TableCell className="text-[11px] font-medium py-2.5 px-1 break-words whitespace-normal leading-tight text-slate-600 dark:text-slate-300">
+                            {w.description}
+                          </TableCell>
+                          <TableCell className="font-bold font-mono text-slate-900 dark:text-slate-100 text-xs py-2.5 px-1">
+                            ৳{amount.toLocaleString()}
+                          </TableCell>
+                          <TableCell className="font-black font-mono text-emerald-600 text-xs py-2.5 px-1">
+                            ৳{net.toLocaleString()}
+                          </TableCell>
+                          <TableCell className="font-bold font-mono text-indigo-600 text-xs py-2.5 px-1">
+                            ৳{fee.toLocaleString()}
+                          </TableCell>
+                          <TableCell className="py-2.5 px-1 text-center">
                             {getStatusBadge(w.status)}
                           </TableCell>
-                          <TableCell className="text-right">
-                            {w.status === 'pending' && (
-                              <div className="flex items-center justify-end gap-2">
+                          <TableCell className="py-2.5 pl-1 pr-3 text-right">
+                            {w.status === 'pending' ? (
+                              <div className="flex items-center justify-end gap-1">
                                 <Button 
                                   variant="outline" 
                                   size="sm" 
                                   onClick={() => handleAction(w, 'completed')}
                                   disabled={processingId === w._id}
-                                  className="border-emerald-500/20 text-emerald-600 hover:bg-emerald-50 h-8 font-semibold"
+                                  className="border-emerald-500/30 text-emerald-600 hover:bg-emerald-50 h-7 px-2 text-[11px] font-semibold cursor-pointer"
                                 >
-                                  <Check className="h-3.5 w-3.5 mr-1" /> Approve
+                                  <Check className="h-3 w-3 mr-0.5" /> Approve
                                 </Button>
                                 <Button 
                                   variant="outline" 
                                   size="sm" 
                                   onClick={() => handleAction(w, 'failed')}
                                   disabled={processingId === w._id}
-                                  className="border-red-500/20 text-red-600 hover:bg-red-50 h-8 font-semibold"
+                                  className="border-red-500/30 text-red-600 hover:bg-red-50 h-7 px-2 text-[11px] font-semibold cursor-pointer"
                                 >
-                                  <X className="h-3.5 w-3.5 mr-1" /> Reject
+                                  <X className="h-3 w-3 mr-0.5" /> Reject
                                 </Button>
                               </div>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">—</span>
                             )}
                           </TableCell>
                         </TableRow>

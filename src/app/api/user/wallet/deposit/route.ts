@@ -17,6 +17,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Missing required deposit details.' }, { status: 400 });
     }
 
+    const cleanTrxId = String(transactionId).trim().toUpperCase();
+    const cleanSender = String(senderNumber).trim();
+
+    // Check if user submitted a phone number as transactionId
+    const isPhoneNumber = 
+      /^01[3-9]\d{8}$/.test(cleanTrxId) || 
+      /^(?:\+?8801|8801)[3-9]\d{8}$/.test(cleanTrxId) || 
+      cleanTrxId === cleanSender;
+
+    if (isPhoneNumber || cleanTrxId.length < 6) {
+      return NextResponse.json({ 
+        message: 'Invalid Transaction ID. Please enter the valid transaction ID received via SMS (e.g., BL9A7K8PQ2), not a phone number.' 
+      }, { status: 400 });
+    }
+
     await connectToDatabase();
 
     const depositTx = await WalletTransaction.create({
@@ -24,7 +39,7 @@ export async function POST(req: NextRequest) {
       amount,
       type: 'deposit',
       status: 'pending',
-      description: `Deposit request via ${paymentMethod.toUpperCase()} (Sender: ${senderNumber}, TxID: ${transactionId})`,
+      description: `Deposit request via ${paymentMethod.toUpperCase()} (Sender: ${cleanSender}, TxID: ${cleanTrxId})`,
     });
 
     await Promise.all([

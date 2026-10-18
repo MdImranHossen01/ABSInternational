@@ -70,6 +70,32 @@ export default function DepositPage() {
       return;
     }
 
+    const cleanTrxId = transactionId.trim().toUpperCase();
+    const cleanSender = senderNumber.trim();
+    const officialNumber = getMethodNumber().trim();
+
+    // Prevent users from submitting phone numbers as TrxID (common copy-paste mistake)
+    const isPhoneNumber = 
+      /^01[3-9]\d{8}$/.test(cleanTrxId) || 
+      /^(?:\+?8801|8801)[3-9]\d{8}$/.test(cleanTrxId) || 
+      cleanTrxId === officialNumber || 
+      cleanTrxId === cleanSender;
+
+    if (isPhoneNumber) {
+      Swal.fire({
+        title: 'Invalid Transaction ID',
+        text: 'Please enter the valid Transaction ID (TrxID) received via SMS (e.g., BL9A7K8PQ2), not a phone number.',
+        icon: 'warning',
+        confirmButtonColor: '#2563eb',
+      });
+      return;
+    }
+
+    if (cleanTrxId.length < 6) {
+      toast.error('Please enter a valid Transaction ID.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const res = await fetch('/api/user/wallet/deposit', {
@@ -78,8 +104,8 @@ export default function DepositPage() {
         body: JSON.stringify({
           amount: Number(amount),
           paymentMethod,
-          senderNumber,
-          transactionId,
+          senderNumber: cleanSender,
+          transactionId: cleanTrxId,
         }),
       });
       const data = await res.json();

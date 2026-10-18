@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     // Find users with nidStatus not 'Not Submitted'
     const users = await User.find({ nidStatus: { $ne: 'Not Submitted' } })
-      .select('name email phone memberId nidNumber nidFrontImage nidBackImage nidStatus kycFullName kycDateOfBirth kycFatherName kycMotherName kycPresentAddress kycPermanentAddress kycOwnerPhoto nidRejectionReason updatedAt createdAt')
+      .select('name email phone memberId nidNumber nidFrontImage nidBackImage nidStatus kycFullName kycDateOfBirth kycFatherName kycMotherName kycPresentAddress kycPermanentAddress kycOwnerPhoto nidRejectionReason updatedAt createdAt rank isSubscriptionActive role')
       .sort({ updatedAt: -1 });
 
     return NextResponse.json(users);

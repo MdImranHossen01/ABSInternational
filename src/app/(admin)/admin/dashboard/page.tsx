@@ -1453,91 +1453,183 @@ export default function AdminDashboard() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground border-b font-bold">
-                  <tr>
-                    <th className="py-3 px-4">Member</th>
-                    <th className="py-3 px-4">Payment Method & Account</th>
-                    <th className="py-3 px-4">Gross Amount</th>
-                    <th className="py-3 px-4">Community Fee (10%)</th>
-                    <th className="py-3 px-4">Net Payout</th>
-                    <th className="py-3 px-4">Date & Time</th>
-                    <th className="py-3 px-4 text-center">Status</th>
-                    <th className="py-3 px-4 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60">
-                  {data.recentWithdrawals.map((tx: any) => {
-                    const gross = tx.amount || 0;
-                    const fee = Math.round(gross * 0.10 * 100) / 100;
-                    const net = Math.round((gross - fee) * 100) / 100;
-                    const userObj = tx.userId || {};
-                    const desc = tx.description || '';
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-xs text-left">
+                  <thead className="bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground border-b font-bold">
+                    <tr>
+                      <th className="py-3 px-4">Member</th>
+                      <th className="py-3 px-4">Payment Method & Account</th>
+                      <th className="py-3 px-4">Gross Amount</th>
+                      <th className="py-3 px-4">Community Fee (10%)</th>
+                      <th className="py-3 px-4">Net Payout</th>
+                      <th className="py-3 px-4">Date & Time</th>
+                      <th className="py-3 px-4 text-center">Status</th>
+                      <th className="py-3 px-4 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {data.recentWithdrawals.map((tx: any) => {
+                      const gross = tx.amount || 0;
+                      const fee = Math.round(gross * 0.10 * 100) / 100;
+                      const net = Math.round((gross - fee) * 100) / 100;
+                      const userObj = tx.userId || {};
+                      const desc = tx.description || '';
 
-                    // Extract payment method from description or fallback
-                    let method = 'MFS / Bank';
-                    let account = '';
-                    const methodMatch = desc.match(/to\s+([A-Za-z0-9_\-]+)\s*\(([^)]+)\)/i);
-                    if (methodMatch) {
-                      method = methodMatch[1].toUpperCase();
-                      account = methodMatch[2];
-                    } else if (desc.toLowerCase().includes('bkash')) {
-                      method = 'BKASH';
-                    } else if (desc.toLowerCase().includes('nagad')) {
-                      method = 'NAGAD';
-                    } else if (desc.toLowerCase().includes('rocket')) {
-                      method = 'ROCKET';
-                    }
+                      // Extract payment method from description or fallback
+                      let method = 'MFS / Bank';
+                      let account = '';
+                      const methodMatch = desc.match(/to\s+([A-Za-z0-9_\-]+)\s*\(([^)]+)\)/i);
+                      if (methodMatch) {
+                        method = methodMatch[1].toUpperCase();
+                        account = methodMatch[2];
+                      } else if (desc.toLowerCase().includes('bkash')) {
+                        method = 'BKASH';
+                      } else if (desc.toLowerCase().includes('nagad')) {
+                        method = 'NAGAD';
+                      } else if (desc.toLowerCase().includes('rocket')) {
+                        method = 'ROCKET';
+                      }
 
-                    return (
-                      <tr key={tx._id} className="hover:bg-muted/30 transition-colors">
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-2.5">
-                            <div className="h-8 w-8 rounded-full bg-purple-500/10 text-purple-700 flex items-center justify-center font-black text-xs shrink-0">
-                              {(userObj.name || 'U').charAt(0).toUpperCase()}
-                            </div>
-                            <div className="min-w-0">
-                              <p className="font-bold text-foreground truncate max-w-[140px]">
-                                {userObj.name || 'Unknown User'}
-                              </p>
-                              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                                <span className="font-mono font-medium">{userObj.memberId || 'N/A'}</span>
-                                {userObj.rank && (
-                                  <>
-                                    <span>·</span>
-                                    <span className="text-primary font-semibold truncate max-w-[100px]">{userObj.rank}</span>
-                                  </>
-                                )}
+                      return (
+                        <tr key={tx._id} className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-2.5">
+                              <div className="h-8 w-8 rounded-full bg-purple-500/10 text-purple-700 flex items-center justify-center font-black text-xs shrink-0">
+                                {(userObj.name || 'U').charAt(0).toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-bold text-foreground truncate max-w-[140px]">
+                                  {userObj.name || 'Unknown User'}
+                                </p>
+                                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                                  <span className="font-mono font-medium">{userObj.memberId || 'N/A'}</span>
+                                  {userObj.rank && (
+                                    <>
+                                      <span>·</span>
+                                      <span className="text-primary font-semibold truncate max-w-[100px]">{userObj.rank}</span>
+                                    </>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="space-y-0.5">
-                            <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">
-                              {method}
-                            </Badge>
-                            {account ? (
-                              <p className="font-mono text-[11px] text-slate-700 dark:text-slate-300 font-semibold">{account}</p>
-                            ) : (
-                              <p className="text-[10px] text-muted-foreground truncate max-w-[150px]">{desc || 'Direct Withdrawal'}</p>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="space-y-0.5">
+                              <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">
+                                {method}
+                              </Badge>
+                              {account ? (
+                                <p className="font-mono text-[11px] text-slate-700 dark:text-slate-300 font-semibold">{account}</p>
+                              ) : (
+                                <p className="text-[10px] text-muted-foreground truncate max-w-[150px]">{desc || 'Direct Withdrawal'}</p>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-3 px-4 font-mono font-bold text-foreground">
+                            ৳{gross.toLocaleString()}
+                          </td>
+                          <td className="py-3 px-4 font-mono text-indigo-600 dark:text-indigo-400 font-semibold">
+                            -৳{fee.toLocaleString()}
+                          </td>
+                          <td className="py-3 px-4 font-mono font-black text-emerald-600 dark:text-emerald-400 text-sm">
+                            ৳{net.toLocaleString()}
+                          </td>
+                          <td className="py-3 px-4 text-muted-foreground text-[11px] whitespace-nowrap">
+                            {tx.createdAt ? format(new Date(tx.createdAt), 'dd MMM yyyy, hh:mm a') : 'N/A'}
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            {tx.status === 'completed' && (
+                              <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+                                Paid
+                              </Badge>
                             )}
+                            {tx.status === 'pending' && (
+                              <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 text-[10px] font-bold animate-pulse">
+                                Pending
+                              </Badge>
+                            )}
+                            {tx.status === 'failed' && (
+                              <Badge className="bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20 text-[10px] font-bold">
+                                Rejected
+                              </Badge>
+                            )}
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            {tx.status === 'pending' ? (
+                              <Link href="/admin/withdrawals">
+                                <Button size="sm" variant="default" className="h-7 px-2.5 text-[11px] bg-primary hover:bg-primary/90 text-white font-bold cursor-pointer">
+                                  Review
+                                </Button>
+                              </Link>
+                            ) : (
+                              <Link href="/admin/withdrawals">
+                                <Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer">
+                                  Details
+                                </Button>
+                              </Link>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                {data.recentWithdrawals.map((tx: any) => {
+                  const gross = tx.amount || 0;
+                  const fee = Math.round(gross * 0.10 * 100) / 100;
+                  const net = Math.round((gross - fee) * 100) / 100;
+                  const userObj = tx.userId || {};
+                  const desc = tx.description || '';
+
+                  // Extract payment method from description or fallback
+                  let method = 'MFS / Bank';
+                  let account = '';
+                  const methodMatch = desc.match(/to\s+([A-Za-z0-9_\-]+)\s*\(([^)]+)\)/i);
+                  if (methodMatch) {
+                    method = methodMatch[1].toUpperCase();
+                    account = methodMatch[2];
+                  } else if (desc.toLowerCase().includes('bkash')) {
+                    method = 'BKASH';
+                  } else if (desc.toLowerCase().includes('nagad')) {
+                    method = 'NAGAD';
+                  } else if (desc.toLowerCase().includes('rocket')) {
+                    method = 'ROCKET';
+                  }
+
+                  return (
+                    <div key={tx._id} className="p-4 space-y-3 bg-white dark:bg-slate-900/60 hover:bg-slate-50/50 transition-colors">
+                      {/* Top: Member Info & Status */}
+                      <div className="flex items-start justify-between gap-2.5">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <div className="h-9 w-9 rounded-full bg-purple-500/10 text-purple-700 dark:text-purple-300 flex items-center justify-center font-black text-xs shrink-0 border border-purple-500/20">
+                            {(userObj.name || 'U').charAt(0).toUpperCase()}
                           </div>
-                        </td>
-                        <td className="py-3 px-4 font-mono font-bold text-foreground">
-                          ৳{gross.toLocaleString()}
-                        </td>
-                        <td className="py-3 px-4 font-mono text-indigo-600 dark:text-indigo-400 font-semibold">
-                          -৳{fee.toLocaleString()}
-                        </td>
-                        <td className="py-3 px-4 font-mono font-black text-emerald-600 dark:text-emerald-400 text-sm">
-                          ৳{net.toLocaleString()}
-                        </td>
-                        <td className="py-3 px-4 text-muted-foreground text-[11px] whitespace-nowrap">
-                          {tx.createdAt ? format(new Date(tx.createdAt), 'dd MMM yyyy, hh:mm a') : 'N/A'}
-                        </td>
-                        <td className="py-3 px-4 text-center">
+                          <div className="min-w-0 flex-1">
+                            <Link 
+                              href={userObj._id ? `/admin/users/${userObj._id}` : '/admin/users'}
+                              className="font-bold text-sm text-foreground hover:text-primary transition-colors truncate block hover:underline"
+                            >
+                              {userObj.name || 'Unknown User'}
+                            </Link>
+                            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
+                              <span className="font-mono font-bold text-primary">{userObj.memberId || 'N/A'}</span>
+                              {userObj.rank && (
+                                <>
+                                  <span>·</span>
+                                  <span className="text-slate-600 dark:text-slate-300 font-medium truncate">{userObj.rank}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="shrink-0">
                           {tx.status === 'completed' && (
                             <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
                               Paid
@@ -1553,28 +1645,63 @@ export default function AdminDashboard() {
                               Rejected
                             </Badge>
                           )}
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          {tx.status === 'pending' ? (
-                            <Link href="/admin/withdrawals">
-                              <Button size="sm" variant="default" className="h-7 px-2.5 text-[11px] bg-primary hover:bg-primary/90 text-white font-bold cursor-pointer">
-                                Review
-                              </Button>
-                            </Link>
-                          ) : (
-                            <Link href="/admin/withdrawals">
-                              <Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer">
-                                Details
-                              </Button>
-                            </Link>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                        </div>
+                      </div>
+
+                      {/* Payment Method & Target Account */}
+                      <div className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-800/40 px-3 py-2 rounded-lg border border-slate-100 dark:border-slate-800">
+                        <span className="text-muted-foreground text-[11px] font-semibold">Destination:</span>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0 shrink-0">
+                            {method}
+                          </Badge>
+                          <span className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                            {account || desc || 'Direct'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Financial Breakdown Grid */}
+                      <div className="grid grid-cols-3 gap-2 bg-slate-50/70 dark:bg-slate-800/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
+                        <div>
+                          <span className="text-[10px] text-muted-foreground uppercase font-bold block">Gross</span>
+                          <span className="font-mono font-bold text-xs text-foreground">৳{gross.toLocaleString()}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-muted-foreground uppercase font-bold block">Fee (10%)</span>
+                          <span className="font-mono font-semibold text-xs text-indigo-600 dark:text-indigo-400">-৳{fee.toLocaleString()}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-muted-foreground uppercase font-bold block">Net Payout</span>
+                          <span className="font-mono font-black text-sm text-emerald-600 dark:text-emerald-400">৳{net.toLocaleString()}</span>
+                        </div>
+                      </div>
+
+                      {/* Footer: Date & Action Button */}
+                      <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-0.5">
+                        <span className="flex items-center gap-1.5 font-medium">
+                          <Clock className="h-3.5 w-3.5 text-slate-400" />
+                          {tx.createdAt ? format(new Date(tx.createdAt), 'dd MMM yyyy, hh:mm a') : 'N/A'}
+                        </span>
+                        {tx.status === 'pending' ? (
+                          <Link href="/admin/withdrawals">
+                            <Button size="sm" variant="default" className="h-7 px-3 text-[11px] bg-primary hover:bg-primary/90 text-white font-bold cursor-pointer">
+                              Review
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Link href="/admin/withdrawals">
+                            <Button size="sm" variant="ghost" className="h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer">
+                              Details
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

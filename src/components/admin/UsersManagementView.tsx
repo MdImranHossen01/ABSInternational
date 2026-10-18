@@ -17,6 +17,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
   MoreHorizontal, 
+  MoreVertical,
+  Mail,
   Loader2, 
   User as UserIcon, 
   Eye, 
@@ -860,15 +862,28 @@ export function UsersManagementView({
           ) : (
             users.map((user) => (
               <div key={user._id} className="p-4 space-y-3 bg-white hover:bg-slate-50/50 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-3 min-w-0">
-                    <div className="h-10 w-10 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-                      <UserIcon className="h-4 w-4" />
-                    </div>
+                {/* Header: Avatar, Name, Member ID, Role & 3-Dot Actions */}
+                <div className="flex items-start justify-between gap-2.5">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {user.image && user.image !== '' ? (
+                      <div className="relative h-11 w-11 shrink-0 rounded-full overflow-hidden border border-slate-200">
+                        <Image 
+                          src={user.image} 
+                          alt={user.name} 
+                          width={44}
+                          height={44}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-11 w-11 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                        <UserIcon className="h-5 w-5" />
+                      </div>
+                    )}
                     <div className="min-w-0 flex-1">
                       <Link 
                         href={`/admin/users/${user._id}`}
-                        className="font-bold text-slate-900 hover:text-primary transition-colors text-left text-sm truncate block hover:underline"
+                        className="font-bold text-slate-900 hover:text-primary transition-colors text-sm truncate block hover:underline leading-snug"
                       >
                         {user.name}
                       </Link>
@@ -889,95 +904,165 @@ export function UsersManagementView({
                           </button>
                         )}
                       </div>
-                      <p className="text-xs text-slate-500 truncate">{user.email}</p>
-                      {user.phone && <p className="text-[11px] text-slate-500 font-mono">{user.phone}</p>}
-                      
-                      {user.sponsorId && (
-                        <div className="mt-1.5 pt-1.5 border-t border-slate-100 text-[11px] text-slate-600">
-                          <span className="text-muted-foreground font-semibold">Sponsor: </span>
-                          <span className="font-bold text-slate-800">{user.sponsorName || (user.sponsorId === 'ABS-COMPANY' ? 'ABS Company' : user.sponsorId)}</span>
-                          <div className="flex items-center gap-1 font-mono text-slate-500">
-                            <span>{user.sponsorId}</span>
-                            {user.sponsorId !== 'ABS-COMPANY' && (
-                              <button
-                                type="button"
-                                onClick={() => handleCopyText(user.sponsorId!, `m-sponsor-${user._id}`)}
-                                className="p-0.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition-colors"
-                                title="Copy Sponsor ID"
-                              >
-                                {copiedId === `m-sponsor-${user._id}` ? (
-                                  <Check className="h-3 w-3 text-emerald-600" />
-                                ) : (
-                                  <Copy className="h-3 w-3" />
-                                )}
-                              </button>
-                            )}
-                          </div>
-                          {user.sponsorPhone && <div className="text-slate-500 font-mono">{user.sponsorPhone}</div>}
-                        </div>
-                      )}
                     </div>
                   </div>
-                  <Badge 
-                    className={`capitalize text-[10px] shrink-0 ${
-                      user.role === 'admin' ? 'bg-blue-600 text-white' : ''
-                    }`}
-                  >
-                    {user.role}
-                  </Badge>
+
+                  {/* Role Badge and 3-Dot Action Button */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Badge 
+                      variant={user.role === 'admin' || user.role === 'super_admin' ? 'default' : 'outline'}
+                      className={`capitalize text-[10px] font-bold px-2 py-0.5 ${
+                        user.role === 'admin' || user.role === 'super_admin' ? 'bg-blue-600 text-white' : ''
+                      } ${user.role === 'manager' ? 'bg-emerald-600 text-white' : ''}`}
+                    >
+                      {user.role}
+                    </Badge>
+
+                    {/* 3-Dot Dropdown Actions */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900"
+                          aria-label="Open user actions"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-52">
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel className="text-[10px] font-black uppercase text-muted-foreground px-2 py-1.5">User Actions</DropdownMenuLabel>
+                          <DropdownMenuItem asChild className="cursor-pointer text-xs font-bold text-slate-800">
+                            <Link href={`/admin/users/${user._id}`}>
+                              <ExternalLink className="mr-2 h-4 w-4 text-primary" /> Full Profile Page
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openUserDetails(user)} className="cursor-pointer text-xs font-semibold">
+                            <Eye className="mr-2 h-4 w-4 text-muted-foreground" /> Quick Modal
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        
+                        <DropdownMenuSeparator />
+                        
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel className="text-[10px] font-black uppercase text-muted-foreground px-2 py-1.5">Management</DropdownMenuLabel>
+                          
+                          {!user.isSubscriptionActive && (
+                            <DropdownMenuItem 
+                              onClick={() => handleMakePremium(user._id, user.name, user.sponsorId)}
+                              className="cursor-pointer text-amber-600 hover:text-amber-700 hover:bg-amber-50 font-bold text-xs"
+                            >
+                              <Award className="mr-2 h-4 w-4 text-amber-500" /> Make Premium Member
+                            </DropdownMenuItem>
+                          )}
+
+                          {user.role !== 'admin' && (
+                            <DropdownMenuItem 
+                              onClick={() => handleUpdateRole(user._id, 'admin')}
+                              className="cursor-pointer text-blue-600 font-bold text-xs"
+                            >
+                              <ShieldCheck className="mr-2 h-4 w-4" /> Make Admin
+                            </DropdownMenuItem>
+                          )}
+
+                          {user.role !== 'manager' && (
+                            <DropdownMenuItem 
+                              onClick={() => handleUpdateRole(user._id, 'manager')}
+                              className="cursor-pointer text-primary font-bold text-xs"
+                            >
+                              <UserCog className="mr-2 h-4 w-4" /> Make Manager
+                            </DropdownMenuItem>
+                          )}
+
+                          {user.role !== 'user' && (
+                            <DropdownMenuItem 
+                              onClick={() => handleUpdateRole(user._id, 'user')}
+                              className="cursor-pointer text-slate-600 font-bold text-xs"
+                            >
+                              <UserCog className="mr-2 h-4 w-4" /> Make User
+                            </DropdownMenuItem>
+                          )}
+
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteUser(user._id, user.name)}
+                            className="text-destructive cursor-pointer font-bold bg-red-50 hover:bg-red-100 mt-1 text-xs"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete User
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  {user.rank && user.rank !== 'user' && (
-                    <Badge className="bg-amber-100 text-amber-900 text-[10px]">{user.rank}</Badge>
+                {/* Status Badges & Spending */}
+                <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                  {user.rank && user.rank !== 'user' ? (
+                    <Badge className="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold">
+                      {user.rank}
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                      General
+                    </Badge>
                   )}
                   {user.isSubscriptionActive ? (
-                    <Badge className="bg-emerald-500 text-white text-[10px]">Active Member</Badge>
+                    <Badge className="bg-emerald-500 text-white text-[10px] font-semibold">Active Member</Badge>
                   ) : (
-                    <Badge className="bg-slate-200 text-slate-700 text-[10px]">Free Member</Badge>
+                    <Badge className="bg-slate-100 text-slate-700 border border-slate-200 text-[10px]">Free Member</Badge>
+                  )}
+                  <span className="text-[11px] text-slate-500 font-medium ml-auto">
+                    {user.totalOrders || 0} orders • ৳{(user.totalSpent || 0).toLocaleString()}
+                  </span>
+                </div>
+
+                {/* Contact Information */}
+                <div className="space-y-1 text-xs text-slate-600 bg-slate-50/60 p-2.5 rounded-xl border border-slate-100">
+                  <div className="flex items-center gap-1.5 truncate">
+                    <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                    <span className="truncate">{user.email}</span>
+                  </div>
+                  {user.phone && (
+                    <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-700">
+                      <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <span>{user.phone}</span>
+                    </div>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between pt-1">
-                  <div className="flex items-center gap-1.5">
-                    <Link href={`/admin/users/${user._id}`}>
-                      <Button 
-                        variant="default" 
-                        size="sm" 
-                        className="h-8 rounded-lg text-xs gap-1.5 bg-primary text-white font-bold"
-                      >
-                        <ExternalLink className="h-3 w-3" /> Profile
-                      </Button>
-                    </Link>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => openUserDetails(user)}
-                      className="h-8 rounded-lg text-xs gap-1.5"
-                    >
-                      <Eye className="h-3.5 w-3.5" /> Quick View
-                    </Button>
-                    {!user.isSubscriptionActive && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => handleMakePremium(user._id, user.name)}
-                        className="h-8 rounded-lg text-xs font-bold text-amber-700 border-amber-300 hover:bg-amber-50 gap-1"
-                      >
-                        <Award className="h-3.5 w-3.5 text-amber-600" /> Premium
-                      </Button>
+                {/* Sponsor Card (if exists) */}
+                {user.sponsorId && (
+                  <div className="rounded-xl bg-slate-50/60 border border-slate-100 p-2.5 text-[11px] flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <span className="text-muted-foreground font-semibold">Sponsor: </span>
+                      <span className="font-bold text-slate-800">{user.sponsorName || (user.sponsorId === 'ABS-COMPANY' ? 'ABS Company' : user.sponsorId)}</span>
+                      <div className="flex items-center gap-1 font-mono text-slate-500 mt-0.5">
+                        <span>{user.sponsorId}</span>
+                        {user.sponsorId !== 'ABS-COMPANY' && (
+                          <button
+                            type="button"
+                            onClick={() => handleCopyText(user.sponsorId!, `m-sponsor-${user._id}`)}
+                            className="p-0.5 hover:bg-slate-200 rounded text-slate-400 hover:text-slate-700 transition-colors"
+                            title="Copy Sponsor ID"
+                          >
+                            {copiedId === `m-sponsor-${user._id}` ? (
+                              <Check className="h-3 w-3 text-emerald-600" />
+                            ) : (
+                              <Copy className="h-3 w-3" />
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    {user.sponsorPhone && (
+                      <div className="text-slate-500 font-mono text-[11px] shrink-0 text-right">
+                        {user.sponsorPhone}
+                      </div>
                     )}
                   </div>
-
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDeleteUser(user._id, user.name)}
-                    className="h-8 rounded-lg text-xs px-2.5"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
+                )}
               </div>
             ))
           )}
