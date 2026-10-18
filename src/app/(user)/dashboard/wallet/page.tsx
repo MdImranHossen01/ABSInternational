@@ -11,10 +11,12 @@ import {
     Key, 
     History, 
     Loader2, 
-    AlertCircle,
     CheckCircle2,
     RefreshCw,
-    Copy
+    Copy,
+    Lock,
+    Eye,
+    EyeOff
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -56,7 +58,8 @@ export default function WalletPage() {
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawMethod, setWithdrawMethod] = useState('bkash');
   const [withdrawAccount, setWithdrawAccount] = useState('');
-  const [withdrawPin, setWithdrawPin] = useState('');
+  const [withdrawPassword, setWithdrawPassword] = useState('');
+  const [showWithdrawPassword, setShowWithdrawPassword] = useState(false);
 
   const [transferAmount, setTransferAmount] = useState('');
   const [transferSource, setTransferSource] = useState('depositWallet');
@@ -133,6 +136,11 @@ export default function WalletPage() {
       return;
     }
 
+    if (!withdrawPassword) {
+      toast.error('Account password is required for security verification');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const res = await fetch('/api/user/wallet/withdraw', {
@@ -141,7 +149,8 @@ export default function WalletPage() {
         body: JSON.stringify({
           amount: Number(withdrawAmount),
           paymentMethod: withdrawMethod,
-          accountNumber: withdrawAccount
+          accountNumber: withdrawAccount,
+          password: withdrawPassword
         })
       });
       const resData = await res.json();
@@ -149,6 +158,7 @@ export default function WalletPage() {
         Swal.fire('Success', resData.message, 'success');
         setWithdrawAmount('');
         setWithdrawAccount('');
+        setWithdrawPassword('');
         fetchWalletData();
       } else {
         toast.error(resData.message || 'Withdrawal failed');
@@ -619,7 +629,32 @@ export default function WalletPage() {
                   />
                 </div>
 
-
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1.5 font-bold">
+                    <Lock className="h-3.5 w-3.5 text-primary" /> Account Password
+                  </Label>
+                  <div className="relative">
+                    <Input 
+                      type={showWithdrawPassword ? 'text' : 'password'} 
+                      placeholder="Enter account login password" 
+                      value={withdrawPassword} 
+                      onChange={(e) => setWithdrawPassword(e.target.value)}
+                      className="h-11 rounded-lg pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowWithdrawPassword(!showWithdrawPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                      tabIndex={-1}
+                    >
+                      {showWithdrawPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    Withdrawal request করতে আপনার অ্যাকাউন্ট পাসওয়ার্ড দিয়ে যাচাই করুন।
+                  </p>
+                </div>
 
                 <Button type="submit" disabled={submitting} className="w-full h-11 font-bold rounded-lg mt-2">
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

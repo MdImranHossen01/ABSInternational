@@ -13,10 +13,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { amount, paymentMethod, accountNumber } = await req.json();
+    const { amount, paymentMethod, accountNumber, password } = await req.json();
 
     if (!amount || amount <= 0 || !paymentMethod || !accountNumber) {
       return NextResponse.json({ message: 'Missing required withdrawal details.' }, { status: 400 });
+    }
+
+    if (!password || typeof password !== 'string') {
+      return NextResponse.json({ message: 'Please enter your account password to verify and confirm withdrawal.' }, { status: 400 });
     }
 
     if (typeof amount !== 'number' || !Number.isFinite(amount) || amount < 500) {
@@ -24,9 +28,28 @@ export async function POST(req: NextRequest) {
     }
 
     await connectToDatabase();
-    const user = await User.findById((session.user as any).id);
+    let user: any = null;
+    const userId = (session.user as any).id;
+    if (userId) {
+      user = await User.findById(userId).select('+password');
+    }
+    if (!user && session.user.email) {
+      user = await User.findOne({ email: session.user.email.toLowerCase() }).select('+password');
+    }
+
     if (!user) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    }
+
+    if (!user.password) {
+      return NextResponse.json({ 
+        message: 'No account password set for this account. Please set a password in Settings.' 
+      }, { status: 400 });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return NextResponse.json({ message: 'Incorrect account password. Verification failed.' }, { status: 400 });
     }
 
     if (user.withdrawalWallet < amount) {

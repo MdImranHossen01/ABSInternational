@@ -7,7 +7,10 @@ import {
   ArrowDownCircle,
   ShieldAlert,
   Loader2,
-  History
+  History,
+  Lock,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +32,8 @@ export default function WithdrawPage() {
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('bkash');
   const [accountNumber, setAccountNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const loadData = async () => {
@@ -52,7 +57,12 @@ export default function WithdrawPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!amount || !accountNumber) {
-      toast.error('All fields are required');
+      toast.error('Payout method, amount, and account number are required');
+      return;
+    }
+
+    if (!password) {
+      toast.error('Account password is required for security verification');
       return;
     }
 
@@ -75,6 +85,7 @@ export default function WithdrawPage() {
           amount: numAmount,
           paymentMethod,
           accountNumber,
+          password,
         }),
       });
       const data = await res.json();
@@ -95,6 +106,7 @@ export default function WithdrawPage() {
         });
         setAmount('');
         setAccountNumber('');
+        setPassword('');
         loadData();
       } else {
         toast.error(data.message || 'Withdrawal failed');
@@ -130,7 +142,7 @@ export default function WithdrawPage() {
             <CardTitle className="text-base font-bold flex items-center gap-2">
               <ArrowDownCircle className="h-5 w-5 text-purple-600" /> New Withdrawal Request
             </CardTitle>
-            <CardDescription>Enter payout details.</CardDescription>
+            <CardDescription>Enter payout details and verify with your account password.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -164,17 +176,46 @@ export default function WithdrawPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-bold">Your Account / Mobile No</Label>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold">Your Account / Mobile No</Label>
+                <Input
+                  placeholder="e.g. 01712345678"
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                  className="h-10 text-xs font-mono"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold flex items-center gap-1.5">
+                    <Lock className="h-3.5 w-3.5 text-purple-600" /> Account Password
+                  </Label>
+                  <span className="text-[11px] text-muted-foreground">Security Verification</span>
+                </div>
+                <div className="relative">
                   <Input
-                    placeholder="e.g. 01712345678"
-                    value={accountNumber}
-                    onChange={(e) => setAccountNumber(e.target.value)}
-                    className="h-10 text-xs font-mono"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter your account login password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-10 text-xs pr-10"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                    tabIndex={-1}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Withdrawal request করতে আপনার অ্যাকাউন্ট পাসওয়ার্ড দিয়ে যাচাই করুন।
+                </p>
               </div>
 
               <Button type="submit" disabled={submitting} className="w-full font-bold h-11 bg-purple-600 hover:bg-purple-700 text-white">
@@ -195,6 +236,7 @@ export default function WithdrawPage() {
             <CardContent className="space-y-2.5 text-xs text-muted-foreground leading-relaxed">
               <p>• <strong>Minimum Cashout:</strong> ৳500 BDT.</p>
               <p>• <strong>Processing Time:</strong> Processed within 24-48 business hours.</p>
+              <p>• <strong>Security:</strong> Account password verification is required on every cashout.</p>
               <p>• <strong>Verification:</strong> Please ensure NID KYC is verified on your profile.</p>
             </CardContent>
           </Card>
