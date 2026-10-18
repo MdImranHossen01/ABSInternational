@@ -44,14 +44,19 @@ export async function GET(
     let sponsorInfo: any = null;
     if (targetUser.sponsorId) {
       if (targetUser.sponsorId === 'ABS-COMPANY' || targetUser.sponsorId === 'COMPANY') {
+        const companyUser = await User.findOne({ 
+          $or: [{ memberId: 'ABS-COMPANY' }, { email: 'company@absinternationalltd.com' }] 
+        }).select('_id name email phone memberId rank isSubscriptionActive role image createdAt').lean();
+
         sponsorInfo = {
-          name: 'ABS Company (Root Sponsor)',
+          _id: companyUser?._id,
+          name: companyUser?.name || 'ABS Company (Root Sponsor)',
           memberId: 'ABS-COMPANY',
           isCompany: true,
-          email: 'info@absinternationalltd.com',
-          phone: '+880 1931-111911',
-          rank: 'Company Director',
-          isSubscriptionActive: true,
+          email: companyUser?.email || 'company@absinternationalltd.com',
+          phone: companyUser?.phone || '+880 1931-111911',
+          rank: companyUser?.rank || 'Premium Member',
+          isSubscriptionActive: companyUser ? !!companyUser.isSubscriptionActive : true,
         };
       } else {
         const foundSponsor = await User.findOne({ memberId: targetUser.sponsorId })
