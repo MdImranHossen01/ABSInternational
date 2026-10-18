@@ -46,6 +46,7 @@ import {
   Activity,
 } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Sidebar,
   SidebarContent,
@@ -107,6 +108,7 @@ const serialNavItems = [
 export function UserSidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const user = session?.user
   const { isMobile, setOpenMobile } = useSidebar()
 
   const closeMobileSidebar = React.useCallback(() => {
@@ -123,19 +125,19 @@ export function UserSidebar() {
   }, [pathname, isMobile, setOpenMobile])
 
   return (
-    <Sidebar collapsible="icon" className="border-r">
+    <Sidebar collapsible="icon" className="border-r border-slate-800/80 bg-[#0a152e] text-slate-100">
       {/* Header Logo & Mobile Close */}
-      <SidebarHeader className="border-b h-14 lg:h-[60px] px-3 flex flex-row items-center justify-between overflow-hidden">
+      <SidebarHeader className="border-b border-slate-800/80 h-14 lg:h-[60px] px-3.5 flex flex-row items-center justify-between overflow-hidden bg-[#0a152e]">
         <Link href="/" onClick={closeMobileSidebar} className="flex items-center">
           <Logo 
-            imageClassName="size-6 shrink-0" 
-            textClassName="text-sm font-black tracking-tight whitespace-nowrap leading-none" 
+            imageClassName="size-7 shrink-0 rounded-md" 
+            textClassName="!text-white font-black text-sm tracking-tight whitespace-nowrap leading-none" 
           />
         </Link>
         <button
           type="button"
           onClick={closeMobileSidebar}
-          className="md:hidden p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
+          className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer"
           aria-label="Close sidebar"
         >
           <X className="h-5 w-5" />
@@ -143,13 +145,13 @@ export function UserSidebar() {
       </SidebarHeader>
 
       {/* Sequential Nav Items */}
-      <SidebarContent className="py-2">
-        <SidebarGroup className="py-0">
-          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/90 px-3 pb-1">
+      <SidebarContent className="py-2 bg-[#0a152e] scrollbar-thin scrollbar-thumb-slate-800">
+        <SidebarGroup className="py-0 px-2">
+          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-wider text-slate-400/90 px-3 pb-1">
             Personal Dashboard
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">
+            <SidebarMenu className="gap-1">
               {serialNavItems.map((item) => {
                 const isActive = item.exact
                   ? pathname === item.href
@@ -162,9 +164,13 @@ export function UserSidebar() {
                       onClick={closeMobileSidebar}
                       isActive={isActive}
                       tooltip={item.title}
-                      className="text-xs font-semibold h-8.5 px-3 rounded-lg transition-colors hover:bg-muted/60"
+                      className={`text-xs font-semibold h-9 px-3 rounded-xl transition-all duration-200 cursor-pointer ${
+                        isActive
+                          ? "!bg-primary !text-white font-bold shadow-md shadow-primary/30"
+                          : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                      }`}
                     >
-                      <item.icon className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" />
+                      <item.icon className={`h-4 w-4 shrink-0 transition-colors ${isActive ? "text-white" : "text-slate-400 group-hover:text-white"}`} />
                       <span className="truncate">{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -175,23 +181,34 @@ export function UserSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Logout */}
-      <SidebarFooter className="border-t p-2">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip="Logout"
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive text-xs font-bold h-9 rounded-lg"
-              onClick={() => {
-                closeMobileSidebar()
-                signOut({ callbackUrl: window.location.origin })
-              }}
-            >
-              <LogOut className="h-4 w-4" />
-              <span>Logout</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      {/* User Profile Mini Footer */}
+      <SidebarFooter className="border-t border-slate-800/80 p-3 bg-[#081024]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Avatar className="h-8 w-8 border border-slate-700 bg-primary/20 text-white shrink-0">
+              <AvatarImage src={user?.image || ""} alt={user?.name || "Member"} />
+              <AvatarFallback className="bg-primary text-white font-bold text-xs">
+                {user?.name ? user.name.slice(0, 2).toUpperCase() : "MB"}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-slate-100 truncate">{user?.name || "Member"}</p>
+              <p className="text-[10px] text-emerald-400 font-semibold capitalize truncate">
+                {(user as any)?.rank || (user as any)?.memberId || "Active Member"}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              closeMobileSidebar()
+              signOut({ callbackUrl: window.location.origin })
+            }}
+            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800/60 rounded-lg transition-colors cursor-pointer"
+            title="Log Out"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
       </SidebarFooter>
 
       <SidebarRail />
