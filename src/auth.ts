@@ -88,20 +88,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.image = user.image || token.picture;
       }
 
-      // 2. Add DB-specific logic
-      if (user && user.id) {
+      // 2. Add DB-specific logic (keep role, name, and image dynamically synced with DB)
+      const targetUserId = (user && user.id) || (token && token.id);
+      if (targetUserId) {
         try {
           await connectToDatabase();
           const mongoose = (await import('mongoose')).default;
 
-          if (user.id && mongoose.Types.ObjectId.isValid(user.id)) {
-            const dbUser = await User.findById(user.id);
+          if (mongoose.Types.ObjectId.isValid(targetUserId as string)) {
+            const dbUser = await User.findById(targetUserId).select('role phone memberId image name status');
             if (dbUser) {
               token.id = dbUser._id.toString();
               token.role = dbUser.role ?? 'user';
               token.phone = dbUser.phone;
               token.memberId = dbUser.memberId;
-              token.image = dbUser.image || user.image || token.picture;
+              token.image = dbUser.image || user?.image || token.picture;
             }
           }
         } catch (error) {

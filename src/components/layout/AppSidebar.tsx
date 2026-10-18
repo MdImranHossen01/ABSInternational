@@ -348,6 +348,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession();
   const role = (session?.user as any)?.role;
   const user = session?.user;
+  const displayRole = role === 'super_admin' ? 'Super Admin' : role === 'admin' ? 'Admin' : role === 'manager' ? 'Manager' : role ? String(role).replace('_', ' ') : 'Admin';
   const { setOpenMobile, isMobile } = useSidebar();
 
   const closeMobileSidebar = () => {
@@ -391,7 +392,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </Avatar>
             <div className="min-w-0">
               <p className="text-xs font-bold text-slate-100 truncate">{user?.name || "Administrator"}</p>
-              <p className="text-[10px] text-slate-400 capitalize truncate">{role || "Super Admin"}</p>
+              <p className="text-[10px] text-slate-400 capitalize truncate">{displayRole}</p>
             </div>
           </div>
           <button
