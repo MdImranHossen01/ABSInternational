@@ -139,6 +139,19 @@ const orderStatusConfig = {
   cancelled: { label: 'Cancelled', color: '#ef4444' },
 } satisfies ChartConfig;
 
+// ─── 6. MLM Fund Pools Donut Config ───────────────────────────────────────
+const fundPoolChartConfig = {
+  reserves: { label: 'Reserve Funds' },
+  communityFund: { label: 'Community (15%)', color: '#6366f1' },
+  tourFund: { label: 'Tour Fund (5%)', color: '#06b6d4' },
+  autoProfit: { label: 'Auto Club (3.5%)', color: '#8b5cf6' },
+  rankDevelopmentFund: { label: 'Rank Dev (2.5%)', color: '#10b981' },
+  incentiveFund: { label: 'Incentive (2%)', color: '#f97316' },
+  globalProfit: { label: 'Global Fund (2%)', color: '#3b82f6' },
+  royaltyFund: { label: 'Royalty (2%)', color: '#eab308' },
+  charityFund: { label: 'Charity (1%)', color: '#ec4899' },
+} satisfies ChartConfig;
+
 export default function AdminDashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -387,8 +400,8 @@ export default function AdminDashboard() {
     const list: any[] = stats?.orderStatusDistribution || [];
     if (!list.length) {
       return [
-        { status: 'Delivered', count: stats?.salesCount || 0, fill: '#10b981' },
-        { status: 'Order Placed', count: stats?.pendingOrdersCount || 0, fill: '#f59e0b' },
+        { status: 'Delivered', count: stats?.salesCount || 0, amount: 0, fill: '#10b981' },
+        { status: 'Order Placed', count: stats?.pendingOrdersCount || 0, amount: 0, fill: '#f59e0b' },
       ];
     }
     const colorMap: Record<string, string> = {
@@ -407,6 +420,24 @@ export default function AdminDashboard() {
       fill: colorMap[item.status] || '#94a3b8',
     }));
   }, [stats]);
+
+  // 5. Fund Pools Live Data for Visual Charts
+  const fundPoolData = useMemo(() => {
+    return [
+      { key: 'communityFund', label: 'Community', pct: '15%', rate: '৳225', fill: '#6366f1', amount: fundPool?.communityFund ?? 0, icon: Users2, border: 'border-indigo-200/80', bg: 'bg-indigo-50/50 dark:bg-indigo-950/20', text: 'text-indigo-700 dark:text-indigo-300' },
+      { key: 'tourFund', label: 'Tour Fund', pct: '5%', rate: '৳75', fill: '#06b6d4', amount: fundPool?.tourFund ?? 0, icon: Plane, border: 'border-cyan-200/80', bg: 'bg-cyan-50/50 dark:bg-cyan-950/20', text: 'text-cyan-700 dark:text-cyan-300' },
+      { key: 'autoProfit', label: 'Auto Club', pct: '3.5%', rate: '৳52.5', fill: '#8b5cf6', amount: fundPool?.autoProfit ?? 0, icon: Zap, border: 'border-violet-200/80', bg: 'bg-violet-50/50 dark:bg-violet-950/20', text: 'text-violet-700 dark:text-violet-300' },
+      { key: 'rankDevelopmentFund', label: 'Rank Dev', pct: '2.5%', rate: '৳37.5', fill: '#10b981', amount: fundPool?.rankDevelopmentFund ?? 0, icon: TrendingUp, border: 'border-emerald-200/80', bg: 'bg-emerald-50/50 dark:bg-emerald-950/20', text: 'text-emerald-700 dark:text-emerald-300' },
+      { key: 'incentiveFund', label: 'Incentive', pct: '2%', rate: '৳30', fill: '#f97316', amount: fundPool?.incentiveFund ?? 0, icon: Trophy, border: 'border-orange-200/80', bg: 'bg-orange-50/50 dark:bg-orange-950/20', text: 'text-orange-700 dark:text-orange-300' },
+      { key: 'globalProfit', label: 'Global Fund', pct: '2%', rate: '৳30', fill: '#3b82f6', amount: fundPool?.globalProfit ?? 0, icon: Globe, border: 'border-blue-200/80', bg: 'bg-blue-50/50 dark:bg-blue-950/20', text: 'text-blue-700 dark:text-blue-300' },
+      { key: 'royaltyFund', label: 'Royalty', pct: '2%', rate: '৳30', fill: '#eab308', amount: fundPool?.royaltyFund ?? 0, icon: Crown, border: 'border-yellow-200/80', bg: 'bg-yellow-50/50 dark:bg-yellow-950/20', text: 'text-yellow-700 dark:text-yellow-300' },
+      { key: 'charityFund', label: 'Charity', pct: '1%', rate: '৳15', fill: '#ec4899', amount: fundPool?.charityFund ?? 0, icon: Heart, border: 'border-pink-200/80', bg: 'bg-pink-50/50 dark:bg-pink-950/20', text: 'text-pink-700 dark:text-pink-300' },
+    ];
+  }, [fundPool]);
+
+  const totalFundPoolReserves = useMemo(() => {
+    return fundPoolData.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+  }, [fundPoolData]);
 
   if (loading && !data) {
     return (
@@ -635,7 +666,7 @@ export default function AdminDashboard() {
           <CardContent className="flex-1 pb-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4">
               {/* Donut Chart with Centered Total */}
-              <ChartContainer config={rankChartConfig} className="mx-auto aspect-square max-h-[220px]">
+              <ChartContainer config={rankChartConfig} className="h-[220px] w-full aspect-auto flex items-center justify-center">
                 <PieChart>
                   <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
                   <Pie
@@ -644,8 +675,12 @@ export default function AdminDashboard() {
                     nameKey="label"
                     innerRadius={55}
                     outerRadius={80}
-                    strokeWidth={3}
+                    strokeWidth={2}
+                    paddingAngle={2}
                   >
+                    {rankData.map((entry, index) => (
+                      <Cell key={`rank-cell-${index}`} fill={entry.fill} />
+                    ))}
                     <Label
                       content={({ viewBox }) => {
                         if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
@@ -696,7 +731,7 @@ export default function AdminDashboard() {
           </CardFooter>
         </Card>
 
-        {/* Chart 2: Capital Inflow vs Reserves vs Cashouts (Radial Gauge) */}
+        {/* Chart 2: Capital Inflow vs Reserves vs Cashouts */}
         <Card className="flex flex-col border shadow-xs">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
@@ -716,24 +751,30 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent className="flex-1 pb-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4">
-              {/* Radial Bar Chart */}
-              <ChartContainer config={radialFinancialConfig} className="mx-auto aspect-square max-h-[220px]">
-                <RadialBarChart
-                  data={radialFinancialData}
-                  startAngle={0}
-                  endAngle={280}
-                  innerRadius={45}
-                  outerRadius={95}
-                >
-                  <PolarGrid
-                    gridType="circle"
-                    radialLines={false}
-                    stroke="none"
-                    className="first:fill-muted last:fill-background"
-                    polarRadius={[95, 45]}
+              {/* Financial Flow Donut Chart */}
+              <ChartContainer config={radialFinancialConfig} className="h-[220px] w-full aspect-auto flex items-center justify-center">
+                <PieChart>
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent
+                        formatter={(val) => `৳${Number(val).toLocaleString()}`}
+                        hideLabel
+                      />
+                    }
                   />
-                  <RadialBar dataKey="amount" background cornerRadius={6} />
-                  <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
+                  <Pie
+                    data={radialFinancialData.filter((d) => d.amount > 0).length ? radialFinancialData.filter((d) => d.amount > 0) : [{ name: 'No Flow', amount: 1, fill: '#cbd5e1' }]}
+                    dataKey="amount"
+                    nameKey="name"
+                    innerRadius={55}
+                    outerRadius={80}
+                    strokeWidth={2}
+                    paddingAngle={3}
+                  >
+                    {(radialFinancialData.filter((d) => d.amount > 0).length ? radialFinancialData.filter((d) => d.amount > 0) : [{ name: 'No Flow', amount: 1, fill: '#cbd5e1' }]).map((entry, index) => (
+                      <Cell key={`financial-cell-${index}`} fill={entry.fill} />
+                    ))}
                     <Label
                       content={({ viewBox }) => {
                         if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
@@ -750,8 +791,8 @@ export default function AdminDashboard() {
                         }
                       }}
                     />
-                  </PolarRadiusAxis>
-                </RadialBarChart>
+                  </Pie>
+                </PieChart>
               </ChartContainer>
 
               {/* Radial Metrics Legend */}
@@ -891,28 +932,40 @@ export default function AdminDashboard() {
             </div>
           </CardHeader>
           <CardContent className="pt-2">
-            <ChartContainer config={orderStatusConfig} className="aspect-auto h-[200px] w-full">
-              <BarChart data={orderPipelineData} margin={{ left: 10, right: 10, top: 15, bottom: 5 }}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
-                <XAxis
-                  dataKey="status"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  className="text-[10px] font-semibold"
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent indicator="dashed" />}
-                />
-                <Bar dataKey="count" radius={6}>
-                  <LabelList position="top" offset={8} className="fill-foreground font-bold text-xs" />
-                  {orderPipelineData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ChartContainer>
+            {orderPipelineData.every((item) => (item.count || 0) === 0) ? (
+              <div className="h-[200px] flex flex-col items-center justify-center text-center p-4 rounded-xl border border-dashed bg-muted/20">
+                <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600 mb-2">
+                  <Package className="h-5 w-5" />
+                </div>
+                <p className="text-xs font-bold text-foreground">0 Orders In Selected Date Range</p>
+                <p className="text-[11px] text-muted-foreground max-w-xs mt-1">
+                  No product orders were placed or delivered between {debouncedDateRange.from} and {debouncedDateRange.to}.
+                </p>
+              </div>
+            ) : (
+              <ChartContainer config={orderStatusConfig} className="aspect-auto h-[200px] w-full">
+                <BarChart data={orderPipelineData} margin={{ left: 10, right: 10, top: 15, bottom: 5 }}>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
+                  <XAxis
+                    dataKey="status"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    className="text-[10px] font-semibold"
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent indicator="dashed" />}
+                  />
+                  <Bar dataKey="count" radius={6} minPointSize={6}>
+                    <LabelList position="top" offset={8} className="fill-foreground font-bold text-xs" />
+                    {orderPipelineData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+            )}
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-3 border-t text-center text-xs">
               <div className="p-1.5 rounded-lg bg-muted/40">
@@ -1051,9 +1104,9 @@ export default function AdminDashboard() {
         </CardContent>
       </Card>
 
-      {/* ─── MLM Fund Pools Live Snapshot ─────────────────────────────────── */}
-      <Card className="border shadow-xs">
-        <CardHeader className="pb-3">
+      {/* ─── MLM Fund Pools Live Snapshot (With Intelligent Donut Chart) ─── */}
+      <Card className="border shadow-xs overflow-hidden">
+        <CardHeader className="pb-3 border-b bg-muted/10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
@@ -1073,37 +1126,135 @@ export default function AdminDashboard() {
               size="sm"
               onClick={handleDistributeGlobalProfit}
               disabled={distributing || !fundPool?.globalProfit}
-              className="gap-2 text-xs font-bold shrink-0 bg-primary hover:bg-primary/90 text-white shadow-xs"
+              className="gap-2 text-xs font-bold shrink-0 bg-primary hover:bg-primary/90 text-white shadow-xs cursor-pointer"
             >
               {distributing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" />}
               Distribute Global Profit
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
-            {[
-              { key: 'autoProfit', label: 'Auto Club', pct: '3.5%', amount: '৳52.5', color: 'bg-violet-50 border-violet-200 text-violet-700', icon: Zap },
-              { key: 'incentiveFund', label: 'Incentive', pct: '2%', amount: '৳30', color: 'bg-orange-50 border-orange-200 text-orange-700', icon: Trophy },
-              { key: 'rankDevelopmentFund', label: 'Rank Dev', pct: '2.5%', amount: '৳37.5', color: 'bg-emerald-50 border-emerald-200 text-emerald-700', icon: TrendingUp },
-              { key: 'globalProfit', label: 'Global Fund', pct: '2%', amount: '৳30', color: 'bg-blue-50 border-blue-200 text-blue-700', icon: Globe },
-              { key: 'royaltyFund', label: 'Royalty', pct: '2%', amount: '৳30', color: 'bg-yellow-50 border-yellow-200 text-yellow-700', icon: Crown },
-              { key: 'tourFund', label: 'Tour Fund', pct: '5%', amount: '৳75', color: 'bg-cyan-50 border-cyan-200 text-cyan-700', icon: Plane },
-              { key: 'communityFund', label: 'Community', pct: '15%', amount: '৳225', color: 'bg-indigo-50 border-indigo-200 text-indigo-700', icon: Users2 },
-              { key: 'charityFund', label: 'Charity', pct: '1%', amount: '৳15', color: 'bg-pink-50 border-pink-200 text-pink-700', icon: Heart },
-            ].map(({ key, label, pct, amount, color, icon: Icon }) => (
-              <div key={key} className={`border ${color.split(' ')[1]} rounded-xl p-3 ${color.split(' ')[0]} shadow-2xs`}>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className={`text-[10px] font-black tracking-wide ${color.split(' ')[2]}`}>{pct}</span>
-                  <Icon className={`h-3.5 w-3.5 ${color.split(' ')[2]}`} />
-                </div>
-                <div className={`text-base sm:text-lg font-black ${color.split(' ')[2]}`}>
-                  {fundLoading ? '...' : `৳${(fundPool?.[key] ?? 0).toLocaleString()}`}
-                </div>
-                <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mt-1 truncate">{label}</p>
-                <p className="text-[9px] text-muted-foreground font-medium">{amount}/act</p>
+        <CardContent className="space-y-5 pt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+            {/* Left: Donut Chart of Reserve Funds Distribution */}
+            <div className="lg:col-span-4 flex flex-col items-center justify-center p-3 rounded-2xl border bg-muted/20">
+              <div className="text-center mb-1">
+                <span className="text-xs font-black text-foreground block">
+                  Reserve Pools Allocation
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  Proportional share of 33% reserve fund
+                </span>
               </div>
-            ))}
+
+              <ChartContainer
+                config={fundPoolChartConfig}
+                className="h-[210px] w-full aspect-auto flex items-center justify-center"
+              >
+                <PieChart>
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent
+                        formatter={(val, name, item) => [
+                          `৳${Number(val).toLocaleString()} (${item.payload.pct})`,
+                          name,
+                        ]}
+                        hideLabel
+                      />
+                    }
+                  />
+                  <Pie
+                    data={fundPoolData.map((p) => ({
+                      ...p,
+                      visitors: p.amount > 0 ? p.amount : 1,
+                    }))}
+                    dataKey="visitors"
+                    nameKey="label"
+                    innerRadius={55}
+                    outerRadius={78}
+                    strokeWidth={2}
+                    paddingAngle={2}
+                  >
+                    {fundPoolData.map((entry, index) => (
+                      <Cell key={`pool-cell-${index}`} fill={entry.fill} />
+                    ))}
+                    <Label
+                      content={({ viewBox }) => {
+                        if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+                          return (
+                            <text
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                            >
+                              <tspan
+                                x={viewBox.cx}
+                                y={viewBox.cy}
+                                className="fill-foreground text-2xl font-black"
+                              >
+                                ৳{Math.round(totalFundPoolReserves).toLocaleString()}
+                              </tspan>
+                              <tspan
+                                x={viewBox.cx}
+                                y={(viewBox.cy || 0) + 18}
+                                className="fill-muted-foreground text-[10px] font-bold"
+                              >
+                                Total Reserves
+                              </tspan>
+                            </text>
+                          );
+                        }
+                      }}
+                    />
+                  </Pie>
+                </PieChart>
+              </ChartContainer>
+
+              <div className="flex flex-wrap items-center justify-center gap-1.5 text-[9px] text-muted-foreground pt-1 border-t w-full">
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" /> Community 15%
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-500" /> Tour 5%
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-violet-500" /> Auto Club 3.5%
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Rank Dev 2.5%
+                </span>
+              </div>
+            </div>
+
+            {/* Right: 8 Live Fund Pool Metrics Cards */}
+            <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              {fundPoolData.map(({ key, label, pct, rate, border, bg, text, amount, fill, icon: Icon }) => (
+                <div
+                  key={key}
+                  className={`border ${border} ${bg} rounded-xl p-3 shadow-2xs hover:shadow-xs transition-all relative overflow-hidden`}
+                >
+                  <div
+                    className="absolute top-0 left-0 right-0 h-1"
+                    style={{ backgroundColor: fill }}
+                  />
+                  <div className="flex items-center justify-between mb-1.5 pt-0.5">
+                    <span className={`text-[10px] font-black tracking-wide ${text}`}>{pct}</span>
+                    <Icon className={`h-3.5 w-3.5 ${text}`} />
+                  </div>
+                  <div className={`text-base sm:text-lg font-black ${text}`}>
+                    {fundLoading ? '...' : `৳${(fundPool?.[key] ?? 0).toLocaleString()}`}
+                  </div>
+                  <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mt-1 truncate">
+                    {label}
+                  </p>
+                  <p className="text-[9px] text-muted-foreground font-medium">{rate}/act</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           {fundPool?.totalActivations !== undefined && (

@@ -590,7 +590,7 @@ export default function UserDashboard() {
           </CardHeader>
           <CardContent className="flex-1 pb-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4">
-              <ChartContainer config={incomeStreamConfig} className="mx-auto aspect-square max-h-[220px]">
+              <ChartContainer config={incomeStreamConfig} className="h-[220px] w-full aspect-auto flex items-center justify-center">
                 <PieChart>
                   <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
                   <Pie
@@ -599,8 +599,12 @@ export default function UserDashboard() {
                     nameKey="name"
                     innerRadius={55}
                     outerRadius={80}
-                    strokeWidth={3}
+                    strokeWidth={2}
+                    paddingAngle={2}
                   >
+                    {incomeStreamData.map((entry, index) => (
+                      <Cell key={`income-cell-${index}`} fill={entry.fill} />
+                    ))}
                     <Label
                       content={({ viewBox }) => {
                         if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
@@ -670,12 +674,12 @@ export default function UserDashboard() {
           <CardContent className="flex-1 pb-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4">
               {/* Radial Bar Gauge */}
-              <ChartContainer config={rankRadialConfig} className="mx-auto aspect-square max-h-[220px]">
+              <ChartContainer config={rankRadialConfig} className="h-[220px] w-full aspect-auto flex items-center justify-center">
                 <RadialBarChart
                   data={rankRadialData}
-                  startAngle={0}
-                  endAngle={Math.round((getRankProgress() / 100) * 360)}
-                  innerRadius={50}
+                  startAngle={90}
+                  endAngle={90 - Math.round(((getRankProgress() || 1) / 100) * 360)}
+                  innerRadius={55}
                   outerRadius={85}
                 >
                   <PolarGrid
@@ -683,9 +687,11 @@ export default function UserDashboard() {
                     radialLines={false}
                     stroke="none"
                     className="first:fill-muted last:fill-background"
-                    polarRadius={[85, 50]}
+                    polarRadius={[85, 55]}
                   />
-                  <RadialBar dataKey="value" background cornerRadius={10} />
+                  <RadialBar dataKey="value" background cornerRadius={10}>
+                    <Cell fill={rankRadialData[0]?.fill || '#f59e0b'} />
+                  </RadialBar>
                   <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
                     <Label
                       content={({ viewBox }) => {
