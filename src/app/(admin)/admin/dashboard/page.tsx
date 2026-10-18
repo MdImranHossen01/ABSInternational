@@ -62,6 +62,8 @@ import {
   CheckCircle2,
   CreditCard,
   ExternalLink,
+  Megaphone,
+  Network,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -141,16 +143,18 @@ const orderStatusConfig = {
   cancelled: { label: 'Cancelled', color: '#ef4444' },
 } satisfies ChartConfig;
 
-// ─── 6. MLM Fund Pools Donut Config ───────────────────────────────────────
+// ─── 6. MLM Fund Pools Donut Config (10 Strategic Allocations = 55%) ────
 const fundPoolChartConfig = {
-  reserves: { label: 'Reserve Funds' },
-  communityFund: { label: 'Community (15%)', color: '#6366f1' },
-  tourFund: { label: 'Tour Fund (5%)', color: '#06b6d4' },
+  reserves: { label: 'Compensation & Funds' },
+  referBonus: { label: 'Refer Bonus (15%)', color: '#3b82f6' },
+  generationBonus: { label: 'Generation (7%)', color: '#10b981' },
   autoProfit: { label: 'Auto Club (3.5%)', color: '#8b5cf6' },
-  rankDevelopmentFund: { label: 'Rank Dev (2.5%)', color: '#10b981' },
   incentiveFund: { label: 'Incentive (2%)', color: '#f97316' },
-  globalProfit: { label: 'Global Fund (2%)', color: '#3b82f6' },
+  rankDevelopmentFund: { label: 'Rank Dev (2.5%)', color: '#14b8a6' },
+  globalProfit: { label: 'Global Fund (2%)', color: '#0ea5e9' },
   royaltyFund: { label: 'Royalty (2%)', color: '#eab308' },
+  tourFund: { label: 'Tour Fund (5%)', color: '#06b6d4' },
+  communityFund: { label: 'Community (15%)', color: '#6366f1' },
   charityFund: { label: 'Charity (1%)', color: '#ec4899' },
 } satisfies ChartConfig;
 
@@ -423,19 +427,22 @@ export default function AdminDashboard() {
     }));
   }, [stats]);
 
-  // 5. Fund Pools Live Data for Visual Charts
+  // 5. Fund Pools Live Data for Visual Charts (All 10 Allocations = 55%)
   const fundPoolData = useMemo(() => {
+    const totalActs = fundPool?.totalActivations ?? stats?.activeSubscribers ?? 0;
     return [
-      { key: 'communityFund', label: 'Community', pct: '15%', rate: '৳225', fill: '#6366f1', amount: fundPool?.communityFund ?? 0, icon: Users2, border: 'border-indigo-200/80', bg: 'bg-indigo-50/50 dark:bg-indigo-950/20', text: 'text-indigo-700 dark:text-indigo-300' },
-      { key: 'tourFund', label: 'Tour Fund', pct: '5%', rate: '৳75', fill: '#06b6d4', amount: fundPool?.tourFund ?? 0, icon: Plane, border: 'border-cyan-200/80', bg: 'bg-cyan-50/50 dark:bg-cyan-950/20', text: 'text-cyan-700 dark:text-cyan-300' },
-      { key: 'autoProfit', label: 'Auto Club', pct: '3.5%', rate: '৳52.5', fill: '#8b5cf6', amount: fundPool?.autoProfit ?? 0, icon: Zap, border: 'border-violet-200/80', bg: 'bg-violet-50/50 dark:bg-violet-950/20', text: 'text-violet-700 dark:text-violet-300' },
-      { key: 'rankDevelopmentFund', label: 'Rank Dev', pct: '2.5%', rate: '৳37.5', fill: '#10b981', amount: fundPool?.rankDevelopmentFund ?? 0, icon: TrendingUp, border: 'border-emerald-200/80', bg: 'bg-emerald-50/50 dark:bg-emerald-950/20', text: 'text-emerald-700 dark:text-emerald-300' },
-      { key: 'incentiveFund', label: 'Incentive', pct: '2%', rate: '৳30', fill: '#f97316', amount: fundPool?.incentiveFund ?? 0, icon: Trophy, border: 'border-orange-200/80', bg: 'bg-orange-50/50 dark:bg-orange-950/20', text: 'text-orange-700 dark:text-orange-300' },
-      { key: 'globalProfit', label: 'Global Fund', pct: '2%', rate: '৳30', fill: '#3b82f6', amount: fundPool?.globalProfit ?? 0, icon: Globe, border: 'border-blue-200/80', bg: 'bg-blue-50/50 dark:bg-blue-950/20', text: 'text-blue-700 dark:text-blue-300' },
-      { key: 'royaltyFund', label: 'Royalty', pct: '2%', rate: '৳30', fill: '#eab308', amount: fundPool?.royaltyFund ?? 0, icon: Crown, border: 'border-yellow-200/80', bg: 'bg-yellow-50/50 dark:bg-yellow-950/20', text: 'text-yellow-700 dark:text-yellow-300' },
-      { key: 'charityFund', label: 'Charity', pct: '1%', rate: '৳15', fill: '#ec4899', amount: fundPool?.charityFund ?? 0, icon: Heart, border: 'border-pink-200/80', bg: 'bg-pink-50/50 dark:bg-pink-950/20', text: 'text-pink-700 dark:text-pink-300' },
+      { key: 'referBonus', label: 'Refer Bonus', sub: 'Direct Referral', pct: '15%', rate: '৳225', fill: '#3b82f6', amount: totalActs * 225, icon: Megaphone, border: 'border-blue-200/80', bg: 'bg-blue-50/50 dark:bg-blue-950/20', text: 'text-blue-700 dark:text-blue-300' },
+      { key: 'generationBonus', label: 'Generation Bonus', sub: 'Up to 10 Gen', pct: '7%', rate: '৳105', fill: '#10b981', amount: totalActs * 105, icon: Network, border: 'border-emerald-200/80', bg: 'bg-emerald-50/50 dark:bg-emerald-950/20', text: 'text-emerald-700 dark:text-emerald-300' },
+      { key: 'autoProfit', label: 'Auto Club', sub: 'Qualification', pct: '3.5%', rate: '৳52.5', fill: '#8b5cf6', amount: fundPool?.autoProfit ?? (totalActs * 52.5), icon: Zap, border: 'border-violet-200/80', bg: 'bg-violet-50/50 dark:bg-violet-950/20', text: 'text-violet-700 dark:text-violet-300' },
+      { key: 'incentiveFund', label: 'Incentive Fund', sub: 'Extra Incentive', pct: '2%', rate: '৳30', fill: '#f97316', amount: fundPool?.incentiveFund ?? (totalActs * 30), icon: Trophy, border: 'border-orange-200/80', bg: 'bg-orange-50/50 dark:bg-orange-950/20', text: 'text-orange-700 dark:text-orange-300' },
+      { key: 'rankDevelopmentFund', label: 'Rank Dev Fund', sub: 'Leadership', pct: '2.5%', rate: '৳37.5', fill: '#14b8a6', amount: fundPool?.rankDevelopmentFund ?? (totalActs * 37.5), icon: TrendingUp, border: 'border-teal-200/80', bg: 'bg-teal-50/50 dark:bg-teal-950/20', text: 'text-teal-700 dark:text-teal-300' },
+      { key: 'globalProfit', label: 'Global Fund', sub: 'Intl Growth', pct: '2%', rate: '৳30', fill: '#0ea5e9', amount: fundPool?.globalProfit ?? (totalActs * 30), icon: Globe, border: 'border-sky-200/80', bg: 'bg-sky-50/50 dark:bg-sky-950/20', text: 'text-sky-700 dark:text-sky-300' },
+      { key: 'royaltyFund', label: 'Royalty Fund', sub: 'Long Term', pct: '2%', rate: '৳30', fill: '#eab308', amount: fundPool?.royaltyFund ?? (totalActs * 30), icon: Crown, border: 'border-yellow-200/80', bg: 'bg-yellow-50/50 dark:bg-yellow-950/20', text: 'text-yellow-700 dark:text-yellow-300' },
+      { key: 'tourFund', label: 'Tour Fund', sub: 'Travel & Explore', pct: '5%', rate: '৳75', fill: '#06b6d4', amount: fundPool?.tourFund ?? (totalActs * 75), icon: Plane, border: 'border-cyan-200/80', bg: 'bg-cyan-50/50 dark:bg-cyan-950/20', text: 'text-cyan-700 dark:text-cyan-300' },
+      { key: 'communityFund', label: 'Community Fund', sub: 'Social Resp', pct: '15%', rate: '৳225', fill: '#6366f1', amount: fundPool?.communityFund ?? (totalActs * 225), icon: Users2, border: 'border-indigo-200/80', bg: 'bg-indigo-50/50 dark:bg-indigo-950/20', text: 'text-indigo-700 dark:text-indigo-300' },
+      { key: 'charityFund', label: 'Charity Fund', sub: 'Helping Humanity', pct: '1%', rate: '৳15', fill: '#ec4899', amount: fundPool?.charityFund ?? (totalActs * 15), icon: Heart, border: 'border-pink-200/80', bg: 'bg-pink-50/50 dark:bg-pink-950/20', text: 'text-pink-700 dark:text-pink-300' },
     ];
-  }, [fundPool]);
+  }, [fundPool, stats]);
 
   const totalFundPoolReserves = useMemo(() => {
     return fundPoolData.reduce((acc, curr) => acc + (curr.amount || 0), 0);
@@ -1164,14 +1171,14 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2">
                 <CardTitle className="text-base font-bold flex items-center gap-2">
                   <Globe className="h-5 w-5 text-indigo-600" />
-                  MLM Strategic Fund Pools
+                  Compensation & Fund Allocation
                 </CardTitle>
                 <span className="text-[10px] font-bold bg-primary/10 text-primary px-2.5 py-0.5 rounded-full">
                   55% Total Allocation (৳825/act)
                 </span>
               </div>
               <CardDescription className="text-xs mt-0.5">
-                Direct Referral 15% (৳225) + Generation 7% (৳105) credited to wallets · 33% (৳495) held across 8 company reserve pools
+                Full 10 Strategic Allocations: Refer Bonus 15% + Generation 7% + 8 Company Reserve Funds 33%
               </CardDescription>
             </div>
             <Button
@@ -1187,14 +1194,14 @@ export default function AdminDashboard() {
         </CardHeader>
         <CardContent className="space-y-5 pt-4">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
-            {/* Left: Donut Chart of Reserve Funds Distribution */}
+            {/* Left: Donut Chart of All 10 Funds & Allocations Distribution */}
             <div className="lg:col-span-4 flex flex-col items-center justify-center p-3 rounded-2xl border bg-muted/20">
               <div className="text-center mb-1">
                 <span className="text-xs font-black text-foreground block">
-                  Reserve Pools Allocation
+                  10 Funds & Allocations
                 </span>
                 <span className="text-[10px] text-muted-foreground">
-                  Proportional share of 33% reserve fund
+                  Proportional share of 55% compensation pool
                 </span>
               </div>
 
@@ -1252,7 +1259,7 @@ export default function AdminDashboard() {
                                 y={(viewBox.cy || 0) + 18}
                                 className="fill-muted-foreground text-[10px] font-bold"
                               >
-                                Total Reserves
+                                Total 55% Allocated
                               </tspan>
                             </text>
                           );
@@ -1265,45 +1272,50 @@ export default function AdminDashboard() {
 
               <div className="flex flex-wrap items-center justify-center gap-1.5 text-[9px] text-muted-foreground pt-1 border-t w-full">
                 <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-500" /> Refer 15%
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Gen 7%
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" /> Community 15%
                 </span>
                 <span>·</span>
                 <span className="flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-cyan-500" /> Tour 5%
                 </span>
-                <span>·</span>
-                <span className="flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-violet-500" /> Auto Club 3.5%
-                </span>
-                <span>·</span>
-                <span className="flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Rank Dev 2.5%
-                </span>
               </div>
             </div>
 
-            {/* Right: 8 Live Fund Pool Metrics Cards */}
-            <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              {fundPoolData.map(({ key, label, pct, rate, border, bg, text, amount, fill, icon: Icon }) => (
+            {/* Right: 10 Live Fund & Compensation Metric Cards */}
+            <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2.5">
+              {fundPoolData.map(({ key, label, sub, pct, rate, border, bg, text, amount, fill, icon: Icon }) => (
                 <div
                   key={key}
-                  className={`border ${border} ${bg} rounded-xl p-3 shadow-2xs hover:shadow-xs transition-all relative overflow-hidden`}
+                  className={`border ${border} ${bg} rounded-xl p-2.5 shadow-2xs hover:shadow-xs transition-all relative overflow-hidden flex flex-col justify-between`}
                 >
                   <div
                     className="absolute top-0 left-0 right-0 h-1"
                     style={{ backgroundColor: fill }}
                   />
-                  <div className="flex items-center justify-between mb-1.5 pt-0.5">
-                    <span className={`text-[10px] font-black tracking-wide ${text}`}>{pct}</span>
-                    <Icon className={`h-3.5 w-3.5 ${text}`} />
+                  <div>
+                    <div className="flex items-center justify-between mb-1 pt-0.5">
+                      <span className={`text-[10px] font-black tracking-wide ${text}`}>{pct}</span>
+                      <Icon className={`h-3.5 w-3.5 ${text}`} />
+                    </div>
+                    <div className={`text-base font-black ${text}`}>
+                      {fundLoading ? '...' : `৳${Math.round(amount).toLocaleString()}`}
+                    </div>
+                    <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mt-0.5 truncate leading-tight">
+                      {label}
+                    </p>
+                    <p className="text-[9px] text-muted-foreground font-medium truncate">{sub}</p>
                   </div>
-                  <div className={`text-base sm:text-lg font-black ${text}`}>
-                    {fundLoading ? '...' : `৳${(fundPool?.[key] ?? 0).toLocaleString()}`}
+                  <div className="mt-1.5 pt-1 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between">
+                    <span className="text-[9px] font-semibold text-slate-500 dark:text-slate-400">{rate}/act</span>
                   </div>
-                  <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mt-1 truncate">
-                    {label}
-                  </p>
-                  <p className="text-[9px] text-muted-foreground font-medium">{rate}/act</p>
                 </div>
               ))}
             </div>
@@ -1314,7 +1326,7 @@ export default function AdminDashboard() {
               <p>
                 Total Package Activations: <strong className="text-foreground">{fundPool.totalActivations} members</strong> (৳{(fundPool.totalActivations * 1500).toLocaleString()})
                 {' · '}
-                Per activation: <strong>৳825 distributed (55%)</strong> + <strong className="text-emerald-600">৳675 company net (45%)</strong>
+                Per activation: <strong className="text-primary">৳825 distributed across 10 funds (55%)</strong> + <strong className="text-emerald-600">৳675 company net (45%)</strong>
               </p>
               {fundPool.lastUpdated && (
                 <p className="text-[10px] text-muted-foreground">
