@@ -60,6 +60,8 @@ import {
   Sparkles,
   ShieldCheck,
   CheckCircle2,
+  CreditCard,
+  ExternalLink,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1269,6 +1271,173 @@ export default function AdminDashboard() {
                   Last updated: {new Date(fundPool.lastUpdated).toLocaleTimeString()}
                 </p>
               )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ─── Recent Withdrawal History (Latest 5-10 Requests) ─────────────── */}
+      <Card className="border shadow-xs overflow-hidden">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b bg-muted/10 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-base font-bold flex items-center gap-2">
+                <Receipt className="h-5 w-5 text-purple-600" />
+                Recent Withdrawal History
+              </CardTitle>
+              <Badge variant="outline" className="text-[10px] font-bold border-purple-300 text-purple-700 bg-purple-50">
+                Latest 10 Requests
+              </Badge>
+            </div>
+            <CardDescription className="text-xs mt-0.5">
+              Live payouts, MFS account numbers, community reserve deductions, and approval statuses
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link href="/admin/withdrawals">
+              <Button variant="outline" size="sm" className="h-8 text-xs font-bold gap-1.5 border-purple-300 hover:bg-purple-50 text-purple-700 dark:text-purple-300 cursor-pointer">
+                <span>Withdrawal Queue</span>
+                {(stats?.pendingWithdrawalsCount || 0) > 0 && (
+                  <Badge className="bg-purple-600 text-white text-[10px] px-1.5 py-0 h-4">
+                    {stats?.pendingWithdrawalsCount}
+                  </Badge>
+                )}
+                <ExternalLink className="h-3.5 w-3.5 ml-0.5" />
+              </Button>
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          {(!data?.recentWithdrawals || data.recentWithdrawals.length === 0) ? (
+            <div className="h-44 flex flex-col items-center justify-center text-center p-6 text-muted-foreground">
+              <ArrowDownLeft className="h-8 w-8 text-muted-foreground/40 mb-2" />
+              <p className="text-xs font-bold text-foreground">No Withdrawal History Found</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Member withdrawal requests will appear here with full account and payout details.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground border-b font-bold">
+                  <tr>
+                    <th className="py-3 px-4">Member</th>
+                    <th className="py-3 px-4">Payment Method & Account</th>
+                    <th className="py-3 px-4">Gross Amount</th>
+                    <th className="py-3 px-4">Community Fee (10%)</th>
+                    <th className="py-3 px-4">Net Payout</th>
+                    <th className="py-3 px-4">Date & Time</th>
+                    <th className="py-3 px-4 text-center">Status</th>
+                    <th className="py-3 px-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {data.recentWithdrawals.map((tx: any) => {
+                    const gross = tx.amount || 0;
+                    const fee = Math.round(gross * 0.10 * 100) / 100;
+                    const net = Math.round((gross - fee) * 100) / 100;
+                    const userObj = tx.userId || {};
+                    const desc = tx.description || '';
+
+                    // Extract payment method from description or fallback
+                    let method = 'MFS / Bank';
+                    let account = '';
+                    const methodMatch = desc.match(/to\s+([A-Za-z0-9_\-]+)\s*\(([^)]+)\)/i);
+                    if (methodMatch) {
+                      method = methodMatch[1].toUpperCase();
+                      account = methodMatch[2];
+                    } else if (desc.toLowerCase().includes('bkash')) {
+                      method = 'BKASH';
+                    } else if (desc.toLowerCase().includes('nagad')) {
+                      method = 'NAGAD';
+                    } else if (desc.toLowerCase().includes('rocket')) {
+                      method = 'ROCKET';
+                    }
+
+                    return (
+                      <tr key={tx._id} className="hover:bg-muted/30 transition-colors">
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-2.5">
+                            <div className="h-8 w-8 rounded-full bg-purple-500/10 text-purple-700 flex items-center justify-center font-black text-xs shrink-0">
+                              {(userObj.name || 'U').charAt(0).toUpperCase()}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-bold text-foreground truncate max-w-[140px]">
+                                {userObj.name || 'Unknown User'}
+                              </p>
+                              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                                <span className="font-mono font-medium">{userObj.memberId || 'N/A'}</span>
+                                {userObj.rank && (
+                                  <>
+                                    <span>·</span>
+                                    <span className="text-primary font-semibold truncate max-w-[100px]">{userObj.rank}</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="space-y-0.5">
+                            <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">
+                              {method}
+                            </Badge>
+                            {account ? (
+                              <p className="font-mono text-[11px] text-slate-700 dark:text-slate-300 font-semibold">{account}</p>
+                            ) : (
+                              <p className="text-[10px] text-muted-foreground truncate max-w-[150px]">{desc || 'Direct Withdrawal'}</p>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 font-mono font-bold text-foreground">
+                          ৳{gross.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-4 font-mono text-indigo-600 dark:text-indigo-400 font-semibold">
+                          -৳{fee.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-4 font-mono font-black text-emerald-600 dark:text-emerald-400 text-sm">
+                          ৳{net.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-4 text-muted-foreground text-[11px] whitespace-nowrap">
+                          {tx.createdAt ? format(new Date(tx.createdAt), 'dd MMM yyyy, hh:mm a') : 'N/A'}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          {tx.status === 'completed' && (
+                            <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+                              Paid
+                            </Badge>
+                          )}
+                          {tx.status === 'pending' && (
+                            <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 text-[10px] font-bold animate-pulse">
+                              Pending
+                            </Badge>
+                          )}
+                          {tx.status === 'failed' && (
+                            <Badge className="bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20 text-[10px] font-bold">
+                              Rejected
+                            </Badge>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          {tx.status === 'pending' ? (
+                            <Link href="/admin/withdrawals">
+                              <Button size="sm" variant="default" className="h-7 px-2.5 text-[11px] bg-primary hover:bg-primary/90 text-white font-bold cursor-pointer">
+                                Review
+                              </Button>
+                            </Link>
+                          ) : (
+                            <Link href="/admin/withdrawals">
+                              <Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer">
+                                Details
+                              </Button>
+                            </Link>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </CardContent>

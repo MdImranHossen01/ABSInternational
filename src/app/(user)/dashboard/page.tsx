@@ -49,6 +49,7 @@ import {
   Check,
   Zap,
   Crown,
+  Receipt,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -998,6 +999,131 @@ export default function UserDashboard() {
               <span className="text-[9px] text-muted-foreground">1% social welfare allocation</span>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* ─── 8. Recent Withdrawal History ─────────────────────────────────── */}
+      <Card className="border shadow-xs overflow-hidden">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b bg-muted/10 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-base font-bold flex items-center gap-2">
+                <Receipt className="h-5 w-5 text-purple-600" />
+                Recent Withdrawal History
+              </CardTitle>
+              <Badge variant="outline" className="text-[10px] font-bold border-purple-300 text-purple-700 bg-purple-50">
+                Latest 10 Requests
+              </Badge>
+            </div>
+            <CardDescription className="text-xs mt-0.5">
+              Your recent cashout requests, payment gateways, community fee deductions, and current status
+            </CardDescription>
+          </div>
+          <Link href="/dashboard/withdraw-history">
+            <Button variant="outline" size="sm" className="h-8 text-xs font-bold gap-1.5 border-purple-300 hover:bg-purple-50 text-purple-700 dark:text-purple-300">
+              <span>View Full History</span>
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
+        </CardHeader>
+        <CardContent className="p-0">
+          {(!fundsData?.recentWithdrawals || fundsData.recentWithdrawals.length === 0) ? (
+            <div className="h-40 flex flex-col items-center justify-center text-center p-6 text-muted-foreground">
+              <ArrowDownLeft className="h-8 w-8 text-muted-foreground/40 mb-2" />
+              <p className="text-xs font-bold text-foreground">No Withdrawal Records Yet</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                When you submit a withdrawal from your Withdrawal Wallet, your payout details will show here.
+              </p>
+              <Link href="/dashboard/withdraw" className="mt-3">
+                <Button size="sm" className="h-7 text-xs bg-primary text-white font-semibold">
+                  Request Cashout
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground border-b font-bold">
+                  <tr>
+                    <th className="py-3 px-4">Gateway & Details</th>
+                    <th className="py-3 px-4">Gross Requested</th>
+                    <th className="py-3 px-4">Community Fee (10%)</th>
+                    <th className="py-3 px-4">Net Payout</th>
+                    <th className="py-3 px-4">Date & Time</th>
+                    <th className="py-3 px-4 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {fundsData.recentWithdrawals.map((tx: any) => {
+                    const gross = tx.amount || 0;
+                    const fee = Math.round(gross * 0.10 * 100) / 100;
+                    const net = Math.round((gross - fee) * 100) / 100;
+                    const desc = tx.description || '';
+
+                    let method = 'MFS / Bank';
+                    let account = '';
+                    const methodMatch = desc.match(/to\s+([A-Za-z0-9_\-]+)\s*\(([^)]+)\)/i);
+                    if (methodMatch) {
+                      method = methodMatch[1].toUpperCase();
+                      account = methodMatch[2];
+                    } else if (desc.toLowerCase().includes('bkash')) {
+                      method = 'BKASH';
+                    } else if (desc.toLowerCase().includes('nagad')) {
+                      method = 'NAGAD';
+                    } else if (desc.toLowerCase().includes('rocket')) {
+                      method = 'ROCKET';
+                    }
+
+                    return (
+                      <tr key={tx._id} className="hover:bg-muted/30 transition-colors">
+                        <td className="py-3 px-4">
+                          <div className="space-y-0.5">
+                            <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">
+                              {method}
+                            </Badge>
+                            {account ? (
+                              <p className="font-mono text-[11px] text-slate-700 dark:text-slate-300 font-semibold">{account}</p>
+                            ) : (
+                              <p className="text-[10px] text-muted-foreground truncate max-w-[200px]">{desc || 'Withdrawal'}</p>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 font-mono font-bold text-foreground">
+                          ৳{gross.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-4 font-mono text-indigo-600 dark:text-indigo-400 font-semibold">
+                          -৳{fee.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-4 font-mono font-black text-emerald-600 dark:text-emerald-400 text-sm">
+                          ৳{net.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-4 text-muted-foreground text-[11px] whitespace-nowrap">
+                          {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          {tx.status === 'completed' && (
+                            <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+                              Paid
+                            </Badge>
+                          )}
+                          {tx.status === 'pending' && (
+                            <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 text-[10px] font-bold animate-pulse">
+                              Pending
+                            </Badge>
+                          )}
+                          {tx.status === 'failed' && (
+                            <Badge className="bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20 text-[10px] font-bold">
+                              Rejected
+                            </Badge>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

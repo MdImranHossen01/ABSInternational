@@ -383,6 +383,13 @@ export async function GET(req: NextRequest) {
     const totalInflow = packageActivationsRevenue + completedDepositAmount + totalRevenue;
     const totalSystemWallets = totalDepositWallet + totalBonusWallet + totalWithdrawalWallet;
 
+    // 16. Recent Withdrawals (Latest 10 with user details)
+    const recentWithdrawals = await WalletTransaction.find({ type: 'withdrawal' })
+      .populate('userId', 'name email memberId phone avatar rank')
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean();
+
     return NextResponse.json({
       stats: {
         totalRevenue,
@@ -426,6 +433,7 @@ export async function GET(req: NextRequest) {
         orderStatusDistribution,
       },
       recentOrders,
+      recentWithdrawals,
       lowStockProducts,
       topSellingProducts,
       topCustomers,
