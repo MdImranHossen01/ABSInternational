@@ -96,6 +96,22 @@ export async function PUT(req: NextRequest) {
       fundPool.lastUpdated = new Date();
       await fundPool.save();
 
+      // Automatically record approved payout as credit on company Bank Ledger
+      try {
+        const { logLedgerTransaction } = await import('@/lib/ledgerHelper');
+        const user = await User.findById(tx.userId).lean();
+        await logLedgerTransaction(
+          'BANK',
+          'credit',
+          netPayout,
+          `Member Payout - ${(user as any)?.name || 'Member'} (${(user as any)?.memberId || 'N/A'}) via ${(tx as any).paymentMethod || 'MFS/Bank'}`,
+          `WTH-${tx._id.toString()}`,
+          tx.createdAt || new Date()
+        );
+      } catch (ledgerErr) {
+        console.error('Error logging withdrawal to ledger:', ledgerErr);
+      }
+
       // 2. Notify user with net payout and community fund fee breakdown
       await createNotification({
         userId: tx.userId,

@@ -546,76 +546,91 @@ export default function AdminDashboard() {
       {/* ─── 6 Core Executive KPI Cards (2 Rows × 3 Cards) ───────────────── */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {/* Card 1: Total Inflow */}
-        <Card className="border border-emerald-500/20 bg-linear-to-b from-emerald-500/10 via-emerald-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <span className="text-xs uppercase font-bold text-emerald-800 dark:text-emerald-300 tracking-wider">
-              Total Inflow
-            </span>
-            <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600">
-              <Coins className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-1.5">
-            <div className="text-2xl sm:text-3xl font-black text-emerald-950 dark:text-emerald-100">
-              ৳{(stats?.totalInflow || 0).toLocaleString()}
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-tight">
-              Activations: <strong>৳{(stats?.packageActivationsRevenue || 0).toLocaleString()}</strong> · Deposits: <strong>৳{(stats?.completedDepositAmount || 0).toLocaleString()}</strong>
-            </p>
-            <div className="pt-1 flex items-center gap-1.5 text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">
-              <ArrowUpRight className="h-3.5 w-3.5" />
-              <span>{stats?.activeSubscribers || 0} Premium Activations + Store Sales</span>
-            </div>
-          </CardContent>
-        </Card>
+        <Link href="/admin/deposits" className="block group">
+          <Card className="border border-emerald-500/20 bg-linear-to-b from-emerald-500/10 via-emerald-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full cursor-pointer">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <span className="text-xs uppercase font-bold text-emerald-800 dark:text-emerald-300 tracking-wider">
+                Total Inflow
+              </span>
+              <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                <Coins className="h-4 w-4" />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-1.5">
+              <div className="text-2xl sm:text-3xl font-black text-emerald-950 dark:text-emerald-100">
+                ৳{(stats?.totalInflow || 0).toLocaleString()}
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-tight">
+                Activations: <strong>৳{(stats?.packageActivationsRevenue || 0).toLocaleString()}</strong> · Deposits: <strong>৳{(stats?.completedDepositAmount || 0).toLocaleString()}</strong>
+              </p>
+              <div className="pt-1 flex items-center justify-between text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">
+                <span className="flex items-center gap-1.5">
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                  <span>{stats?.activeSubscribers || 0} Premium Activations + Store Sales</span>
+                </span>
+                <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Card 2: Total Balances in Wallets */}
-        <Card className="border border-blue-500/20 bg-linear-to-b from-blue-500/10 via-blue-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <span className="text-xs uppercase font-bold text-blue-800 dark:text-blue-300 tracking-wider">
-              System Balances
-            </span>
-            <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600">
-              <Wallet className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-1.5">
-            <div className="text-2xl sm:text-3xl font-black text-blue-950 dark:text-blue-100">
-              ৳{(stats?.totalSystemWallets || 0).toLocaleString()}
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-tight">
-              Deposit: <strong>৳{(stats?.totalDepositWallet || 0).toLocaleString()}</strong> · Bonus: <strong>৳{Math.round(stats?.totalBonusWallet || 0).toLocaleString()}</strong>
-            </p>
-            <div className="pt-1 flex items-center gap-1.5 text-[10px] text-blue-700 dark:text-blue-400 font-semibold">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              <span>Withdrawable Reserve: ৳{(stats?.totalWithdrawalWallet || 0).toLocaleString()}</span>
-            </div>
-          </CardContent>
-        </Card>
+        <Link href="/admin/ledger" className="block group">
+          <Card className="border border-blue-500/20 bg-linear-to-b from-blue-500/10 via-blue-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full cursor-pointer">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <span className="text-xs uppercase font-bold text-blue-800 dark:text-blue-300 tracking-wider">
+                System Balances
+              </span>
+              <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+                <Wallet className="h-4 w-4" />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-1.5">
+              <div className="text-2xl sm:text-3xl font-black text-blue-950 dark:text-blue-100">
+                ৳{(stats?.totalSystemWallets || 0).toLocaleString()}
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-tight">
+                Deposit: <strong>৳{(stats?.totalDepositWallet || 0).toLocaleString()}</strong> · Bonus: <strong>৳{Math.round(stats?.totalBonusWallet || 0).toLocaleString()}</strong>
+              </p>
+              <div className="pt-1 flex items-center justify-between text-[10px] text-blue-700 dark:text-blue-400 font-semibold">
+                <span className="flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  <span>Withdrawable Reserve: ৳{(stats?.totalWithdrawalWallet || 0).toLocaleString()}</span>
+                </span>
+                <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Card 3: Total Bonus Wallet (All Users Accumulated) */}
-        <Card className="border border-amber-500/20 bg-linear-to-b from-amber-500/10 via-amber-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <span className="text-xs uppercase font-bold text-amber-800 dark:text-amber-300 tracking-wider">
-              Total Bonus Wallet
-            </span>
-            <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600">
-              <Sparkles className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-1.5">
-            <div className="text-2xl sm:text-3xl font-black text-amber-950 dark:text-amber-100">
-              ৳{Math.round(stats?.totalBonusWallet || 0).toLocaleString()}
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-tight">
-              Accumulated earnings stored across all member bonus wallets
-            </p>
-            <div className="pt-1 flex items-center gap-1.5 text-[10px] text-amber-700 dark:text-amber-400 font-semibold">
-              <Coins className="h-3.5 w-3.5" />
-              <span>Auto-Convert Rule: ≥ ৳500 to Withdrawal Wallet</span>
-            </div>
-          </CardContent>
-        </Card>
+        <Link href="/admin/users" className="block group">
+          <Card className="border border-amber-500/20 bg-linear-to-b from-amber-500/10 via-amber-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full cursor-pointer">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <span className="text-xs uppercase font-bold text-amber-800 dark:text-amber-300 tracking-wider">
+                Total Bonus Wallet
+              </span>
+              <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
+                <Sparkles className="h-4 w-4" />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-1.5">
+              <div className="text-2xl sm:text-3xl font-black text-amber-950 dark:text-amber-100">
+                ৳{Math.round(stats?.totalBonusWallet || 0).toLocaleString()}
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-tight">
+                Accumulated earnings stored across all member bonus wallets
+              </p>
+              <div className="pt-1 flex items-center justify-between text-[10px] text-amber-700 dark:text-amber-400 font-semibold">
+                <span className="flex items-center gap-1.5">
+                  <Coins className="h-3.5 w-3.5" />
+                  <span>Auto-Convert Rule: ≥ ৳500 to Withdrawal Wallet</span>
+                </span>
+                <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Card 4: Total Withdraw */}
         <Link href="/admin/withdrawals" className="block group">

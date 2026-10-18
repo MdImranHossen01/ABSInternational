@@ -60,6 +60,21 @@ export async function PUT(req: NextRequest) {
         user.depositWallet += tx.amount;
         await user.save();
       }
+
+      // Automatically record approved deposit into company Bank Ledger
+      try {
+        const { logLedgerTransaction } = await import('@/lib/ledgerHelper');
+        await logLedgerTransaction(
+          'BANK',
+          'debit',
+          tx.amount,
+          `Member Deposit - ${user?.name || 'Member'} (${user?.memberId || 'N/A'})`,
+          `DEP-${tx._id.toString()}`,
+          tx.createdAt || new Date()
+        );
+      } catch (ledgerErr) {
+        console.error('Error logging deposit to ledger:', ledgerErr);
+      }
       await createNotification({
         userId: tx.userId,
         title: 'Deposit Approved',
