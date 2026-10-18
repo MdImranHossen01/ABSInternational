@@ -160,7 +160,112 @@ export async function GET(req: NextRequest) {
     const pendingKycCount = await User.countDocuments({ nidStatus: 'Pending' });
     const charityFund = activeSubscribers * 15;
 
-    // 10. Top Selling Products
+    // 10. Rank Distribution (Member count per rank)
+    const ranksMasterList = [
+      'user',
+      'Premium Member',
+      'Team Manager',
+      'Royal Manager',
+      'Silver Manager',
+      'Gold Manager',
+      'Diamond Manager',
+      'Crown Manager',
+      'Director'
+    ];
+    const rankAgg = await User.aggregate([
+      { $group: { _id: { $ifNull: ['$rank', 'user'] }, count: { $sum: 1 } } }
+    ]);
+    const rankMap: Record<string, number> = {};
+    rankAgg.forEach((r: any) => {
+      rankMap[r._id] = r.count;
+    });
+    const rankDistribution = ranksMasterList.map((rankId) => ({
+      rank: rankId,
+      label: rankId === 'user' ? 'General Member' : rankId,
+      count: rankMap[rankId] || 0
+    }));
+
+    // 11. Complete Withdrawal Breakdown (Completed vs Pending vs Failed)
+    const withdrawalSummaryAgg = await WalletTransaction.aggregate([
+      { $match: { type: 'withdrawal' } },
+      {
+        $group: {
+          _id: '$status',
+          totalAmount: { $sum: '$amount' },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+    let completedWithdrawalAmount = 0;
+    let completedWithdrawalsCount = 0;
+    let pendingWithdrawalAmount = 0;
+    let rejectedWithdrawalAmount = 0;
+
+    withdrawalSummaryAgg.forEach((w: any) => {
+      if (w._id === 'completed') {
+        completedWithdrawalAmount = w.totalAmount;
+        completedWithdrawalsCount = w.count;
+      } else if (w._id === 'pending') {
+        pendingWithdrawalAmount = w.totalAmount;
+      } else if (w._id === 'failed') {
+        rejectedWithdrawalAmount = w.totalAmount;
+      }
+    });
+
+    // 12. Deposit Breakdown
+    const depositSummaryAgg = await WalletTransaction.aggregate([
+      { $match: { type: 'deposit' } },
+      {
+        $group: {
+          _id: '$status',
+          totalAmount: { $sum: '$amount' },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+    let completedDepositAmount = 0;
+    let completedDepositsCount = 0;
+    let pendingDepositAmount = 0;
+
+    depositSummaryAgg.forEach((d: any) => {
+      if (d._id === 'completed') {
+        completedDepositAmount = d.totalAmount;
+        completedDepositsCount = d.count;
+      } else if (d._id === 'pending') {
+        pendingDepositAmount = d.totalAmount;
+      }
+    });
+
+    // 13. Order Status Breakdown & Units Sold
+    const orderStatusAgg = await Order.aggregate([
+      { $match: { deletedAt: null } },
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+          totalAmount: { $sum: '$totalAmount' }
+        }
+      }
+    ]);
+    const orderStatusDistribution = orderStatusAgg.map((o: any) => ({
+      status: o._id,
+      count: o.count,
+      totalAmount: o.totalAmount
+    }));
+
+    const productUnitsAgg = await Order.aggregate([
+      { $match: { deletedAt: null, status: { $in: ['Paid', 'Confirmed', 'Ready for Delivery', 'Released for Delivery', 'Delivered'] } } },
+      { $unwind: '$items' },
+      {
+        $group: {
+          _id: null,
+          totalUnits: { $sum: '$items.quantity' }
+        }
+      }
+    ]);
+    const totalUnitsSold = productUnitsAgg[0]?.totalUnits || 0;
+
+    // 14. Top Selling Products
     const topSellingProducts = await Order.aggregate([
       { $match: { status: { $in: ['Paid', 'Confirmed', 'Ready for Delivery', 'Released for Delivery', 'Delivered'] }, createdAt: { $gte: startDate, $lte: endDate }, deletedAt: null } },
       { $unwind: '$items' },
@@ -175,7 +280,7 @@ export async function GET(req: NextRequest) {
       { $limit: 5 }
     ]);
 
-    // 11. Top Customers
+    // 15. Top Customers
     const topCustomers = await Order.aggregate([
       { $match: { status: { $in: ['Paid', 'Confirmed', 'Ready for Delivery', 'Released for Delivery', 'Delivered'] }, createdAt: { $gte: startDate, $lte: endDate }, deletedAt: null } },
       {
@@ -274,10 +379,15 @@ export async function GET(req: NextRequest) {
     const avgDailyRevenue = totalRevenue / daysInRange;
     const projectedMonthlyRevenue = avgDailyRevenue * 30;
 
+    const packageActivationsRevenue = activeSubscribers * 1500;
+    const totalInflow = packageActivationsRevenue + completedDepositAmount + totalRevenue;
+    const totalSystemWallets = totalDepositWallet + totalBonusWallet + totalWithdrawalWallet;
+
     return NextResponse.json({
       stats: {
         totalRevenue,
         salesCount,
+        totalUnitsSold,
         totalUsers,
         pendingOrdersCount,
         activeSubscribers,
@@ -297,7 +407,23 @@ export async function GET(req: NextRequest) {
         charityFund,
         totalDepositWallet,
         totalBonusWallet,
-        totalWithdrawalWallet
+        totalWithdrawalWallet,
+        totalSystemWallets,
+        // Inflow & Cash Metrics
+        packageActivationsRevenue,
+        totalInflow,
+        // Withdrawal Summary
+        completedWithdrawalAmount,
+        completedWithdrawalsCount,
+        pendingWithdrawalAmount,
+        rejectedWithdrawalAmount,
+        // Deposit Summary
+        completedDepositAmount,
+        completedDepositsCount,
+        pendingDepositAmount,
+        // Rank & Order Status Distributions
+        rankDistribution,
+        orderStatusDistribution,
       },
       recentOrders,
       lowStockProducts,
