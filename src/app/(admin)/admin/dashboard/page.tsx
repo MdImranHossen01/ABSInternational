@@ -505,11 +505,11 @@ export default function AdminDashboard() {
 
       {/* ─── 4 Core Financial & Operations Metric Cards ─────────────────────── */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Card 1: Total Inflow (কত টাকা আসছে) */}
+        {/* Card 1: Total Inflow */}
         <Card className="border border-emerald-500/20 bg-linear-to-b from-emerald-500/10 via-emerald-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <span className="text-xs uppercase font-bold text-emerald-800 dark:text-emerald-300 tracking-wider">
-              Total Inflow (মোট আয়)
+              Total Inflow
             </span>
             <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600">
               <Coins className="h-4 w-4" />
@@ -529,11 +529,11 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Card 2: Total Balances in Wallets (কত ব্যালেন্স আছে) */}
+        {/* Card 2: Total Balances in Wallets */}
         <Card className="border border-blue-500/20 bg-linear-to-b from-blue-500/10 via-blue-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <span className="text-xs uppercase font-bold text-blue-800 dark:text-blue-300 tracking-wider">
-              System Balances (মোট ব্যালেন্স)
+              System Balances
             </span>
             <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600">
               <Wallet className="h-4 w-4" />
@@ -553,12 +553,12 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Card 3: Total Withdrawn (কত টাকা উইথড্র হয়েছে) */}
+        {/* Card 3: Total Withdrawn */}
         <Link href="/admin/withdrawals" className="block group">
           <Card className="border border-purple-500/20 bg-linear-to-b from-purple-500/10 via-purple-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <span className="text-xs uppercase font-bold text-purple-800 dark:text-purple-300 tracking-wider">
-                Total Cashouts (উইথড্রয়াল)
+                Total Cashouts
               </span>
               <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
                 <ArrowDownLeft className="h-4 w-4" />
@@ -581,12 +581,12 @@ export default function AdminDashboard() {
           </Card>
         </Link>
 
-        {/* Card 4: Product Sales & Units (প্রোডাক্ট বিক্রয়) */}
+        {/* Card 4: Product Sales & Units */}
         <Link href="/admin/orders" className="block group">
           <Card className="border border-amber-500/20 bg-linear-to-b from-amber-500/10 via-amber-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <span className="text-xs uppercase font-bold text-amber-800 dark:text-amber-300 tracking-wider">
-                Product Sales (পণ্য বিক্রয়)
+                Product Sales
               </span>
               <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
                 <ShoppingBag className="h-4 w-4" />
@@ -619,7 +619,7 @@ export default function AdminDashboard() {
               <div>
                 <CardTitle className="text-base font-bold flex items-center gap-2">
                   <Award className="h-5 w-5 text-amber-500" />
-                  Members by Rank (পদবী অনুযায়ী মেম্বার)
+                  Members by Rank
                 </CardTitle>
                 <CardDescription className="text-xs">
                   Graphical member distribution across all 9 MLM ranks
@@ -703,7 +703,7 @@ export default function AdminDashboard() {
               <div>
                 <CardTitle className="text-base font-bold flex items-center gap-2">
                   <Coins className="h-5 w-5 text-emerald-500" />
-                  Capital Inflow vs Reserves (টাকা আসা বনাম তহবিল)
+                  Capital Inflow vs Reserves
                 </CardTitle>
                 <CardDescription className="text-xs">
                   Proportional comparison of incoming funds, wallet balances, and payouts
@@ -759,7 +759,7 @@ export default function AdminDashboard() {
                 <div className="p-2.5 rounded-xl border bg-emerald-50/40 border-emerald-200/60 dark:bg-emerald-950/20">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-emerald-500" /> Total Inflow (আগম)
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" /> Total Inflow
                     </span>
                     <span className="font-mono font-black text-emerald-950 dark:text-emerald-100">
                       ৳{(stats?.totalInflow || 0).toLocaleString()}
@@ -771,7 +771,7 @@ export default function AdminDashboard() {
                 <div className="p-2.5 rounded-xl border bg-blue-50/40 border-blue-200/60 dark:bg-blue-950/20">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-blue-800 dark:text-blue-300 flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-blue-500" /> Wallet Reserves (তহবিল)
+                      <span className="h-2 w-2 rounded-full bg-blue-500" /> Wallet Reserves
                     </span>
                     <span className="font-mono font-black text-blue-950 dark:text-blue-100">
                       ৳{(stats?.totalSystemWallets || 0).toLocaleString()}
@@ -783,7 +783,7 @@ export default function AdminDashboard() {
                 <div className="p-2.5 rounded-xl border bg-purple-50/40 border-purple-200/60 dark:bg-purple-950/20">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-purple-800 dark:text-purple-300 flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-purple-500" /> Total Paid Out (উইথড্র)
+                      <span className="h-2 w-2 rounded-full bg-purple-500" /> Total Paid Out
                     </span>
                     <span className="font-mono font-black text-purple-950 dark:text-purple-100">
                       ৳{(stats?.completedWithdrawalAmount || 0).toLocaleString()}
@@ -808,7 +808,7 @@ export default function AdminDashboard() {
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-bold flex items-center gap-2">
               <Layers className="h-5 w-5 text-primary" />
-              Member Wallets Allocation (ওয়ালেট ব্যালেন্স বিভাজন)
+              Member Wallets Allocation
             </CardTitle>
             <CardDescription className="text-xs">
               Live balances stored in Deposit, Bonus, and Withdrawal wallets
@@ -877,7 +877,7 @@ export default function AdminDashboard() {
               <div>
                 <CardTitle className="text-base font-bold flex items-center gap-2">
                   <Package className="h-5 w-5 text-amber-500" />
-                  Order Pipeline & Sales Volume (পণ্য বিক্রয় পাইপলাইন)
+                  Order Pipeline & Sales Volume
                 </CardTitle>
                 <CardDescription className="text-xs">
                   Real-time status of orders and customer product purchases
@@ -1059,7 +1059,7 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2">
                 <CardTitle className="text-base font-bold flex items-center gap-2">
                   <Globe className="h-5 w-5 text-indigo-600" />
-                  MLM Strategic Fund Pools (কোম্পানি ফান্ড রিজার্ভ)
+                  MLM Strategic Fund Pools
                 </CardTitle>
                 <span className="text-[10px] font-bold bg-primary/10 text-primary px-2.5 py-0.5 rounded-full">
                   55% Total Allocation (৳825/act)

@@ -1,9 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import {
+  CartesianGrid,
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  Pie,
+  PieChart,
+  RadialBar,
+  RadialBarChart,
+  PolarGrid,
+  PolarRadiusAxis,
+  XAxis,
+  YAxis,
+  Cell,
+  Label,
+  LabelList,
+} from 'recharts';
 import {
   Package,
   Loader2,
@@ -28,14 +46,47 @@ import {
   CheckCircle2,
   Clock,
   Copy,
-  Check
+  Check,
+  Zap,
+  Crown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from '@/components/ui/chart';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
+import { format } from 'date-fns';
+
+// ─── Chart Configurations ───────────────────────────────────────────────────
+const incomeStreamConfig = {
+  bonus: { label: 'Bonus Amount' },
+  sponsor: { label: 'Sponsor Bonus (15%)', color: '#3b82f6' },
+  generation: { label: 'Generation Bonus (7%)', color: '#10b981' },
+  autoprofit: { label: 'Auto Club Matrix', color: '#8b5cf6' },
+  rank: { label: 'Rank Incentives', color: '#f59e0b' },
+  global: { label: 'Global Profit Share', color: '#06b6d4' },
+} satisfies ChartConfig;
+
+const rankRadialConfig = {
+  progress: { label: 'Rank Progress', color: '#f59e0b' },
+} satisfies ChartConfig;
+
+const userWalletBarConfig = {
+  deposit: { label: 'Deposit Wallet', color: '#10b981' },
+  bonus: { label: 'Bonus Wallet', color: '#f59e0b' },
+  withdrawal: { label: 'Withdrawal Wallet', color: '#8b5cf6' },
+} satisfies ChartConfig;
+
+const userTrendConfig = {
+  amount: { label: 'Daily Earnings', color: '#8b5cf6' },
+} satisfies ChartConfig;
 
 export default function UserDashboard() {
   const { data: session } = useSession();
@@ -150,7 +201,7 @@ export default function UserDashboard() {
       const res = await fetch('/api/user/activate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sponsorId: profile.sponsorId || '' })
+        body: JSON.stringify({ sponsorId: profile.sponsorId || '' }),
       });
       const data = await res.json();
 
@@ -159,12 +210,11 @@ export default function UserDashboard() {
           title: 'Success!',
           text: data.message,
           icon: 'success',
-          confirmButtonColor: 'var(--primary)'
+          confirmButtonColor: 'var(--primary)',
         });
-        // Reload details
         const [profileRes, fundsRes] = await Promise.all([
           fetch('/api/user/profile'),
-          fetch('/api/user/funds')
+          fetch('/api/user/funds'),
         ]);
         if (profileRes.ok) setProfile(await profileRes.json());
         if (fundsRes.ok) setFundsData(await fundsRes.json());
@@ -173,7 +223,7 @@ export default function UserDashboard() {
           title: 'Activation Failed',
           text: data.message || 'Something went wrong.',
           icon: 'error',
-          confirmButtonColor: 'var(--primary)'
+          confirmButtonColor: 'var(--primary)',
         });
       }
     } catch (err) {
@@ -186,26 +236,102 @@ export default function UserDashboard() {
   const getRankProgress = () => {
     if (!profile) return 0;
     switch (profile.rank) {
-      case 'user': return 0;
-      case 'Premium Member': return Math.min(100, Math.round(((profile.directCount || 0) / 6) * 100));
-      default: return Math.min(100, Math.round(((profile.directCount || 0) / 6) * 100));
+      case 'user':
+        return 0;
+      case 'Premium Member':
+        return Math.min(100, Math.round(((profile.directCount || 0) / 6) * 100));
+      default:
+        return Math.min(100, Math.round(((profile.directCount || 0) / 6) * 100));
     }
   };
 
   const getNextRank = () => {
     if (!profile) return 'Premium Member';
     switch (profile.rank) {
-      case 'user': return 'Premium Member';
-      case 'Premium Member': return 'Team Manager';
-      case 'Team Manager': return 'Royal Manager';
-      case 'Royal Manager': return 'Silver Manager';
-      case 'Silver Manager': return 'Gold Manager';
-      case 'Gold Manager': return 'Diamond Manager';
-      case 'Diamond Manager': return 'Crown Manager';
-      case 'Crown Manager': return 'Director';
-      default: return 'Top Rank Achieved';
+      case 'user':
+        return 'Premium Member';
+      case 'Premium Member':
+        return 'Team Manager';
+      case 'Team Manager':
+        return 'Royal Manager';
+      case 'Royal Manager':
+        return 'Silver Manager';
+      case 'Silver Manager':
+        return 'Gold Manager';
+      case 'Gold Manager':
+        return 'Diamond Manager';
+      case 'Diamond Manager':
+        return 'Crown Manager';
+      case 'Crown Manager':
+        return 'Director';
+      default:
+        return 'Top Rank Achieved';
     }
   };
+
+  // 1. Income Stream Donut Chart Data
+  const incomeStreamData = useMemo(() => {
+    const s = fundsData?.summary;
+    const sponsor = s?.sponsorBonus || 0;
+    const gen = s?.generationBonus || 0;
+    const auto = s?.autoProfitBonus || 0;
+    const rank = s?.rankBonus || 0;
+    const global = s?.globalProfitBonus || 0;
+
+    const items = [
+      { name: 'Sponsor Bonus (15%)', amount: sponsor, fill: '#3b82f6' },
+      { name: 'Generation Bonus (7%)', amount: gen, fill: '#10b981' },
+      { name: 'Auto Club Matrix', amount: auto, fill: '#8b5cf6' },
+      { name: 'Rank Incentives', amount: rank, fill: '#f59e0b' },
+      { name: 'Global Profit', amount: global, fill: '#06b6d4' },
+    ].filter((it) => it.amount > 0);
+
+    if (!items.length) {
+      return [{ name: 'Pending Earnings', amount: 1, fill: '#cbd5e1' }];
+    }
+    return items;
+  }, [fundsData?.summary]);
+
+  // 2. Rank Radial Progress Data
+  const rankRadialData = useMemo(() => {
+    const pct = getRankProgress();
+    return [
+      {
+        name: 'Rank Progress',
+        value: pct,
+        fill: '#f59e0b',
+      },
+    ];
+  }, [profile]);
+
+  // 3. User Wallets Horizontal Bar Data
+  const userWalletsData = useMemo(() => {
+    return [
+      {
+        wallet: 'Deposit Wallet',
+        amount: Math.round(profile?.depositWallet || 0),
+        fill: '#10b981',
+      },
+      {
+        wallet: 'Bonus Wallet',
+        amount: Math.round((profile?.bonusWallet || 0) * 100) / 100,
+        fill: '#f59e0b',
+      },
+      {
+        wallet: 'Withdrawal Wallet',
+        amount: Math.round(profile?.withdrawalWallet || 0),
+        fill: '#8b5cf6',
+      },
+    ];
+  }, [profile]);
+
+  // 4. Daily Earnings 14-day Trend Data
+  const dailyTrendData = useMemo(() => {
+    return (fundsData?.dailyEarnings || []).map((d: any) => ({
+      date: d.date,
+      amount: d.amount || 0,
+    }));
+  }, [fundsData?.dailyEarnings]);
 
   if (loading) {
     return (
@@ -221,10 +347,11 @@ export default function UserDashboard() {
   const globalFunds = fundsData?.globalFunds || {};
   const totalEarned = fundsData?.summary?.totalIncome || profile?.bonusWallet || 0;
   const totalBonus = fundsData?.summary?.totalBonus || profile?.bonusWallet || 0;
+  const totalWithdrawn = fundsData?.summary?.completedWithdrawals || 0;
 
   return (
-    <div className="space-y-6">
-      {/* 1. Welcome Banner */}
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* ─── 1. Welcome Banner ─────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-linear-to-r from-primary via-primary/90 to-emerald-800 text-white shadow-lg">
         <div>
           <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -334,7 +461,7 @@ export default function UserDashboard() {
         </Card>
       )}
 
-      {/* Quick Action Buttons */}
+      {/* ─── 2. Quick Action Buttons ─────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 sm:gap-3">
         <Link href="/dashboard/deposit">
           <Button variant="outline" className="w-full h-16 flex-col gap-1 border-emerald-500/30 hover:bg-emerald-500/5 text-xs font-semibold">
@@ -360,24 +487,24 @@ export default function UserDashboard() {
             <span>My Tree</span>
           </Button>
         </Link>
-        <Link href="/dashboard/generation-bonus">
+        <Link href="/dashboard/total-bonus">
           <Button variant="outline" className="w-full h-16 flex-col gap-1 border-amber-500/30 hover:bg-amber-500/5 text-xs font-semibold">
             <Coins className="h-5 w-5 text-amber-600" />
-            <span>Generation Bonus</span>
+            <span>Bonus Wallet</span>
           </Button>
         </Link>
-        <Link href="/dashboard/rank-reward">
-          <Button variant="outline" className="w-full h-16 flex-col gap-1 border-rose-500/30 hover:bg-rose-500/5 text-xs font-semibold">
-            <Trophy className="h-5 w-5 text-rose-600" />
-            <span>Rank Rewards</span>
+        <Link href="/dashboard/withdraw-history">
+          <Button variant="outline" className="w-full h-16 flex-col gap-1 border-indigo-500/30 hover:bg-indigo-500/5 text-xs font-semibold">
+            <Activity className="h-5 w-5 text-indigo-600" />
+            <span>Withdraw History</span>
           </Button>
         </Link>
       </div>
 
-      {/* Financial Wallets & Income Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      {/* ─── 3. Financial Overview Cards ─────────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Income */}
-        <Link href="/dashboard/total-income" className="block group">
+        <Link href="/dashboard/total-bonus" className="block group">
           <Card className="h-full border border-primary/20 bg-linear-to-b from-primary/5 to-transparent transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:border-primary/40 cursor-pointer">
             <CardHeader className="pb-1">
               <CardTitle className="text-xs uppercase text-primary font-bold tracking-wider flex items-center justify-between">
@@ -392,18 +519,18 @@ export default function UserDashboard() {
           </Card>
         </Link>
 
-        {/* Total Bonus */}
+        {/* Bonus Wallet */}
         <Link href="/dashboard/total-bonus" className="block group">
-          <Card className="h-full border border-blue-500/20 bg-linear-to-b from-blue-500/5 to-transparent transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:border-blue-500/40 cursor-pointer">
+          <Card className="h-full border border-amber-500/20 bg-linear-to-b from-amber-500/5 to-transparent transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:border-amber-500/40 cursor-pointer">
             <CardHeader className="pb-1">
-              <CardTitle className="text-xs uppercase text-blue-700 dark:text-blue-400 font-bold tracking-wider flex items-center justify-between">
-                <span>Total Bonus</span>
-                <Coins className="h-4 w-4 text-blue-600 transition-transform group-hover:scale-110" />
+              <CardTitle className="text-xs uppercase text-amber-700 dark:text-amber-400 font-bold tracking-wider flex items-center justify-between">
+                <span>Bonus Wallet</span>
+                <Coins className="h-4 w-4 text-amber-600 transition-transform group-hover:scale-110" />
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl sm:text-3xl font-black text-blue-900 dark:text-blue-300">৳{totalBonus.toLocaleString()}</div>
-              <p className="text-[10px] text-muted-foreground mt-1">Available in bonus wallet</p>
+              <div className="text-2xl sm:text-3xl font-black text-amber-950 dark:text-amber-300">৳{totalBonus.toLocaleString()}</div>
+              <p className="text-[10px] text-muted-foreground mt-1">Available for auto-convert (≥ ৳500)</p>
             </CardContent>
           </Card>
         </Link>
@@ -424,131 +551,387 @@ export default function UserDashboard() {
           </Card>
         </Link>
 
-        {/* Available Bonus Wallet */}
-        <Link href="/dashboard/total-bonus" className="block group">
-          <Card className="h-full border border-amber-500/20 bg-linear-to-b from-amber-500/5 to-transparent transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:border-amber-500/40 cursor-pointer">
-            <CardHeader className="pb-1">
-              <CardTitle className="text-xs uppercase text-amber-700 dark:text-amber-400 font-bold tracking-wider flex items-center justify-between">
-                <span>Bonus Wallet</span>
-                <Award className="h-4 w-4 text-amber-600 transition-transform group-hover:scale-110" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl sm:text-3xl font-black text-amber-950 dark:text-amber-300">৳{(profile?.bonusWallet || 0).toLocaleString()}</div>
-              <p className="text-[10px] text-muted-foreground mt-1">Ready for withdrawal/transfer</p>
-            </CardContent>
-          </Card>
-        </Link>
-
         {/* Withdrawal Wallet */}
         <Link href="/dashboard/withdraw" className="block group">
           <Card className="h-full border border-purple-500/20 bg-linear-to-b from-purple-500/5 to-transparent transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:border-purple-500/40 cursor-pointer">
             <CardHeader className="pb-1">
               <CardTitle className="text-xs uppercase text-purple-700 dark:text-purple-400 font-bold tracking-wider flex items-center justify-between">
                 <span>Withdrawal Wallet</span>
-                <TrendingUp className="h-4 w-4 text-purple-600 transition-transform group-hover:scale-110" />
+                <ArrowDownLeft className="h-4 w-4 text-purple-600 transition-transform group-hover:scale-110" />
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl sm:text-3xl font-black text-purple-950 dark:text-purple-300">৳{(profile?.withdrawalWallet || 0).toLocaleString()}</div>
-              <p className="text-[10px] text-muted-foreground mt-1">Bank / bKash / Nagad</p>
+              <p className="text-[10px] text-muted-foreground mt-1">Cashout via bKash / Nagad / Rocket</p>
             </CardContent>
           </Card>
         </Link>
       </div>
 
-      {/* Team Performance & Rank Progress */}
+      {/* ─── 4. Smart Graphical Charts Row 1: Income Stream Donut & Rank Radial ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Team Performance */}
-        <Card>
+        {/* Chart 1: Income Stream Breakdown (Donut Chart with Center Total) */}
+        <Card className="flex flex-col border shadow-xs">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  <Coins className="h-5 w-5 text-primary" />
+                  Income Stream Breakdown
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Sources of earnings generated from downlines, generation matrix, and club pools
+                </CardDescription>
+              </div>
+              <Badge variant="outline" className="border-primary/20 text-primary font-bold text-xs">
+                Total: ৳{totalEarned.toLocaleString()}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="flex-1 pb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4">
+              <ChartContainer config={incomeStreamConfig} className="mx-auto aspect-square max-h-[220px]">
+                <PieChart>
+                  <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                  <Pie
+                    data={incomeStreamData}
+                    dataKey="amount"
+                    nameKey="name"
+                    innerRadius={55}
+                    outerRadius={80}
+                    strokeWidth={3}
+                  >
+                    <Label
+                      content={({ viewBox }) => {
+                        if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+                          return (
+                            <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                              <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-2xl font-black">
+                                ৳{totalEarned.toLocaleString()}
+                              </tspan>
+                              <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 18} className="fill-muted-foreground text-[10px] font-bold">
+                                Total Income
+                              </tspan>
+                            </text>
+                          );
+                        }
+                      }}
+                    />
+                  </Pie>
+                </PieChart>
+              </ChartContainer>
+
+              {/* Bonus Breakdown Legend */}
+              <div className="space-y-2">
+                {[
+                  { label: 'Sponsor Bonus (15%)', amount: fundsData?.summary?.sponsorBonus || 0, color: '#3b82f6' },
+                  { label: 'Generation Bonus (7%)', amount: fundsData?.summary?.generationBonus || 0, color: '#10b981' },
+                  { label: 'Auto Club Matrix (3.5%)', amount: fundsData?.summary?.autoProfitBonus || 0, color: '#8b5cf6' },
+                  { label: 'Rank Incentives', amount: fundsData?.summary?.rankBonus || 0, color: '#f59e0b' },
+                  { label: 'Global Profit Share', amount: fundsData?.summary?.globalProfitBonus || 0, color: '#06b6d4' },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center justify-between text-xs p-1.5 rounded-lg hover:bg-muted/40 transition-colors">
+                    <div className="flex items-center gap-2 truncate">
+                      <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+                      <span className="font-medium text-slate-700 dark:text-slate-300 truncate">{item.label}</span>
+                    </div>
+                    <span className="font-mono font-bold text-foreground shrink-0">৳{item.amount.toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="pt-2 border-t text-[11px] text-muted-foreground flex justify-between items-center">
+            <span>Ready for Cashout: <strong className="text-purple-600">৳{(profile?.withdrawalWallet || 0).toLocaleString()}</strong></span>
+            <span>Total Withdrawn: <strong className="text-foreground">৳{totalWithdrawn.toLocaleString()}</strong></span>
+          </CardFooter>
+        </Card>
+
+        {/* Chart 2: Rank Achievement Progress (Radial Gauge) */}
+        <Card className="flex flex-col border shadow-xs">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  <Award className="h-5 w-5 text-amber-500" />
+                  My Rank & Progress
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Unlock next rank by qualifying active direct downlines
+                </CardDescription>
+              </div>
+              <Link href="/dashboard/rank-system">
+                <Button variant="ghost" size="sm" className="text-xs text-amber-600 font-bold">
+                  Rank Rules <ChevronRight className="h-3.5 w-3.5 ml-1" />
+                </Button>
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent className="flex-1 pb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4">
+              {/* Radial Bar Gauge */}
+              <ChartContainer config={rankRadialConfig} className="mx-auto aspect-square max-h-[220px]">
+                <RadialBarChart
+                  data={rankRadialData}
+                  startAngle={0}
+                  endAngle={Math.round((getRankProgress() / 100) * 360)}
+                  innerRadius={50}
+                  outerRadius={85}
+                >
+                  <PolarGrid
+                    gridType="circle"
+                    radialLines={false}
+                    stroke="none"
+                    className="first:fill-muted last:fill-background"
+                    polarRadius={[85, 50]}
+                  />
+                  <RadialBar dataKey="value" background cornerRadius={10} />
+                  <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
+                    <Label
+                      content={({ viewBox }) => {
+                        if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+                          return (
+                            <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                              <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-3xl font-black">
+                                {getRankProgress()}%
+                              </tspan>
+                              <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 20} className="fill-muted-foreground text-[10px] font-bold">
+                                Progress
+                              </tspan>
+                            </text>
+                          );
+                        }
+                      }}
+                    />
+                  </PolarRadiusAxis>
+                </RadialBarChart>
+              </ChartContainer>
+
+              {/* Rank Target Details */}
+              <div className="space-y-3">
+                <div className="p-2.5 rounded-xl border bg-amber-50/50 border-amber-200/60 dark:bg-amber-950/20">
+                  <span className="text-[10px] uppercase font-bold text-amber-800 dark:text-amber-400 block tracking-wider">
+                    Current Rank
+                  </span>
+                  <div className="text-lg font-black text-amber-950 dark:text-amber-100 mt-0.5 flex items-center gap-1.5">
+                    <Trophy className="h-4 w-4 text-amber-600" />
+                    <span>{profile?.rank || 'user'}</span>
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl border bg-muted/40">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Target Next Rank:</span>
+                    <span className="font-black text-primary">{getNextRank()}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs mt-1.5 pt-1.5 border-t">
+                    <span className="text-muted-foreground">Direct Downlines:</span>
+                    <span className="font-bold">{profile?.directCount || 0} / 6 Active</span>
+                  </div>
+                </div>
+
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200/60 rounded-xl flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground font-medium">Target Reward:</span>
+                  <span className="font-bold text-emerald-700 font-mono">+৳200 Cash + Seba Card</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="pt-2 border-t text-[11px] text-muted-foreground flex justify-between items-center">
+            <span>Direct Qualified: <strong className="text-foreground">{profile?.directCount || 0} Members</strong></span>
+            <span>Needed for Manager: <strong className="text-primary">{Math.max(0, 6 - (profile?.directCount || 0))} more</strong></span>
+          </CardFooter>
+        </Card>
+      </div>
+
+      {/* ─── 5. Smart Graphical Charts Row 2: Wallets Allocation & 14-Day Trend ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Chart 3: Member Wallets Allocation (Horizontal Bar) */}
+        <Card className="border shadow-xs">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-bold flex items-center gap-2">
+              <Layers className="h-5 w-5 text-primary" />
+              Wallets Balance Allocation
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Live balances available across Deposit, Bonus, and Withdrawal wallets
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-2">
+            <ChartContainer config={userWalletBarConfig} className="aspect-auto h-[190px] w-full">
+              <BarChart
+                data={userWalletsData}
+                layout="vertical"
+                margin={{ left: 10, right: 30, top: 10, bottom: 10 }}
+              >
+                <XAxis type="number" hide />
+                <YAxis
+                  dataKey="wallet"
+                  type="category"
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs font-semibold"
+                  width={120}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={
+                    <ChartTooltipContent
+                      formatter={(val) => `৳${Number(val).toLocaleString()}`}
+                      hideLabel
+                    />
+                  }
+                />
+                <Bar dataKey="amount" radius={6}>
+                  <LabelList
+                    position="right"
+                    offset={10}
+                    className="fill-foreground font-mono font-bold text-xs"
+                    formatter={(val: any) => `৳${Number(val).toLocaleString()}`}
+                  />
+                  {userWalletsData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+
+            <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t text-center text-xs">
+              <Link href="/dashboard/deposit" className="p-2 rounded-lg bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors">
+                <span className="text-[10px] text-muted-foreground uppercase font-bold block">Deposit</span>
+                <span className="text-sm font-black text-emerald-700">৳{(profile?.depositWallet || 0).toLocaleString()}</span>
+              </Link>
+              <Link href="/dashboard/total-bonus" className="p-2 rounded-lg bg-amber-500/5 hover:bg-amber-500/10 transition-colors">
+                <span className="text-[10px] text-muted-foreground uppercase font-bold block">Bonus</span>
+                <span className="text-sm font-black text-amber-700">৳{totalBonus.toLocaleString()}</span>
+              </Link>
+              <Link href="/dashboard/withdraw" className="p-2 rounded-lg bg-purple-500/5 hover:bg-purple-500/10 transition-colors">
+                <span className="text-[10px] text-muted-foreground uppercase font-bold block">Withdrawal</span>
+                <span className="text-sm font-black text-purple-700">৳{(profile?.withdrawalWallet || 0).toLocaleString()}</span>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Chart 4: Daily Earnings 14-Day Area Trend */}
+        <Card className="border shadow-xs">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-purple-600" />
+                  Daily Earnings Trend
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Daily incoming commissions and bonus growth
+                </CardDescription>
+              </div>
+              <Badge variant="outline" className="border-purple-300 text-purple-700 bg-purple-50 text-[10px] font-bold">
+                Last 14 Days
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-2">
+            <ChartContainer config={userTrendConfig} className="aspect-auto h-[190px] w-full">
+              <AreaChart data={dailyTrendData} margin={{ left: 10, right: 10, top: 15, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="fillUserTrend" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.25} />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(val) => {
+                    try {
+                      return format(new Date(val), 'dd MMM');
+                    } catch {
+                      return val;
+                    }
+                  }}
+                  className="text-[10px] font-semibold"
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={
+                    <ChartTooltipContent
+                      indicator="dot"
+                      formatter={(val) => `৳${Number(val).toLocaleString()}`}
+                    />
+                  }
+                />
+                <Area
+                  dataKey="amount"
+                  type="natural"
+                  fill="url(#fillUserTrend)"
+                  stroke="#8b5cf6"
+                  strokeWidth={2.5}
+                />
+              </AreaChart>
+            </ChartContainer>
+
+            <div className="flex items-center justify-between text-xs mt-4 pt-3 border-t text-muted-foreground">
+              <span>Lifetime Income: <strong className="text-foreground">৳{totalEarned.toLocaleString()}</strong></span>
+              <Link href="/dashboard/transaction-statement" className="text-primary font-bold hover:underline flex items-center gap-1">
+                Statement <ChevronRight className="h-3 w-3" />
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ─── 6. Team Performance ─────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-6">
+        <Card className="border shadow-xs">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-base font-bold flex items-center gap-2">
                   <Users className="h-5 w-5 text-primary" /> Team Performance
                 </CardTitle>
-                <CardDescription>Track downline volume, direct members and overall sales</CardDescription>
+                <CardDescription>Track downline volume, direct members and overall team sales</CardDescription>
               </div>
               <Link href="/dashboard/tree">
-                <Button variant="ghost" size="sm" className="text-xs text-primary">
+                <Button variant="ghost" size="sm" className="text-xs text-primary font-bold">
                   View Tree <ChevronRight className="h-3.5 w-3.5 ml-1" />
                 </Button>
               </Link>
             </div>
           </CardHeader>
           <CardContent className="grid grid-cols-3 gap-3">
-            <div className="p-3 bg-muted/40 rounded-xl text-center">
+            <div className="p-3.5 bg-muted/40 rounded-xl text-center">
               <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Downlines</span>
               <span className="text-xl sm:text-2xl font-black text-foreground mt-1 block">
                 {profile?.teamCount || 0}
               </span>
-              <span className="text-[10px] text-emerald-600 font-semibold">Members</span>
+              <span className="text-[10px] text-emerald-600 font-semibold">Total Network Members</span>
             </div>
 
-            <div className="p-3 bg-muted/40 rounded-xl text-center">
+            <div className="p-3.5 bg-muted/40 rounded-xl text-center">
               <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Personal Sales</span>
               <span className="text-xl sm:text-2xl font-black text-foreground mt-1 block">
                 ৳{profile?.personalSales || 0}
               </span>
-              <span className="text-[10px] text-primary font-semibold">Own PV</span>
+              <span className="text-[10px] text-primary font-semibold">Own PV / Purchases</span>
             </div>
 
-            <div className="p-3 bg-muted/40 rounded-xl text-center">
+            <div className="p-3.5 bg-muted/40 rounded-xl text-center">
               <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Team Sales</span>
               <span className="text-xl sm:text-2xl font-black text-foreground mt-1 block">
                 ৳{profile?.teamSales || 0}
               </span>
-              <span className="text-[10px] text-blue-600 font-semibold">Group Volume</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* My Rank & Rank Progress */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base font-bold flex items-center gap-2">
-                  <Award className="h-5 w-5 text-amber-600" /> My Rank & Progress
-                </CardTitle>
-                <CardDescription>Achieve 6 active downlines to unlock next manager rank</CardDescription>
-              </div>
-              <Link href="/dashboard/rank-system">
-                <Button variant="ghost" size="sm" className="text-xs text-amber-600">
-                  Rank Rules <ChevronRight className="h-3.5 w-3.5 ml-1" />
-                </Button>
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between text-xs sm:text-sm">
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">Current:</span>
-                <Badge className="bg-amber-500 text-white font-bold">{profile?.rank || 'user'}</Badge>
-              </div>
-              <div className="font-bold text-primary">
-                Next: {getNextRank()}
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Progress value={getRankProgress()} className="h-3" />
-              <div className="flex justify-between text-[11px] text-muted-foreground">
-                <span>{profile?.directCount || 0} / 6 Active Direct Downlines</span>
-                <span className="font-bold text-foreground">{getRankProgress()}% Completed</span>
-              </div>
-            </div>
-
-            <div className="p-2.5 bg-amber-500/5 border border-amber-500/20 rounded-lg flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Team Manager Reward:</span>
-              <span className="font-bold text-emerald-600 font-mono">+৳200 Cash + Seba Card</span>
+              <span className="text-[10px] text-blue-600 font-semibold">Group Volume Sales</span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Global Fund Pools Live Snapshot */}
-      <Card>
+      {/* ─── 7. Global Fund Pools Live Snapshot ──────────────────────────── */}
+      <Card className="border shadow-xs">
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
@@ -557,11 +940,11 @@ export default function UserDashboard() {
                 Global Fund Pools Live Snapshot
               </CardTitle>
               <CardDescription>
-                Live balance allocated from company package activations to the 5 designated community funds.
+                Live balance allocated from company package activations to the designated community funds
               </CardDescription>
             </div>
             <Link href="/dashboard/global-profit">
-              <Button variant="outline" size="sm" className="text-xs border-teal-500/30 text-teal-700">
+              <Button variant="outline" size="sm" className="text-xs border-teal-500/30 text-teal-700 font-bold">
                 View Funds Breakdown <ArrowRight className="h-3.5 w-3.5 ml-1" />
               </Button>
             </Link>
@@ -574,7 +957,7 @@ export default function UserDashboard() {
               <span className="text-lg font-black text-purple-950 dark:text-purple-300 mt-1 block">
                 ৳{(globalFunds.globalProfit || 0).toLocaleString()}
               </span>
-              <span className="text-[9px] text-muted-foreground">Shared to all members</span>
+              <span className="text-[9px] text-muted-foreground">Shared to all active members</span>
             </div>
 
             <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
@@ -582,7 +965,7 @@ export default function UserDashboard() {
               <span className="text-lg font-black text-amber-950 dark:text-amber-300 mt-1 block">
                 ৳{(globalFunds.incentiveFund || 0).toLocaleString()}
               </span>
-              <span className="text-[9px] text-muted-foreground">Gadgets & tours</span>
+              <span className="text-[9px] text-muted-foreground">Gadgets, phones & tours</span>
             </div>
 
             <div className="p-3 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
@@ -590,7 +973,7 @@ export default function UserDashboard() {
               <span className="text-lg font-black text-cyan-950 dark:text-cyan-300 mt-1 block">
                 ৳{(globalFunds.rankDevelopmentFund || 0).toLocaleString()}
               </span>
-              <span className="text-[9px] text-muted-foreground">Rank upgrade payouts</span>
+              <span className="text-[9px] text-muted-foreground">Rank upgrade cash rewards</span>
             </div>
 
             <div className="p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/20">
@@ -598,7 +981,7 @@ export default function UserDashboard() {
               <span className="text-lg font-black text-indigo-950 dark:text-indigo-300 mt-1 block">
                 ৳{(globalFunds.royaltyFund || 0).toLocaleString()}
               </span>
-              <span className="text-[9px] text-muted-foreground">Diamond+ royalties</span>
+              <span className="text-[9px] text-muted-foreground">Diamond+ royalties & cars</span>
             </div>
 
             <div className="p-3 rounded-xl bg-rose-500/5 border border-rose-500/20 col-span-2 sm:col-span-1">
@@ -606,7 +989,7 @@ export default function UserDashboard() {
               <span className="text-lg font-black text-rose-950 dark:text-rose-300 mt-1 block">
                 ৳{(globalFunds.charityFund || 0).toLocaleString()}
               </span>
-              <span className="text-[9px] text-muted-foreground">Social welfare</span>
+              <span className="text-[9px] text-muted-foreground">1% social welfare allocation</span>
             </div>
           </div>
         </CardContent>

@@ -79,6 +79,38 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // Withdrawals for this user
+    const withdrawTxList = await WalletTransaction.find({
+      userId: user._id,
+      type: 'withdrawal',
+    }).lean();
+    const completedWithdrawals = withdrawTxList
+      .filter((w) => w.status === 'completed')
+      .reduce((s, w) => s + (w.amount || 0), 0);
+    const pendingWithdrawals = withdrawTxList
+      .filter((w) => w.status === 'pending')
+      .reduce((s, w) => s + (w.amount || 0), 0);
+
+    // Group earnings by date for trend chart (last 14 days)
+    const dailyEarningsMap: Record<string, number> = {};
+    for (const tx of transactions) {
+      if (tx.createdAt) {
+        const dateKey = new Date(tx.createdAt).toISOString().split('T')[0];
+        dailyEarningsMap[dateKey] = (dailyEarningsMap[dateKey] || 0) + (tx.amount || 0);
+      }
+    }
+
+    const dailyEarnings = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateKey = d.toISOString().split('T')[0];
+      dailyEarnings.push({
+        date: dateKey,
+        amount: Math.round((dailyEarningsMap[dateKey] || 0) * 100) / 100,
+      });
+    }
+
     // Total income = sum of all earnings
     const totalIncome = transactions.reduce((acc, curr) => acc + (curr.amount || 0), 0);
     // Total bonus in user wallet
@@ -93,7 +125,10 @@ export async function GET(req: NextRequest) {
         autoProfitBonus,
         rankBonus,
         globalProfitBonus,
+        completedWithdrawals,
+        pendingWithdrawals,
       },
+      dailyEarnings,
       globalFunds: {
         globalProfit: fundPool?.globalProfit || 0,
         incentiveFund: fundPool?.incentiveFund || 0,

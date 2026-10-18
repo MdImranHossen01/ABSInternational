@@ -652,7 +652,7 @@ export default function WalletPage() {
                     </button>
                   </div>
                   <p className="text-[11px] text-muted-foreground">
-                    Withdrawal request করতে আপনার অ্যাকাউন্ট পাসওয়ার্ড দিয়ে যাচাই করুন।
+                    Please confirm your account password to authorize this cashout request.
                   </p>
                 </div>
 
