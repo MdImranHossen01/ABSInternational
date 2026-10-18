@@ -536,8 +536,8 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ─── 4 Core Financial & Operations Metric Cards ─────────────────────── */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      {/* ─── 6 Core Executive KPI Cards (2 Rows × 3 Cards) ───────────────── */}
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {/* Card 1: Total Inflow */}
         <Card className="border border-emerald-500/20 bg-linear-to-b from-emerald-500/10 via-emerald-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -586,12 +586,36 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Card 3: Total Withdrawn */}
+        {/* Card 3: Total Bonus Wallet (All Users Accumulated) */}
+        <Card className="border border-amber-500/20 bg-linear-to-b from-amber-500/10 via-amber-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <span className="text-xs uppercase font-bold text-amber-800 dark:text-amber-300 tracking-wider">
+              Total Bonus Wallet
+            </span>
+            <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600">
+              <Sparkles className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-1.5">
+            <div className="text-2xl sm:text-3xl font-black text-amber-950 dark:text-amber-100">
+              ৳{Math.round(stats?.totalBonusWallet || 0).toLocaleString()}
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-tight">
+              Accumulated earnings stored across all member bonus wallets
+            </p>
+            <div className="pt-1 flex items-center gap-1.5 text-[10px] text-amber-700 dark:text-amber-400 font-semibold">
+              <Coins className="h-3.5 w-3.5" />
+              <span>Auto-Convert Rule: ≥ ৳500 to Withdrawal Wallet</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 4: Total Withdraw */}
         <Link href="/admin/withdrawals" className="block group">
           <Card className="border border-purple-500/20 bg-linear-to-b from-purple-500/10 via-purple-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <span className="text-xs uppercase font-bold text-purple-800 dark:text-purple-300 tracking-wider">
-                Total Cashouts
+                Total Withdraw
               </span>
               <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
                 <ArrowDownLeft className="h-4 w-4" />
@@ -604,17 +628,43 @@ export default function AdminDashboard() {
               <p className="text-[11px] text-muted-foreground leading-tight">
                 Completed: <strong>{stats?.completedWithdrawalsCount || 0}</strong> requests successfully paid
               </p>
+              <div className="pt-1 flex items-center gap-1.5 text-[10px] text-purple-700 dark:text-purple-400 font-semibold">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                <span>Paid out to members via bKash, Nagad & Banks</span>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Card 5: Pending Withdrawals */}
+        <Link href="/admin/withdrawals" className="block group">
+          <Card className="border border-rose-500/20 bg-linear-to-b from-rose-500/10 via-rose-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <span className="text-xs uppercase font-bold text-rose-800 dark:text-rose-300 tracking-wider">
+                Pending Withdrawals
+              </span>
+              <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-600 group-hover:scale-110 transition-transform">
+                <Clock className="h-4 w-4" />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-1.5">
+              <div className="text-2xl sm:text-3xl font-black text-rose-950 dark:text-rose-100">
+                ৳{(stats?.pendingWithdrawalAmount || 0).toLocaleString()}
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-tight">
+                <strong>{stats?.pendingWithdrawalsCount || 0}</strong> cashout requests awaiting admin approval
+              </p>
               <div className="pt-1 flex items-center justify-between text-[10px]">
-                <span className="text-purple-700 dark:text-purple-400 font-semibold">Pending Approval:</span>
-                <Badge variant="outline" className="text-[10px] bg-purple-50 text-purple-700 border-purple-300">
-                  {stats?.pendingWithdrawalsCount || 0} (৳{(stats?.pendingWithdrawalAmount || 0).toLocaleString()})
+                <span className="text-rose-700 dark:text-rose-400 font-semibold">Review Queue:</span>
+                <Badge variant="outline" className="text-[10px] bg-rose-50 text-rose-700 border-rose-300 font-bold">
+                  {stats?.pendingWithdrawalsCount || 0} Pending
                 </Badge>
               </div>
             </CardContent>
           </Card>
         </Link>
 
-        {/* Card 4: Product Sales & Units */}
+        {/* Card 6: Product Sales & Units */}
         <Link href="/admin/orders" className="block group">
           <Card className="border border-amber-500/20 bg-linear-to-b from-amber-500/10 via-amber-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -634,7 +684,7 @@ export default function AdminDashboard() {
               </p>
               <div className="pt-1 flex items-center justify-between text-[10px]">
                 <span className="text-amber-700 dark:text-amber-400 font-semibold">Pending Orders:</span>
-                <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-300">
+                <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-300 font-bold">
                   {stats?.pendingOrdersCount || 0} orders
                 </Badge>
               </div>
