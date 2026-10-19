@@ -387,9 +387,60 @@ export async function DELETE(req: NextRequest) {
       }, { status: 400 });
     }
 
-    await User.deleteOne({ _id: userId });
+    // --- FULL CASCADE DELETION ---
+    // 1. Find all wallet transactions belonging to this user
+    const WalletTransaction = (await import('@/models/WalletTransaction')).default;
+    const userTxs = await WalletTransaction.find({ userId: userToDelete._id }).select('_id type').lean();
+    const txIds = userTxs.map(t => t._id.toString());
 
-    return NextResponse.json({ message: 'User deleted successfully' });
+    // 2. Remove all matching Ledger transactions (deposits/withdrawals) and recalculate ledger
+    if (txIds.length > 0) {
+      const depRefs = txIds.map(id => `DEP-${id}`);
+      const wdrRefs = txIds.map(id => `WDR-${id}`);
+      const allLedgerRefs = [...depRefs, ...wdrRefs];
+
+      const LedgerTransaction = (await import('@/models/LedgerTransaction')).default;
+      await LedgerTransaction.deleteMany({ reference: { $in: allLedgerRefs } });
+
+      try {
+        const { recalculateLedgerBalance } = await import('@/lib/ledgerHelper');
+        await recalculateLedgerBalance('BANK');
+        await recalculateLedgerBalance('CASH');
+      } catch (ledgerErr) {
+        console.error('Error recalculating ledger after user deletion:', ledgerErr);
+      }
+    }
+
+    // 3. Delete all Wallet Transactions of this user
+    await WalletTransaction.deleteMany({ userId: userToDelete._id });
+
+    // 4. Delete Notifications
+    const Notification = (await import('@/models/Notification')).default;
+    await Notification.deleteMany({ userId: userToDelete._id });
+
+    // 5. Delete Reviews and Abandoned Carts
+    const Review = (await import('@/models/Review')).default;
+    await Review.deleteMany({ user: userToDelete._id });
+    const AbandonedCart = (await import('@/models/AbandonedCart')).default;
+    await AbandonedCart.deleteMany({ user: userToDelete._id });
+
+    // 6. Safeguard MLM Network Tree: Reassign downlines to parent sponsor
+    if (userToDelete.memberId) {
+      const fallbackSponsor = userToDelete.sponsorId || 'ABS-COMPANY';
+      await User.updateMany(
+        { sponsorId: userToDelete.memberId },
+        { $set: { sponsorId: fallbackSponsor } }
+      );
+      await User.updateMany(
+        { placementId: userToDelete.memberId },
+        { $set: { placementId: userToDelete.placementId || 'ABS-COMPANY' } }
+      );
+    }
+
+    // 7. Delete the User
+    await User.deleteOne({ _id: userToDelete._id });
+
+    return NextResponse.json({ message: 'User and all associated transactions, ledger entries, and records deleted successfully.' });
   } catch (error) {
     console.error('Delete User Error:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
