@@ -576,12 +576,12 @@ export default function AdminDashboard() {
                 ৳{(stats?.totalInflow || 0).toLocaleString()}
               </div>
               <p className="text-[11px] text-muted-foreground leading-tight">
-                Activations: <strong>৳{(stats?.packageActivationsRevenue || 0).toLocaleString()}</strong> · Deposits: <strong>৳{(stats?.completedDepositAmount || 0).toLocaleString()}</strong>
+                MFS/Bank Deposits: <strong>৳{(stats?.completedDepositAmount || 0).toLocaleString()}</strong> · Direct Sales: <strong>৳{(stats?.directStoreRevenue || 0).toLocaleString()}</strong>
               </p>
               <div className="pt-1 flex items-center justify-between text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">
                 <span className="flex items-center gap-1.5">
                   <ArrowUpRight className="h-3.5 w-3.5" />
-                  <span>{stats?.activeSubscribers || 0} Premium Activations + Store Sales</span>
+                  <span>{stats?.activeSubscribers || 0} Premium Activations (৳{(stats?.packageActivationsRevenue || 0).toLocaleString()})</span>
                 </span>
                 <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
@@ -895,7 +895,7 @@ export default function AdminDashboard() {
                       ৳{(stats?.totalInflow || 0).toLocaleString()}
                     </span>
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-1">Activations + Product Sales + Deposits</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">MFS/Bank Deposits + Direct Store Sales</p>
                 </div>
 
                 <div className="p-2.5 rounded-xl border bg-blue-50/40 border-blue-200/60 dark:bg-blue-950/20">

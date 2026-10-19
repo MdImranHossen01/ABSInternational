@@ -56,6 +56,7 @@ export async function GET(req: NextRequest) {
           _id: null,
           totalRevenue: { $sum: '$totalAmount' },
           totalDeliveryCharge: { $sum: '$deliveryCharge' },
+          totalWalletUsed: { $sum: { $ifNull: ['$walletAmountUsed', 0] } },
           salesCount: { $sum: 1 },
           totalCOGS: { 
             $sum: { 
@@ -75,6 +76,7 @@ export async function GET(req: NextRequest) {
     const { 
       totalRevenue = 0, 
       totalDeliveryCharge = 0,
+      totalWalletUsed = 0,
       salesCount = 0, 
       totalCOGS = 0 
     } = revenueStats[0] || {};
@@ -380,7 +382,11 @@ export async function GET(req: NextRequest) {
     const projectedMonthlyRevenue = avgDailyRevenue * 30;
 
     const packageActivationsRevenue = activeSubscribers * 1500;
-    const totalInflow = packageActivationsRevenue + completedDepositAmount + totalRevenue;
+    // External capital entering company accounts (Bank/MFS):
+    // 1. Approved MFS/Bank Deposits into deposit wallets (which fund package activations and wallet purchases)
+    // 2. Direct E-commerce Store Revenue (excluding payments made via internal wallet tokens to prevent double-counting)
+    const directStoreRevenue = Math.max(0, totalRevenue - totalWalletUsed);
+    const totalInflow = completedDepositAmount + directStoreRevenue;
     const totalSystemWallets = totalDepositWallet + totalBonusWallet + totalWithdrawalWallet;
 
     // 16. Recent Withdrawals (Latest 10 with user details)
@@ -399,6 +405,8 @@ export async function GET(req: NextRequest) {
         pendingOrdersCount,
         activeSubscribers,
         totalWalletTokens,
+        totalWalletUsed,
+        directStoreRevenue,
         totalCOGS,
         totalExpenses,
         grossProfit,
