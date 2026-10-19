@@ -223,6 +223,32 @@ export async function executePremiumActivation(user: any, options: ActivationOpt
   }
   await user.save();
 
+  // If manually activated by admin, record direct/cash deposit inflow
+  if (options.isManualAdmin) {
+    const depositTx = await WalletTransaction.create({
+      userId: user._id,
+      amount: PACKAGE_PRICE,
+      type: 'deposit',
+      status: 'completed',
+      description: `Manual Activation Cash/Direct Payment (1,500 BDT) by Admin (${options.adminName || 'Admin'})`,
+    });
+
+    // Automatically record into company Accounts Ledger
+    try {
+      const { logLedgerTransaction } = await import('@/lib/ledgerHelper');
+      await logLedgerTransaction(
+        'BANK',
+        'debit',
+        PACKAGE_PRICE,
+        `Member Deposit (Manual Activation) - ${user.name || 'Member'} (${user.memberId || 'N/A'})`,
+        `DEP-${depositTx._id.toString()}`,
+        new Date()
+      );
+    } catch (ledgerErr) {
+      console.error('Error logging manual activation deposit to ledger:', ledgerErr);
+    }
+  }
+
   // Record package activation transaction
   await WalletTransaction.create({
     userId: user._id,

@@ -138,8 +138,11 @@ export async function GET(req: NextRequest) {
       .limit(5)
       .select('name stock price');
 
-    // 9. Loyalty & MLM System Stats
-    const activeSubscribers = await User.countDocuments({ isSubscriptionActive: true });
+    // 9. Loyalty & MLM System Stats (Excluding root company node)
+    const activeSubscribers = await User.countDocuments({ 
+      isSubscriptionActive: true, 
+      memberId: { $ne: 'ABS-COMPANY' } 
+    });
     
     const walletSumResult = await User.aggregate([
       {
