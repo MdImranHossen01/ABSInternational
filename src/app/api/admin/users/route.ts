@@ -34,10 +34,10 @@ export async function GET(req: NextRequest) {
       matchQuery.sponsorId = 'ABS-COMPANY';
     } else if (type === 'active') {
       matchQuery.isSubscriptionActive = true;
-      matchQuery.role = { $nin: ['admin', 'super_admin'] };
+      matchQuery.memberId = { $ne: 'ABS-COMPANY' };
     } else if (type === 'free') {
       matchQuery.isSubscriptionActive = false;
-      matchQuery.role = { $nin: ['admin', 'super_admin'] };
+      matchQuery.memberId = { $ne: 'ABS-COMPANY' };
     } else if (type === 'ranks') {
       matchQuery.rank = { $nin: ['user', null, ''] };
     } else {
