@@ -150,6 +150,7 @@ export async function GET(req: NextRequest) {
           sponsorObjectId: { $arrayElemAt: ['$sponsorDoc._id', 0] },
           rank: 1,
           isSubscriptionActive: 1,
+          nidStatus: 1,
           depositWallet: 1,
           bonusWallet: 1,
           withdrawalWallet: 1,

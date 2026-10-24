@@ -85,6 +85,7 @@ export interface UserData {
   sponsorPhone?: string;
   rank?: string;
   isSubscriptionActive?: boolean;
+  nidStatus?: string;
   depositWallet?: number;
   bonusWallet?: number;
   withdrawalWallet?: number;
@@ -651,12 +652,23 @@ export function UsersManagementView({
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col space-y-0.5">
-                        <Link 
-                          href={`/admin/users/${user._id}`}
-                          className="font-bold text-slate-900 hover:text-primary transition-colors text-left text-xs sm:text-sm hover:underline"
-                        >
-                          {user.name}
-                        </Link>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <Link 
+                            href={`/admin/users/${user._id}`}
+                            className="font-bold text-slate-900 hover:text-primary transition-colors text-left text-xs sm:text-sm hover:underline"
+                          >
+                            {user.name}
+                          </Link>
+                          {user.nidStatus === 'Approved' && (
+                            <span 
+                              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs shrink-0" 
+                              title="KYC Verified Member"
+                            >
+                              <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
+                              Verified
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-1 font-mono text-[11px]">
                           <span className="font-bold text-primary">{user.memberId || 'N/A'}</span>
                           {user.memberId && (
@@ -881,12 +893,23 @@ export function UsersManagementView({
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
-                      <Link 
-                        href={`/admin/users/${user._id}`}
-                        className="font-bold text-slate-900 hover:text-primary transition-colors text-sm truncate block hover:underline leading-snug"
-                      >
-                        {user.name}
-                      </Link>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Link 
+                          href={`/admin/users/${user._id}`}
+                          className="font-bold text-slate-900 hover:text-primary transition-colors text-sm truncate hover:underline leading-snug"
+                        >
+                          {user.name}
+                        </Link>
+                        {user.nidStatus === 'Approved' && (
+                          <span 
+                            className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs shrink-0" 
+                            title="KYC Verified Member"
+                          >
+                            <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
+                            Verified
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-center gap-1 font-mono text-[11px] mt-0.5">
                         <span className="font-bold text-primary">{user.memberId || 'N/A'}</span>
                         {user.memberId && (
@@ -1103,7 +1126,18 @@ export function UsersManagementView({
                   {selectedUser.name?.charAt(0) || 'U'}
                 </div>
                 <div className="text-center md:text-left space-y-1">
-                  <h2 className="font-black text-xl tracking-tight text-slate-900">{selectedUser.name}</h2>
+                  <div className="flex items-center justify-center md:justify-start gap-2 flex-wrap">
+                    <h2 className="font-black text-xl tracking-tight text-slate-900">{selectedUser.name}</h2>
+                    {selectedUser.nidStatus === 'Approved' && (
+                      <span 
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs" 
+                        title="KYC Verified Member"
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                        Verified
+                      </span>
+                    )}
+                  </div>
                   <p className="text-muted-foreground text-xs">{selectedUser.email}</p>
                   <div className="flex flex-wrap justify-center md:justify-start gap-1.5 mt-2 font-mono text-xs">
                     <Badge className="bg-primary text-white font-bold">ID: {selectedUser.memberId || 'N/A'}</Badge>
