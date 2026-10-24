@@ -26,10 +26,12 @@ export async function GET(req: NextRequest) {
 
     await connectToDatabase();
 
-    const matchQuery: any = {};
+    const matchQuery: any = {
+      role: { $ne: 'super_admin' }
+    };
 
     if (type === 'admins') {
-      matchQuery.role = { $in: ['admin', 'super_admin', 'manager'] };
+      matchQuery.role = { $in: ['admin', 'manager'] };
     } else if (type === 'leaders') {
       matchQuery.sponsorId = 'ABS-COMPANY';
     } else if (type === 'active') {
@@ -40,9 +42,6 @@ export async function GET(req: NextRequest) {
       matchQuery.memberId = { $ne: 'ABS-COMPANY' };
     } else if (type === 'ranks') {
       matchQuery.rank = { $nin: ['user', null, ''] };
-    } else {
-      // 'all'
-      matchQuery.role = { $ne: 'super_admin' as const };
     }
 
     // Explicit Status Filter
@@ -54,7 +53,9 @@ export async function GET(req: NextRequest) {
 
     // Explicit Role Filter
     if (roleFilter && roleFilter !== 'all') {
-      matchQuery.role = roleFilter;
+      if (roleFilter !== 'super_admin') {
+        matchQuery.role = roleFilter;
+      }
     }
 
     // Explicit Rank Filter

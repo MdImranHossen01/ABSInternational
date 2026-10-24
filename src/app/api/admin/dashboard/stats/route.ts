@@ -138,13 +138,20 @@ export async function GET(req: NextRequest) {
       .limit(5)
       .select('name stock price');
 
-    // 9. Loyalty & MLM System Stats (Excluding root company node)
+    // 9. Loyalty & MLM System Stats (Excluding root company node and developer super_admin)
     const activeSubscribers = await User.countDocuments({ 
       isSubscriptionActive: true, 
-      memberId: { $ne: 'ABS-COMPANY' } 
+      memberId: { $ne: 'ABS-COMPANY' },
+      role: { $ne: 'super_admin' }
     });
     
     const walletSumResult = await User.aggregate([
+      {
+        $match: {
+          role: { $ne: 'super_admin' },
+          memberId: { $ne: 'ABS-COMPANY' }
+        }
+      },
       {
         $group: {
           _id: null,
@@ -162,10 +169,10 @@ export async function GET(req: NextRequest) {
     
     const pendingWithdrawalsCount = await WalletTransaction.countDocuments({ type: 'withdrawal', status: 'pending' });
     const pendingDepositsCount = await WalletTransaction.countDocuments({ type: 'deposit', status: 'pending' });
-    const pendingKycCount = await User.countDocuments({ nidStatus: 'Pending' });
+    const pendingKycCount = await User.countDocuments({ nidStatus: 'Pending', role: { $ne: 'super_admin' } });
     const charityFund = activeSubscribers * 15;
 
-    // 10. Rank Distribution (Member count per rank)
+    // 10. Rank Distribution (Member count per rank - excluding super_admin and company root)
     const ranksMasterList = [
       'user',
       'Premium Member',
@@ -178,6 +185,12 @@ export async function GET(req: NextRequest) {
       'Director'
     ];
     const rankAgg = await User.aggregate([
+      {
+        $match: {
+          role: { $ne: 'super_admin' },
+          memberId: { $ne: 'ABS-COMPANY' }
+        }
+      },
       { $group: { _id: { $ifNull: ['$rank', 'user'] }, count: { $sum: 1 } } }
     ]);
     const rankMap: Record<string, number> = {};
