@@ -79,7 +79,50 @@ export async function GET(req: NextRequest) {
       ? await User.countDocuments({ sponsorId: memberIdForCount, isSubscriptionActive: true })
       : 0;
 
-    return NextResponse.json({ ...user, memberId: memberIdForCount || (user as any).memberId, directCount }, { status: 200 });
+    let sponsorInfo: any = null;
+    if (user.sponsorId) {
+      if (user.sponsorId === 'ABS-COMPANY' || user.sponsorId === 'COMPANY') {
+        const companyUser = await User.findOne({ 
+          $or: [{ memberId: 'ABS-COMPANY' }, { email: 'company@absinternationalltd.com' }] 
+        }).select('_id name email phone memberId rank isSubscriptionActive role image createdAt').lean();
+
+        sponsorInfo = {
+          _id: companyUser?._id,
+          name: companyUser?.name || 'ABS Company (Root Sponsor)',
+          memberId: 'ABS-COMPANY',
+          isCompany: true,
+          email: companyUser?.email || 'company@absinternationalltd.com',
+          phone: companyUser?.phone || '+880 1931-111911',
+          rank: companyUser?.rank || 'Premium Member',
+        };
+      } else {
+        const sClean = String(user.sponsorId).trim();
+        const foundSponsor = await User.findOne({
+          $or: [
+            { memberId: sClean },
+            { username: sClean.toLowerCase() },
+            { email: sClean.toLowerCase() },
+            { phone: sClean }
+          ]
+        }).select('_id name email phone memberId rank isSubscriptionActive role image createdAt').lean();
+
+        if (foundSponsor) {
+          sponsorInfo = foundSponsor;
+        } else {
+          sponsorInfo = {
+            memberId: user.sponsorId,
+            name: 'Unknown Sponsor',
+          };
+        }
+      }
+    }
+
+    return NextResponse.json({
+      ...user,
+      memberId: memberIdForCount || (user as any).memberId,
+      directCount,
+      sponsor: sponsorInfo,
+    }, { status: 200 });
   } catch (error) {
     console.error('Error fetching profile:', error);
     return NextResponse.json({ message: 'Failed to fetch profile' }, { status: 500 });

@@ -50,6 +50,7 @@ import {
   Zap,
   Crown,
   Receipt,
+  Mail,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -396,7 +397,7 @@ export default function UserDashboard() {
                 <button
                   type="button"
                   onClick={() => handleCopy(profile.memberId, 'member')}
-                  className="p-1 hover:bg-white/20 rounded transition-colors text-white/90 hover:text-white"
+                  className="p-1 hover:bg-white/20 rounded transition-colors text-white/90 hover:text-white cursor-pointer"
                   title="Copy Member ID"
                   aria-label="Copy Member ID"
                 >
@@ -408,23 +409,36 @@ export default function UserDashboard() {
                 </button>
               )}
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="opacity-80">Sponsor ID:</span>
-              <span className="font-bold tracking-wide">{profile?.sponsorId || 'None'}</span>
-              {profile?.sponsorId && profile.sponsorId !== 'None' && (
-                <button
-                  type="button"
-                  onClick={() => handleCopy(profile.sponsorId, 'sponsor')}
-                  className="p-1 hover:bg-white/20 rounded transition-colors text-white/90 hover:text-white"
-                  title="Copy Sponsor ID"
-                  aria-label="Copy Sponsor ID"
-                >
-                  {copiedField === 'sponsor' ? (
-                    <Check className="h-3.5 w-3.5 text-emerald-300" />
-                  ) : (
-                    <Copy className="h-3.5 w-3.5" />
-                  )}
-                </button>
+            <div className="flex flex-wrap items-center gap-1.5 font-sans">
+              <span className="opacity-80">Sponsor:</span>
+              {profile?.sponsor?.name && (
+                <span className="font-bold text-white bg-white/20 px-2 py-0.5 rounded text-[11px]">
+                  {profile.sponsor.name}
+                </span>
+              )}
+              <div className="flex items-center gap-1 font-mono">
+                <span className="font-bold tracking-wide">{profile?.sponsorId || 'None'}</span>
+                {profile?.sponsorId && profile.sponsorId !== 'None' && (
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(profile.sponsorId, 'sponsor')}
+                    className="p-1 hover:bg-white/20 rounded transition-colors text-white/90 hover:text-white cursor-pointer"
+                    title="Copy Sponsor ID"
+                    aria-label="Copy Sponsor ID"
+                  >
+                    {copiedField === 'sponsor' ? (
+                      <Check className="h-3.5 w-3.5 text-emerald-300" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5" />
+                    )}
+                  </button>
+                )}
+              </div>
+              {profile?.sponsor?.email && (
+                <span className="opacity-90 text-[11px] flex items-center gap-1 ml-1 pl-1.5 border-l border-white/25">
+                  <Mail className="h-3 w-3 inline opacity-75" />
+                  <span>{profile.sponsor.email}</span>
+                </span>
               )}
             </div>
           </div>
