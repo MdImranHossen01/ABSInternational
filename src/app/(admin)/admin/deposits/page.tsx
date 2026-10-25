@@ -104,16 +104,32 @@ export default function AdminDepositsPage() {
   };
 
   const parseDepositDetails = (desc: string) => {
-    const methodMatch = desc?.match(/via\s+([A-Za-z0-9_-]+)/i);
-    const senderMatch = desc?.match(/Sender:\s*([^,\)]+)/i);
-    const txidMatch = desc?.match(/TxID:\s*([^,\)]+)/i);
-    const noteMatch = desc?.match(/Note:\s*([^,\)]+)/i);
+    if (!desc) {
+      return { isStructured: false, method: 'DIRECT', sender: 'N/A', txId: '', note: '', raw: '' };
+    }
+    const hasMethodOrSender = /via\s+[A-Za-z0-9_-]+/i.test(desc) || /Sender:/i.test(desc);
+    if (!hasMethodOrSender) {
+      return {
+        isStructured: false,
+        method: 'DIRECT',
+        sender: 'N/A',
+        txId: '',
+        note: '',
+        raw: desc
+      };
+    }
+
+    const methodMatch = desc.match(/via\s+([A-Za-z0-9_-]+)/i);
+    const senderMatch = desc.match(/Sender:\s*([^,\)]+)/i);
+    const txidMatch = desc.match(/TxID:\s*([^,\)]+)/i);
+    const noteMatch = desc.match(/Note:\s*([^)]+?)(?:\s*\))?$/i) || desc.match(/Note:\s*([^,\)]+)/i);
 
     return {
+      isStructured: true,
       method: methodMatch ? methodMatch[1].toUpperCase() : 'MFS',
       sender: senderMatch ? senderMatch[1].trim() : 'N/A',
       txId: txidMatch ? txidMatch[1].trim() : '',
-      note: noteMatch ? noteMatch[1].trim() : '',
+      note: noteMatch ? noteMatch[1].replace(/\)$/, '').trim() : '',
       raw: desc
     };
   };
@@ -169,67 +185,105 @@ export default function AdminDepositsPage() {
             <>
               {/* Desktop Table View */}
               <div className="hidden md:block overflow-x-auto">
-                <Table>
+                <Table className="w-full">
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Member ID</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Details</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                    <TableRow className="bg-slate-50/75">
+                      <TableHead className="w-[100px] whitespace-nowrap">Date</TableHead>
+                      <TableHead className="w-[110px] whitespace-nowrap">Member ID</TableHead>
+                      <TableHead className="w-[140px] whitespace-nowrap">Name</TableHead>
+                      <TableHead className="min-w-[240px]">Details</TableHead>
+                      <TableHead className="w-[100px] whitespace-nowrap">Amount</TableHead>
+                      <TableHead className="w-[110px] whitespace-nowrap">Status</TableHead>
+                      <TableHead className="w-[190px] text-right whitespace-nowrap">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {deposits.map((d: any) => (
-                      <TableRow key={d._id}>
-                        <TableCell className="text-xs text-muted-foreground">{new Date(d.createdAt).toLocaleDateString()}</TableCell>
-                        <TableCell className="font-mono text-xs font-bold text-primary">{d.userId?.memberId || 'N/A'}</TableCell>
-                        <TableCell className="font-bold">{d.userId?.name || 'N/A'}</TableCell>
-                        <TableCell className="text-xs font-medium max-w-sm">{d.description}</TableCell>
-                        <TableCell className="font-bold text-slate-900">৳{d.amount}</TableCell>
-                        <TableCell>
-                          {getStatusBadge(d.status)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1.5">
-                            {/* View Details Button */}
-                            <Button 
-                              variant="secondary" 
-                              size="sm" 
-                              onClick={() => setSelectedDeposit(d)}
-                              className="h-8 text-xs font-semibold gap-1 px-2.5"
-                            >
-                              <Eye className="h-3.5 w-3.5" /> View
-                            </Button>
-
-                            {d.status === 'pending' && (
-                              <>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  onClick={() => handleAction(d._id, 'completed')}
-                                  disabled={processingId === d._id}
-                                  className="border-emerald-500/20 text-emerald-600 hover:bg-emerald-50 h-8 font-semibold px-2.5"
-                                >
-                                  <Check className="h-3.5 w-3.5 mr-1" /> Approve
-                                </Button>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  onClick={() => handleAction(d._id, 'failed')}
-                                  disabled={processingId === d._id}
-                                  className="border-red-500/20 text-red-600 hover:bg-red-50 h-8 font-semibold px-2.5"
-                                >
-                                  <X className="h-3.5 w-3.5 mr-1" /> Reject
-                                </Button>
-                              </>
+                    {deposits.map((d: any) => {
+                      const parsed = parseDepositDetails(d.description);
+                      return (
+                        <TableRow key={d._id} className="hover:bg-slate-50/50">
+                          <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                            {new Date(d.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="font-mono text-xs font-bold text-primary whitespace-nowrap">
+                            {d.userId?.memberId || 'N/A'}
+                          </TableCell>
+                          <TableCell className="font-bold text-xs whitespace-nowrap">
+                            {d.userId?.name || 'N/A'}
+                          </TableCell>
+                          <TableCell className="py-3.5 max-w-[280px] lg:max-w-md">
+                            {parsed.isStructured ? (
+                              <div className="space-y-1.5 text-xs break-words whitespace-normal leading-relaxed">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <Badge variant="outline" className="text-[10px] font-bold uppercase px-1.5 py-0 h-4 bg-slate-100 text-slate-800 border-slate-300">
+                                    {parsed.method}
+                                  </Badge>
+                                  <span className="font-mono text-slate-700 text-[11px]">
+                                    Sender: <strong className="text-slate-900">{parsed.sender}</strong>
+                                  </span>
+                                </div>
+                                {parsed.txId && (
+                                  <div className="text-[11px] font-mono text-primary font-semibold break-all">
+                                    TxID: <span className="bg-primary/5 px-1.5 py-0.5 rounded border border-primary/20">{parsed.txId}</span>
+                                  </div>
+                                )}
+                                {parsed.note && (
+                                  <div className="text-[11px] text-amber-900 dark:text-amber-300 font-medium bg-amber-50 dark:bg-amber-950/40 px-2 py-1 rounded-md border border-amber-200/80 break-words leading-snug">
+                                    <span className="font-bold text-amber-800 dark:text-amber-400">Note:</span> {parsed.note}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <p className="text-slate-700 break-words whitespace-normal text-xs leading-relaxed max-w-sm lg:max-w-md">
+                                {d.description}
+                              </p>
                             )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          </TableCell>
+                          <TableCell className="font-bold text-slate-900 whitespace-nowrap text-sm">
+                            ৳{d.amount?.toLocaleString()}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {getStatusBadge(d.status)}
+                          </TableCell>
+                          <TableCell className="text-right whitespace-nowrap">
+                            <div className="flex items-center justify-end gap-1.5">
+                              {/* View Details Button */}
+                              <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={() => setSelectedDeposit(d)}
+                                className="h-8 text-xs font-semibold gap-1 px-2.5 cursor-pointer"
+                              >
+                                <Eye className="h-3.5 w-3.5" /> View
+                              </Button>
+
+                              {d.status === 'pending' && (
+                                <>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={() => handleAction(d._id, 'completed')}
+                                    disabled={processingId === d._id}
+                                    className="border-emerald-500/20 text-emerald-600 hover:bg-emerald-50 h-8 font-semibold px-2.5 cursor-pointer"
+                                  >
+                                    <Check className="h-3.5 w-3.5 mr-1" /> Approve
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={() => handleAction(d._id, 'failed')}
+                                    disabled={processingId === d._id}
+                                    className="border-red-500/20 text-red-600 hover:bg-red-50 h-8 font-semibold px-2.5 cursor-pointer"
+                                  >
+                                    <X className="h-3.5 w-3.5 mr-1" /> Reject
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </div>
