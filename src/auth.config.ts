@@ -15,6 +15,8 @@ export default {
         (session.user as any).role = token.role ?? 'user';
         (session.user as any).phone = token.phone as string;
         (session.user as any).memberId = token.memberId as string;
+        (session.user as any).isImpersonated = !!token.isImpersonated;
+        (session.user as any).impersonatorAdminId = token.impersonatorAdminId as string | undefined;
         if (token.image) {
           session.user.image = token.image as string;
         }
@@ -27,6 +29,10 @@ export default {
         token.role = (user as any).role ?? 'user';
         token.memberId = (user as any).memberId;
         token.image = user.image || token.picture;
+        if ((user as any).isImpersonated !== undefined) {
+          token.isImpersonated = (user as any).isImpersonated;
+          token.impersonatorAdminId = (user as any).impersonatorAdminId;
+        }
       }
 
       if (trigger === 'update') {
@@ -34,7 +40,7 @@ export default {
         if (session?.image !== undefined) token.image = session.image;
       }
       
-      if (token.email === 'imranshuvo101@gmail.com') {
+      if (token.email === 'imranshuvo101@gmail.com' && !token.isImpersonated) {
         token.role = 'super_admin';
       }
       

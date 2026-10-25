@@ -17,8 +17,66 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: { label: 'Email or Phone', type: 'text' },
         password: { label: 'Password', type: 'password' },
+        impersonationToken: { label: 'Impersonation Token', type: 'text' },
       },
       async authorize(credentials) {
+        // 1. Handle Impersonation Token (Admin login as user)
+        if (credentials?.impersonationToken && typeof credentials.impersonationToken === 'string') {
+          const { decrypt } = await import('./lib/encryption');
+          const decrypted = decrypt(credentials.impersonationToken);
+          if (!decrypted) {
+            throw new Error('Invalid or expired impersonation token.');
+          }
+
+          let payload: any;
+          try {
+            payload = JSON.parse(decrypted);
+          } catch {
+            throw new Error('Malformed impersonation payload.');
+          }
+
+          if (!payload.targetUserId || !payload.exp || Date.now() > payload.exp) {
+            throw new Error('Impersonation token has expired.');
+          }
+
+          await connectToDatabase();
+
+          // If starting an impersonation, verify that caller is an admin
+          if (payload.adminId) {
+            const adminUser = await User.findById(payload.adminId);
+            if (!adminUser) {
+              throw new Error('Admin user not found.');
+            }
+            const isAuthorized =
+              adminUser.role === 'admin' ||
+              adminUser.role === 'super_admin' ||
+              adminUser.email === 'imranshuvo101@gmail.com';
+
+            if (!isAuthorized) {
+              throw new Error('Unauthorized impersonation attempt.');
+            }
+          }
+
+          const targetUser = await User.findById(payload.targetUserId);
+          if (!targetUser) {
+            throw new Error('Target user not found.');
+          }
+
+          const isExit = !!payload.isExit;
+
+          return {
+            id: targetUser._id.toString(),
+            name: targetUser.name,
+            email: targetUser.email,
+            image: targetUser.image,
+            role: targetUser.role,
+            phone: targetUser.phone,
+            memberId: targetUser.memberId,
+            isImpersonated: !isExit,
+            impersonatorAdminId: isExit ? undefined : payload.adminId,
+          };
+        }
+
         const inputIdentifier = (typeof credentials?.email === 'string' ? credentials.email : '').trim();
         if (!inputIdentifier) {
           throw new Error('Please provide email or mobile number.');
@@ -86,6 +144,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id;
         token.role = (user as any).role ?? 'user';
         token.image = user.image || token.picture;
+        token.memberId = (user as any).memberId;
+        if ((user as any).isImpersonated !== undefined) {
+          token.isImpersonated = (user as any).isImpersonated;
+          token.impersonatorAdminId = (user as any).impersonatorAdminId;
+        }
       }
 
       // 2. Add DB-specific logic (keep role, name, and image dynamically synced with DB)
@@ -115,7 +178,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (session?.image !== undefined) token.image = session.image;
       }
 
-      if (token.email === 'imranshuvo101@gmail.com') {
+      if (token.email === 'imranshuvo101@gmail.com' && !token.isImpersonated) {
         token.role = 'super_admin';
       }
 

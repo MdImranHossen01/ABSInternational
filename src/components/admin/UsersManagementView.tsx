@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef, Suspense } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Pagination } from '@/components/ui/pagination';
@@ -45,7 +45,8 @@ import {
   RotateCcw,
   X,
   Filter,
-  SlidersHorizontal
+  SlidersHorizontal,
+  LogIn
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
@@ -120,6 +121,7 @@ export function UsersManagementView({
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  const [impersonatingId, setImpersonatingId] = useState<string | null>(null);
 
   // Debounce search term
   useEffect(() => {
@@ -414,6 +416,58 @@ export function UsersManagementView({
     } catch (error: any) {
       console.error('Make Premium Error:', error);
       toast.error(error.message || 'Failed to upgrade user');
+    }
+  };
+
+  const handleImpersonateUser = async (targetUserId: string, userName: string) => {
+    const result = await Swal.fire({
+      title: 'Login as User?',
+      html: `
+        <div class="text-left space-y-2 text-xs sm:text-sm">
+          <p class="text-slate-700">Are you sure you want to log in as <b>${userName}</b>?</p>
+          <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-900 text-xs space-y-1">
+            <span class="font-bold block">User Dashboard Access:</span>
+            <span>You will enter their dashboard and can make deposits, submit KYC, or perform orders on their behalf. You can return to Admin anytime via the profile dropdown.</span>
+          </div>
+        </div>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Yes, Enter Dashboard',
+      customClass: {
+        popup: 'rounded-3xl',
+        confirmButton: 'rounded-xl font-bold px-6 py-3',
+        cancelButton: 'rounded-xl font-bold px-6 py-3'
+      }
+    });
+
+    if (!result.isConfirmed) return;
+
+    setImpersonatingId(targetUserId);
+    try {
+      const res = await fetch('/api/admin/impersonate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUserId }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to start impersonation');
+
+      const signResult = await signIn('credentials', {
+        impersonationToken: data.token,
+        redirect: false,
+      });
+
+      if (signResult?.error) throw new Error(signResult.error);
+
+      toast.success(`Logged in as ${userName}`);
+      window.location.href = '/dashboard';
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to login as user');
+      setImpersonatingId(null);
     }
   };
 
@@ -801,6 +855,18 @@ export function UsersManagementView({
                             <DropdownMenuItem onClick={() => openUserDetails(user)} className="cursor-pointer text-xs">
                               <Eye className="mr-2 h-4 w-4 text-muted-foreground" /> Quick Modal
                             </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleImpersonateUser(user._id, user.name)}
+                              disabled={impersonatingId === user._id}
+                              className="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                            >
+                              {impersonatingId === user._id ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin text-indigo-600" />
+                              ) : (
+                                <LogIn className="mr-2 h-4 w-4 text-indigo-600" />
+                              )}
+                              Login as User
+                            </DropdownMenuItem>
                           </DropdownMenuGroup>
                           
                           <DropdownMenuSeparator />
@@ -963,6 +1029,18 @@ export function UsersManagementView({
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => openUserDetails(user)} className="cursor-pointer text-xs font-semibold">
                             <Eye className="mr-2 h-4 w-4 text-muted-foreground" /> Quick Modal
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleImpersonateUser(user._id, user.name)}
+                            disabled={impersonatingId === user._id}
+                            className="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                          >
+                            {impersonatingId === user._id ? (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin text-indigo-600" />
+                            ) : (
+                              <LogIn className="mr-2 h-4 w-4 text-indigo-600" />
+                            )}
+                            Login as User
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                         

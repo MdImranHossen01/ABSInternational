@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
-import { User, LogOut, Bell, ShieldCheck, Menu, UserPlus, Copy, Check } from 'lucide-react';
+import { useSession, signOut, signIn } from 'next-auth/react';
+import { User, LogOut, Bell, ShieldCheck, Menu, UserPlus, Copy, Check, ShieldAlert, ArrowLeftRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { ModeToggle } from '@/components/mode-toggle';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -24,6 +25,47 @@ export default function UserTopbar() {
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [profile, setProfile] = useState<any>(null);
   const [copiedId, setCopiedId] = useState(false);
+  const [isImpersonated, setIsImpersonated] = useState<boolean>(() => Boolean((session?.user as any)?.isImpersonated));
+  const [isExiting, setIsExiting] = useState(false);
+
+  useEffect(() => {
+    if ((session?.user as any)?.isImpersonated) {
+      setIsImpersonated(true);
+    }
+    // Also verify from status API
+    fetch('/api/admin/impersonate/status')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.isImpersonated) setIsImpersonated(true);
+      })
+      .catch(() => {});
+  }, [session?.user]);
+
+  const handleExitImpersonation = async () => {
+    setIsExiting(true);
+    try {
+      const res = await fetch('/api/admin/impersonate/exit', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to exit impersonation');
+      }
+
+      const signResult = await signIn('credentials', {
+        impersonationToken: data.token,
+        redirect: false,
+      });
+
+      if (signResult?.error) {
+        throw new Error(signResult.error);
+      }
+
+      toast.success('Returned to Admin Dashboard');
+      window.location.href = '/admin/users';
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to return to admin');
+      setIsExiting(false);
+    }
+  };
 
   useEffect(() => {
     if (!session?.user) return;
@@ -96,7 +138,15 @@ export default function UserTopbar() {
         {session?.user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary" size="icon" className="rounded-full overflow-hidden border border-primary/20">
+              <Button
+                variant="secondary"
+                size="icon"
+                className={`rounded-full overflow-hidden border ${
+                  isImpersonated
+                    ? 'border-amber-500 ring-2 ring-amber-500/60 ring-offset-2'
+                    : 'border-primary/20'
+                }`}
+              >
                 {session.user.image ? (
                   <Image
                     src={session.user.image}
@@ -112,7 +162,48 @@ export default function UserTopbar() {
                 <span className="sr-only">User menu</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className={`w-64 p-2 shadow-xl ${isImpersonated ? 'border-amber-500/30' : ''}`}>
+              {isImpersonated && (
+                <>
+                  <div className="p-3 mb-2 rounded-xl bg-gradient-to-br from-amber-500/15 via-amber-500/10 to-amber-500/5 border border-amber-500/30 text-xs shadow-xs">
+                    <div className="flex items-center gap-1.5 font-bold text-amber-700 dark:text-amber-400 mb-1">
+                      <ShieldAlert className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 animate-pulse" />
+                      <span>Admin Impersonation</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-snug">
+                      You are currently viewing as:
+                    </p>
+                    <p className="text-xs font-bold text-foreground truncate mt-0.5">
+                      {session.user.name}
+                    </p>
+                    {(profile?.memberId || (session.user as any)?.memberId) && (
+                      <p className="text-[10px] font-mono font-bold text-amber-700 dark:text-amber-400">
+                        {profile?.memberId || (session.user as any)?.memberId}
+                      </p>
+                    )}
+                    <Button
+                      type="button"
+                      onClick={handleExitImpersonation}
+                      disabled={isExiting}
+                      size="sm"
+                      className="w-full mt-2.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white font-bold text-xs shadow-xs rounded-lg cursor-pointer h-8 gap-1.5"
+                    >
+                      {isExiting ? (
+                        <>
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          <span>Returning...</span>
+                        </>
+                      ) : (
+                        <>
+                          <ArrowLeftRight className="h-3.5 w-3.5" />
+                          <span>Return to Admin Dashboard</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuGroup>
                 <DropdownMenuLabel>
                   <div className="flex flex-col space-y-1">
@@ -162,7 +253,7 @@ export default function UserTopbar() {
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
-              {isAdmin && (
+              {isAdmin && !isImpersonated && (
                 <DropdownMenuItem asChild>
                   <Link href="/admin/dashboard" className="text-amber-700 dark:text-amber-300 font-semibold">
                     <ShieldCheck className="mr-2 h-4 w-4 text-amber-600" />

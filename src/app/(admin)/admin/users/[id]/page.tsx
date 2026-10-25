@@ -30,8 +30,11 @@ import {
   Loader2,
   Building2,
   Sparkles,
-  DollarSign
+  DollarSign,
+  LogIn
 } from 'lucide-react';
+import { signIn } from 'next-auth/react';
+import Swal from 'sweetalert2';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -140,6 +143,7 @@ export default function AdminUserProfilePage() {
   const [activeTab, setActiveTab] = useState<'downlines' | 'orders' | 'sponsor'>('downlines');
   const [downlineSearch, setDownlineSearch] = useState('');
   const [orderSearch, setOrderSearch] = useState('');
+  const [impersonating, setImpersonating] = useState(false);
 
   const fetchUserData = async () => {
     if (!userId) return;
@@ -170,6 +174,59 @@ export default function AdminUserProfilePage() {
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     toast.success(`${label} copied to clipboard!`);
+  };
+
+  const handleImpersonateUser = async () => {
+    if (!user) return;
+    const result = await Swal.fire({
+      title: 'Login as User?',
+      html: `
+        <div class="text-left space-y-2 text-xs sm:text-sm">
+          <p class="text-slate-700">Are you sure you want to log in as <b>${user.name}</b>?</p>
+          <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-900 text-xs space-y-1">
+            <span class="font-bold block">User Dashboard Access:</span>
+            <span>You will enter their dashboard and can make deposits, submit KYC, or perform orders on their behalf. You can return to Admin anytime via the profile dropdown.</span>
+          </div>
+        </div>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Yes, Enter Dashboard',
+      customClass: {
+        popup: 'rounded-3xl',
+        confirmButton: 'rounded-xl font-bold px-6 py-3',
+        cancelButton: 'rounded-xl font-bold px-6 py-3'
+      }
+    });
+
+    if (!result.isConfirmed) return;
+
+    setImpersonating(true);
+    try {
+      const res = await fetch('/api/admin/impersonate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUserId: user._id }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to start impersonation');
+
+      const signResult = await signIn('credentials', {
+        impersonationToken: data.token,
+        redirect: false,
+      });
+
+      if (signResult?.error) throw new Error(signResult.error);
+
+      toast.success(`Logged in as ${user.name}`);
+      window.location.href = '/dashboard';
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to login as user');
+      setImpersonating(false);
+    }
   };
 
   // Filtered Downlines
@@ -234,6 +291,20 @@ export default function AdminUserProfilePage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button
+            onClick={handleImpersonateUser}
+            disabled={impersonating}
+            size="sm"
+            className="rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer shadow-xs gap-1.5"
+          >
+            {impersonating ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <LogIn className="h-3.5 w-3.5" />
+            )}
+            Login as User
+          </Button>
+
           <Link href="/admin/users">
             <Button variant="outline" size="sm" className="rounded-xl text-xs font-semibold">
               Users Directory

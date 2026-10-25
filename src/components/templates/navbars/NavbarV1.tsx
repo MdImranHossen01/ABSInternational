@@ -20,8 +20,9 @@ import {
   X,
   Copy,
   Check,
+  ArrowLeftRight,
 } from 'lucide-react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession, signOut, signIn } from 'next-auth/react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -527,6 +528,26 @@ export default function Navbar() {
                           </>
                         )}
 
+                        {(session.user as any)?.isImpersonated && (
+                          <DropdownMenuItem
+                            onClick={async () => {
+                              try {
+                                const res = await fetch('/api/admin/impersonate/exit', { method: 'POST' });
+                                const data = await res.json();
+                                if (data.token) {
+                                  await signIn('credentials', { impersonationToken: data.token, redirect: false });
+                                  toast.success('Returned to Admin Dashboard');
+                                  window.location.href = '/admin/users';
+                                }
+                              } catch {
+                                toast.error('Failed to return to admin');
+                              }
+                            }}
+                            className="bg-amber-500 text-white font-bold cursor-pointer hover:bg-amber-600 focus:bg-amber-600 focus:text-white"
+                          >
+                            <ArrowLeftRight className="mr-2 h-4 w-4" /> Return to Admin Dashboard
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem asChild>
                           <Link href="/register" className="cursor-pointer">
                             <UserPlus className="mr-2 h-4 w-4" /> Register
