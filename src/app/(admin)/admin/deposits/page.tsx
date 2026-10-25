@@ -107,11 +107,13 @@ export default function AdminDepositsPage() {
     const methodMatch = desc?.match(/via\s+([A-Za-z0-9_-]+)/i);
     const senderMatch = desc?.match(/Sender:\s*([^,\)]+)/i);
     const txidMatch = desc?.match(/TxID:\s*([^,\)]+)/i);
+    const noteMatch = desc?.match(/Note:\s*([^,\)]+)/i);
 
     return {
       method: methodMatch ? methodMatch[1].toUpperCase() : 'MFS',
       sender: senderMatch ? senderMatch[1].trim() : 'N/A',
       txId: txidMatch ? txidMatch[1].trim() : '',
+      note: noteMatch ? noteMatch[1].trim() : '',
       raw: desc
     };
   };
@@ -383,6 +385,15 @@ export default function AdminDepositsPage() {
                           </div>
                         </div>
                       </div>
+
+                      {parsed.note && (
+                        <div className="pt-2 border-t border-slate-200/60">
+                          <span className="text-muted-foreground block text-[11px] font-semibold text-amber-700">Member Note / Remarks:</span>
+                          <p className="font-semibold text-slate-900 mt-0.5 bg-amber-50/70 p-2.5 rounded-lg border border-amber-200/80 text-xs">
+                            {parsed.note}
+                          </p>
+                        </div>
+                      )}
 
                       <div className="pt-2 border-t border-slate-200/60">
                         <span className="text-muted-foreground block text-[11px]">Full Raw Note:</span>

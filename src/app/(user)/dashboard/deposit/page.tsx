@@ -36,6 +36,7 @@ export default function DepositPage() {
   const [paymentMethod, setPaymentMethod] = useState('bkash');
   const [senderNumber, setSenderNumber] = useState('');
   const [transactionId, setTransactionId] = useState('');
+  const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [copiedNumber, setCopiedNumber] = useState('');
 
@@ -65,35 +66,38 @@ export default function DepositPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !senderNumber || !transactionId) {
-      toast.error('Please fill in all deposit fields');
+    if (!amount || !senderNumber.trim()) {
+      toast.error('Please enter the deposit amount and sender phone number');
       return;
     }
 
     const cleanTrxId = transactionId.trim().toUpperCase();
     const cleanSender = senderNumber.trim();
+    const cleanNote = note.trim();
     const officialNumber = getMethodNumber().trim();
 
-    // Prevent users from submitting phone numbers as TrxID (common copy-paste mistake)
-    const isPhoneNumber = 
-      /^01[3-9]\d{8}$/.test(cleanTrxId) || 
-      /^(?:\+?8801|8801)[3-9]\d{8}$/.test(cleanTrxId) || 
-      cleanTrxId === officialNumber || 
-      cleanTrxId === cleanSender;
+    if (cleanTrxId) {
+      // Prevent users from submitting phone numbers as TrxID (common copy-paste mistake)
+      const isPhoneNumber =
+        /^01[3-9]\d{8}$/.test(cleanTrxId) ||
+        /^(?:\+?8801|8801)[3-9]\d{8}$/.test(cleanTrxId) ||
+        cleanTrxId === officialNumber ||
+        cleanTrxId === cleanSender;
 
-    if (isPhoneNumber) {
-      Swal.fire({
-        title: 'Invalid Transaction ID',
-        text: 'Please enter the valid Transaction ID (TrxID) received via SMS (e.g., BL9A7K8PQ2), not a phone number.',
-        icon: 'warning',
-        confirmButtonColor: '#2563eb',
-      });
-      return;
-    }
+      if (isPhoneNumber) {
+        Swal.fire({
+          title: 'Invalid Transaction ID',
+          text: 'Please enter a valid Transaction ID (TrxID) received via SMS (e.g., BL9A7K8PQ2), not a phone number. Or leave it blank if unavailable.',
+          icon: 'warning',
+          confirmButtonColor: '#2563eb',
+        });
+        return;
+      }
 
-    if (cleanTrxId.length < 6) {
-      toast.error('Please enter a valid Transaction ID.');
-      return;
+      if (cleanTrxId.length < 4) {
+        toast.error('Transaction ID is too short. Please check or leave blank.');
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -105,7 +109,8 @@ export default function DepositPage() {
           amount: Number(amount),
           paymentMethod,
           senderNumber: cleanSender,
-          transactionId: cleanTrxId,
+          transactionId: cleanTrxId || undefined,
+          note: cleanNote || undefined,
         }),
       });
       const data = await res.json();
@@ -119,6 +124,7 @@ export default function DepositPage() {
         setAmount('');
         setSenderNumber('');
         setTransactionId('');
+        setNote('');
         loadData();
       } else {
         toast.error(data.message || 'Deposit failed');
@@ -131,11 +137,16 @@ export default function DepositPage() {
   };
 
   const getMethodNumber = () => {
+    const manualConfig = settings?.manualPaymentConfig;
     switch (paymentMethod) {
-      case 'bkash': return settings?.paymentMethods?.bkashNumber || '01700000000';
-      case 'nagad': return settings?.paymentMethods?.nagadNumber || '01800000000';
-      case 'rocket': return settings?.paymentMethods?.rocketNumber || '01900000000';
-      default: return settings?.paymentMethods?.bankAccount || 'ABS International Ltd';
+      case 'bkash':
+        return manualConfig?.bkash?.number || '01898758495';
+      case 'nagad':
+        return manualConfig?.nagad?.number || '01898758495';
+      case 'rocket':
+        return manualConfig?.rocket?.number || '01898758495';
+      default:
+        return 'ABS International Ltd';
     }
   };
 
@@ -218,9 +229,12 @@ export default function DepositPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold">Sender Phone / Account No</Label>
+                  <Label className="text-xs font-bold flex items-center justify-between">
+                    <span>Sender Phone / Account No</span>
+                    <span className="text-[10px] text-emerald-600 font-semibold">* Required</span>
+                  </Label>
                   <Input
-                    placeholder="Your bKash/Nagad number"
+                    placeholder="Your bKash/Nagad/Rocket number"
                     value={senderNumber}
                     onChange={(e) => setSenderNumber(e.target.value)}
                     className="h-10 text-xs font-mono"
@@ -229,15 +243,31 @@ export default function DepositPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold">Transaction ID (TrxID)</Label>
+                  <Label className="text-xs font-bold flex items-center justify-between">
+                    <span>Transaction ID (TrxID)</span>
+                    <span className="text-[10px] text-muted-foreground font-normal">Optional</span>
+                  </Label>
                   <Input
-                    placeholder="e.g. BL9A7K8PQ2"
+                    placeholder="e.g. BL9A7K8PQ2 (If available)"
                     value={transactionId}
                     onChange={(e) => setTransactionId(e.target.value)}
                     className="h-10 text-xs font-mono uppercase"
-                    required
                   />
                 </div>
+              </div>
+
+              {/* Note / Remarks Field */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold flex items-center justify-between">
+                  <span>Note / Remarks</span>
+                  <span className="text-[10px] text-muted-foreground font-normal">Optional</span>
+                </Label>
+                <Input
+                  placeholder="Additional note (e.g. sent from personal bKash, agent cash-in, reference)"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  className="h-10 text-xs"
+                />
               </div>
 
               <Button type="submit" disabled={submitting} className="w-full font-bold h-11 bg-emerald-600 hover:bg-emerald-700 text-white">

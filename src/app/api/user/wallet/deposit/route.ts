@@ -11,41 +11,51 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { amount, paymentMethod, senderNumber, transactionId } = await req.json();
+    const { amount, paymentMethod, senderNumber, transactionId, note } = await req.json();
 
-    if (!amount || amount <= 0 || !paymentMethod || !senderNumber || !transactionId) {
-      return NextResponse.json({ message: 'Missing required deposit details.' }, { status: 400 });
+    if (!amount || amount <= 0 || !paymentMethod || !senderNumber) {
+      return NextResponse.json({ message: 'Missing required deposit details. Please provide amount, payment method, and sender phone number.' }, { status: 400 });
     }
 
-    const cleanTrxId = String(transactionId).trim().toUpperCase();
     const cleanSender = String(senderNumber).trim();
+    const cleanTrxId = transactionId ? String(transactionId).trim().toUpperCase() : '';
+    const cleanNote = note ? String(note).trim() : '';
 
-    // Check if user submitted a phone number as transactionId
-    const isPhoneNumber = 
-      /^01[3-9]\d{8}$/.test(cleanTrxId) || 
-      /^(?:\+?8801|8801)[3-9]\d{8}$/.test(cleanTrxId) || 
-      cleanTrxId === cleanSender;
+    if (cleanTrxId) {
+      // Check if user submitted a phone number as transactionId
+      const isPhoneNumber = 
+        /^01[3-9]\d{8}$/.test(cleanTrxId) || 
+        /^(?:\+?8801|8801)[3-9]\d{8}$/.test(cleanTrxId) || 
+        cleanTrxId === cleanSender;
 
-    if (isPhoneNumber || cleanTrxId.length < 6) {
-      return NextResponse.json({ 
-        message: 'Invalid Transaction ID. Please enter the valid transaction ID received via SMS (e.g., BL9A7K8PQ2), not a phone number.' 
-      }, { status: 400 });
+      if (isPhoneNumber || cleanTrxId.length < 4) {
+        return NextResponse.json({ 
+          message: 'Invalid Transaction ID. Please enter a valid transaction ID received via SMS (e.g., BL9A7K8PQ2), not a phone number.' 
+        }, { status: 400 });
+      }
     }
 
     await connectToDatabase();
+
+    const descParts = [
+      `Deposit request via ${paymentMethod.toUpperCase()}`,
+      `Sender: ${cleanSender}`,
+    ];
+    if (cleanTrxId) descParts.push(`TxID: ${cleanTrxId}`);
+    if (cleanNote) descParts.push(`Note: ${cleanNote}`);
 
     const depositTx = await WalletTransaction.create({
       userId: (session.user as any).id,
       amount,
       type: 'deposit',
       status: 'pending',
-      description: `Deposit request via ${paymentMethod.toUpperCase()} (Sender: ${cleanSender}, TxID: ${cleanTrxId})`,
+      description: `${descParts[0]} (${descParts.slice(1).join(', ')})`,
     });
 
     await Promise.all([
       createAdminNotification({
         title: 'New Deposit Request',
-        message: `Deposit request of ৳${amount.toLocaleString()} submitted via ${paymentMethod.toUpperCase()} (Sender: ${senderNumber}, TxID: ${transactionId}).`,
+        message: `Deposit request of ৳${amount.toLocaleString()} submitted via ${paymentMethod.toUpperCase()} (Sender: ${cleanSender}${cleanTrxId ? `, TxID: ${cleanTrxId}` : ''}${cleanNote ? `, Note: ${cleanNote}` : ''}).`,
         type: 'deposit',
         link: '/admin/deposits',
       }),
