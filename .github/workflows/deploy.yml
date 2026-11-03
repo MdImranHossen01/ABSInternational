@@ -62,6 +62,8 @@ jobs:
                 mem_reservation: 80m
                 ports:
                   - "3002:3000"
+                environment:
+                  - NODE_OPTIONS=--max-old-space-size=125
                 env_file:
                   - .env.local
                 logging:
