@@ -285,6 +285,17 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ message: 'User is already a Premium Member.' }, { status: 400 });
       }
 
+      const { executePremiumActivation, PACKAGE_PRICE } = await import('@/lib/mlm-activation');
+      const currentDeposit = Number(userToUpdate.depositWallet) || 0;
+      if (currentDeposit < PACKAGE_PRICE) {
+        return NextResponse.json(
+          {
+            message: `Cannot activate Premium Membership: ${userToUpdate.name}'s Deposit Wallet balance is ৳${currentDeposit.toLocaleString()} (minimum ৳${PACKAGE_PRICE.toLocaleString()} required). Please deposit and approve ৳${PACKAGE_PRICE.toLocaleString()} in their Deposit Wallet first.`,
+          },
+          { status: 400 }
+        );
+      }
+
       // If admin provided a new sponsor ID, validate and assign it
       if (newSponsorId && newSponsorId.trim()) {
         const cleanSponsor = newSponsorId.trim();
@@ -314,11 +325,10 @@ export async function PATCH(req: NextRequest) {
         await userToUpdate.save();
       }
 
-      const { executePremiumActivation } = await import('@/lib/mlm-activation');
       const result = await executePremiumActivation(userToUpdate, {
         isManualAdmin: true,
         adminName: session.user?.name || 'Admin',
-        bypassBalanceDeduction: true,
+        bypassBalanceDeduction: false,
       });
 
       const sponsorMsg = newSponsorId
@@ -328,7 +338,7 @@ export async function PATCH(req: NextRequest) {
           : ' No sponsor — funds redirected to Global Pool.';
 
       return NextResponse.json({ 
-        message: `${userToUpdate.name} has been upgraded to Premium Member! 1,500 BDT package funds distributed.${sponsorMsg}`,
+        message: `${userToUpdate.name} has been upgraded to Premium Member! ৳1,500 deducted from Deposit Wallet and disbursed across all funds.${sponsorMsg}`,
         distribution: result.distribution 
       });
     }

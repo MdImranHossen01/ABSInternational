@@ -376,8 +376,8 @@ export function UsersManagementView({
           </div>
 
           <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs space-y-1">
-            <span class="font-bold block">MLM Package Fund Disbursement:</span>
-            <span>The 1,500 BDT Joining Package will be fully disbursed across all funds — Sponsor Bonus 225 BDT, Generation Bonus 105 BDT, Auto Club, Community, Charity, etc.</span>
+            <span class="font-bold block">Deposit Deduction &amp; Fund Disbursement:</span>
+            <span><b>৳1,500</b> will be deducted from the member&apos;s <b>Deposit Wallet</b> and fully disbursed across all funds — Sponsor Bonus (৳225), Generation Bonus (৳105), 8 Reserve Pools (৳495), and Company Profit (৳675).</span>
           </div>
         </div>
       `,
@@ -385,7 +385,7 @@ export function UsersManagementView({
       showCancelButton: true,
       confirmButtonColor: '#f59e0b',
       cancelButtonColor: '#64748b',
-      confirmButtonText: 'Yes, Make Premium!',
+      confirmButtonText: 'Yes, Deduct ৳1,500 & Activate!',
       customClass: {
         popup: 'rounded-3xl',
         confirmButton: 'rounded-xl font-bold px-6 py-3',
@@ -409,7 +409,15 @@ export function UsersManagementView({
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Failed to upgrade user');
+      if (!response.ok) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Cannot Activate Premium',
+          text: data.message || 'Failed to upgrade user',
+          confirmButtonColor: 'var(--primary)',
+        });
+        return;
+      }
 
       toast.success(data.message);
       fetchUsers();

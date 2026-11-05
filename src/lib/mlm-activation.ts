@@ -195,6 +195,14 @@ export interface ActivationOptions {
 }
 
 export async function executePremiumActivation(user: any, options: ActivationOptions = {}) {
+  // Strict Deposit Wallet Balance Requirement (Minimum 1,500 BDT required for both user & manual admin activation)
+  const currentDepositBalance = Number(user.depositWallet) || 0;
+  if (currentDepositBalance < PACKAGE_PRICE) {
+    throw new Error(
+      `Insufficient Deposit Wallet balance (৳${currentDepositBalance.toLocaleString()}). Minimum ৳${PACKAGE_PRICE.toLocaleString()} is required in Deposit Wallet to activate Premium Membership.`
+    );
+  }
+
   // 0. Auto-assign memberId if missing (e.g. admin-created users)
   if (!user.memberId) {
     let isUnique = false;
@@ -209,7 +217,7 @@ export async function executePremiumActivation(user: any, options: ActivationOpt
     }
   }
 
-  // 1. Mark subscription active & rank
+  // 1. Mark subscription active, rank & deduct 1,500 BDT from Deposit Wallet
   user.isSubscriptionActive = true;
   user.rank = 'Premium Member';
   user.isSebaCardGenerated = true;
@@ -217,47 +225,18 @@ export async function executePremiumActivation(user: any, options: ActivationOpt
     user.sebaCardNo = `ABS-SEBA-${Math.floor(100000 + Math.random() * 900000)}`;
   }
 
-  // If user activated themselves via deposit wallet, deduct balance
-  if (!options.bypassBalanceDeduction && !options.isManualAdmin) {
-    user.depositWallet -= PACKAGE_PRICE;
-  }
+  user.depositWallet = Math.max(0, Math.round((currentDepositBalance - PACKAGE_PRICE) * 100) / 100);
   await user.save();
 
-  // If manually activated by admin, record direct/cash deposit inflow
-  if (options.isManualAdmin) {
-    const depositTx = await WalletTransaction.create({
-      userId: user._id,
-      amount: PACKAGE_PRICE,
-      type: 'deposit',
-      status: 'completed',
-      description: `Manual Activation Cash/Direct Payment (1,500 BDT) by Admin (${options.adminName || 'Admin'})`,
-    });
-
-    // Automatically record into company Accounts Ledger
-    try {
-      const { logLedgerTransaction } = await import('@/lib/ledgerHelper');
-      await logLedgerTransaction(
-        'BANK',
-        'debit',
-        PACKAGE_PRICE,
-        `Member Deposit (Manual Activation) - ${user.name || 'Member'} (${user.memberId || 'N/A'})`,
-        `DEP-${depositTx._id.toString()}`,
-        new Date()
-      );
-    } catch (ledgerErr) {
-      console.error('Error logging manual activation deposit to ledger:', ledgerErr);
-    }
-  }
-
-  // Record package activation transaction
+  // Record package activation deduction transaction
   await WalletTransaction.create({
     userId: user._id,
     amount: PACKAGE_PRICE,
     type: 'spent',
     status: 'completed',
     description: options.isManualAdmin
-      ? `ABS Joining Package Activation (1,500 BDT) by Admin (${options.adminName || 'Admin'})`
-      : 'ABS Joining Package Purchase (1,500 BDT)',
+      ? `ABS Joining Package Activation (1,500 BDT deducted from Deposit Wallet) by Admin (${options.adminName || 'Admin'})`
+      : 'ABS Joining Package Purchase (1,500 BDT deducted from Deposit Wallet)',
   });
 
   // 2. Sponsor Bonus (15% = 225 BDT)
