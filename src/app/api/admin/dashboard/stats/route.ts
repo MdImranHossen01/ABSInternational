@@ -118,9 +118,16 @@ export async function GET(req: NextRequest) {
     const grossProfit = totalRevenue - totalCOGS - totalDeliveryCharge;
     const netProfit = grossProfit + totalIncomes - totalExpenses;
 
-    // 5. Total Customers (Only users with role 'user')
+    // 5. Excluded System Accounts (ABS-COMPANY root node & super_admin)
+    const excludedUsers = await User.find({
+      $or: [{ memberId: 'ABS-COMPANY' }, { role: 'super_admin' }]
+    }).select('_id').lean();
+    const excludedUserIds = excludedUsers.map((u: any) => u._id);
+
+    // Total Members (All real members excluding root company node and developer super_admin)
     const totalUsers = await User.countDocuments({ 
-      role: 'user' 
+      role: { $ne: 'super_admin' },
+      memberId: { $ne: 'ABS-COMPANY' }
     });
 
     // 6. Pending Orders (Total, not date filtered)
@@ -162,14 +169,26 @@ export async function GET(req: NextRequest) {
         }
       }
     ]);
-    const totalDepositWallet = walletSumResult[0]?.totalDeposit || 0;
-    const totalBonusWallet = walletSumResult[0]?.totalBonus || 0;
-    const totalWithdrawalWallet = walletSumResult[0]?.totalWithdrawal || 0;
-    const totalWalletTokens = walletSumResult[0]?.totalWalletBalance || 0;
+    const totalDepositWallet = Math.round((walletSumResult[0]?.totalDeposit || 0) * 100) / 100;
+    const totalBonusWallet = Math.round((walletSumResult[0]?.totalBonus || 0) * 100) / 100;
+    const totalWithdrawalWallet = Math.round((walletSumResult[0]?.totalWithdrawal || 0) * 100) / 100;
+    const totalWalletTokens = Math.round((walletSumResult[0]?.totalWalletBalance || 0) * 100) / 100;
     
-    const pendingWithdrawalsCount = await WalletTransaction.countDocuments({ type: 'withdrawal', status: 'pending' });
-    const pendingDepositsCount = await WalletTransaction.countDocuments({ type: 'deposit', status: 'pending' });
-    const pendingKycCount = await User.countDocuments({ nidStatus: 'Pending', role: { $ne: 'super_admin' } });
+    const pendingWithdrawalsCount = await WalletTransaction.countDocuments({
+      type: 'withdrawal',
+      status: 'pending',
+      userId: { $nin: excludedUserIds }
+    });
+    const pendingDepositsCount = await WalletTransaction.countDocuments({
+      type: 'deposit',
+      status: 'pending',
+      userId: { $nin: excludedUserIds }
+    });
+    const pendingKycCount = await User.countDocuments({
+      nidStatus: 'Pending',
+      role: { $ne: 'super_admin' },
+      memberId: { $ne: 'ABS-COMPANY' }
+    });
     const charityFund = activeSubscribers * 15;
 
     // 10. Rank Distribution (Member count per rank - excluding super_admin and company root)
@@ -203,9 +222,9 @@ export async function GET(req: NextRequest) {
       count: rankMap[rankId] || 0
     }));
 
-    // 11. Complete Withdrawal Breakdown (Completed vs Pending vs Failed)
+    // 11. Complete Withdrawal Breakdown (Completed vs Pending vs Failed - excluding ABS-COMPANY & super_admin)
     const withdrawalSummaryAgg = await WalletTransaction.aggregate([
-      { $match: { type: 'withdrawal' } },
+      { $match: { type: 'withdrawal', userId: { $nin: excludedUserIds } } },
       {
         $group: {
           _id: '$status',
@@ -230,9 +249,9 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    // 12. Deposit Breakdown
+    // 12. Deposit Breakdown (excluding ABS-COMPANY & super_admin)
     const depositSummaryAgg = await WalletTransaction.aggregate([
-      { $match: { type: 'deposit' } },
+      { $match: { type: 'deposit', userId: { $nin: excludedUserIds } } },
       {
         $group: {
           _id: '$status',
@@ -398,15 +417,16 @@ export async function GET(req: NextRequest) {
     const projectedMonthlyRevenue = avgDailyRevenue * 30;
 
     const packageActivationsRevenue = activeSubscribers * 1500;
-    // External capital entering company accounts (Bank/MFS):
-    // 1. Approved MFS/Bank Deposits into deposit wallets (which fund package activations and wallet purchases)
-    // 2. Direct E-commerce Store Revenue (excluding payments made via internal wallet tokens to prevent double-counting)
     const directStoreRevenue = Math.max(0, totalRevenue - totalWalletUsed);
-    const totalInflow = completedDepositAmount + directStoreRevenue;
-    const totalSystemWallets = totalDepositWallet + totalBonusWallet + totalWithdrawalWallet;
+    // Total Business Inflow = Active Package Memberships Revenue (28 × ৳1,500) + Direct Store Sales
+    const totalInflow = packageActivationsRevenue + directStoreRevenue;
+    const totalSystemWallets = Math.round((totalDepositWallet + totalBonusWallet + totalWithdrawalWallet) * 100) / 100;
 
-    // 16. Recent Withdrawals (Latest 10 with user details)
-    const recentWithdrawals = await WalletTransaction.find({ type: 'withdrawal' })
+    // 16. Recent Withdrawals (Latest 10 with user details — excluding ABS-COMPANY & super_admin)
+    const recentWithdrawals = await WalletTransaction.find({
+      type: 'withdrawal',
+      userId: { $nin: excludedUserIds }
+    })
       .populate('userId', 'name email memberId phone avatar rank')
       .sort({ createdAt: -1 })
       .limit(10)

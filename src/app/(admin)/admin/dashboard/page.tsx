@@ -385,17 +385,17 @@ export default function AdminDashboard() {
     return [
       {
         wallet: 'Deposit Wallet',
-        amount: Math.round(stats?.totalDepositWallet || 0),
+        amount: Number((stats?.totalDepositWallet || 0).toFixed(2)),
         fill: '#10b981',
       },
       {
         wallet: 'Bonus Wallet',
-        amount: Math.round(stats?.totalBonusWallet || 0),
+        amount: Number((stats?.totalBonusWallet || 0).toFixed(2)),
         fill: '#f59e0b',
       },
       {
         wallet: 'Withdrawal Wallet',
-        amount: Math.round(stats?.totalWithdrawalWallet || 0),
+        amount: Number((stats?.totalWithdrawalWallet || 0).toFixed(2)),
         fill: '#8b5cf6',
       },
     ];
@@ -427,22 +427,24 @@ export default function AdminDashboard() {
     }));
   }, [stats]);
 
-  // 5. Fund Pools Live Data for Visual Charts (All 10 Allocations = 55%)
+  const activePackageCount = stats?.activeSubscribers ?? fundPool?.totalActivations ?? 0;
+
+  // 5. Fund Pools Live Data for Visual Charts (All 10 Allocations = 55% of ৳1,500 = ৳825/member)
   const fundPoolData = useMemo(() => {
-    const totalActs = fundPool?.totalActivations ?? stats?.activeSubscribers ?? 0;
+    const totalActs = activePackageCount;
     return [
-      { key: 'referBonus', label: 'Refer Bonus', sub: 'Direct Referral', pct: '15%', rate: '৳225', fill: '#3b82f6', amount: totalActs * 225, icon: Megaphone, border: 'border-blue-200/80', bg: 'bg-blue-50/50 dark:bg-blue-950/20', text: 'text-blue-700 dark:text-blue-300' },
-      { key: 'generationBonus', label: 'Generation Bonus', sub: 'Up to 10 Gen', pct: '7%', rate: '৳105', fill: '#10b981', amount: totalActs * 105, icon: Network, border: 'border-emerald-200/80', bg: 'bg-emerald-50/50 dark:bg-emerald-950/20', text: 'text-emerald-700 dark:text-emerald-300' },
-      { key: 'autoProfit', label: 'Auto Club', sub: 'Qualification', pct: '3.5%', rate: '৳52.5', fill: '#8b5cf6', amount: fundPool?.autoProfit ?? (totalActs * 52.5), icon: Zap, border: 'border-violet-200/80', bg: 'bg-violet-50/50 dark:bg-violet-950/20', text: 'text-violet-700 dark:text-violet-300' },
-      { key: 'incentiveFund', label: 'Incentive Fund', sub: 'Extra Incentive', pct: '2%', rate: '৳30', fill: '#f97316', amount: fundPool?.incentiveFund ?? (totalActs * 30), icon: Trophy, border: 'border-orange-200/80', bg: 'bg-orange-50/50 dark:bg-orange-950/20', text: 'text-orange-700 dark:text-orange-300' },
-      { key: 'rankDevelopmentFund', label: 'Rank Dev Fund', sub: 'Leadership', pct: '2.5%', rate: '৳37.5', fill: '#14b8a6', amount: fundPool?.rankDevelopmentFund ?? (totalActs * 37.5), icon: TrendingUp, border: 'border-teal-200/80', bg: 'bg-teal-50/50 dark:bg-teal-950/20', text: 'text-teal-700 dark:text-teal-300' },
-      { key: 'globalProfit', label: 'Global Fund', sub: 'Intl Growth', pct: '2%', rate: '৳30', fill: '#0ea5e9', amount: fundPool?.globalProfit ?? (totalActs * 30), icon: Globe, border: 'border-sky-200/80', bg: 'bg-sky-50/50 dark:bg-sky-950/20', text: 'text-sky-700 dark:text-sky-300' },
-      { key: 'royaltyFund', label: 'Royalty Fund', sub: 'Long Term', pct: '2%', rate: '৳30', fill: '#eab308', amount: fundPool?.royaltyFund ?? (totalActs * 30), icon: Crown, border: 'border-yellow-200/80', bg: 'bg-yellow-50/50 dark:bg-yellow-950/20', text: 'text-yellow-700 dark:text-yellow-300' },
-      { key: 'tourFund', label: 'Tour Fund', sub: 'Travel & Explore', pct: '5%', rate: '৳75', fill: '#06b6d4', amount: fundPool?.tourFund ?? (totalActs * 75), icon: Plane, border: 'border-cyan-200/80', bg: 'bg-cyan-50/50 dark:bg-cyan-950/20', text: 'text-cyan-700 dark:text-cyan-300' },
-      { key: 'communityFund', label: 'Community Fund', sub: 'Social Resp', pct: '15%', rate: '৳225', fill: '#6366f1', amount: fundPool?.communityFund ?? (totalActs * 225), icon: Users2, border: 'border-indigo-200/80', bg: 'bg-indigo-50/50 dark:bg-indigo-950/20', text: 'text-indigo-700 dark:text-indigo-300' },
-      { key: 'charityFund', label: 'Charity Fund', sub: 'Helping Humanity', pct: '1%', rate: '৳15', fill: '#ec4899', amount: fundPool?.charityFund ?? (totalActs * 15), icon: Heart, border: 'border-pink-200/80', bg: 'bg-pink-50/50 dark:bg-pink-950/20', text: 'text-pink-700 dark:text-pink-300' },
+      { key: 'referBonus', label: 'Refer Bonus', sub: 'Instant Upline Bonus', pct: '15%', rate: '৳225', fill: '#3b82f6', amount: totalActs * 225, icon: Megaphone, border: 'border-blue-200/80', bg: 'bg-blue-50/50 dark:bg-blue-950/20', text: 'text-blue-700 dark:text-blue-300' },
+      { key: 'generationBonus', label: 'Generation Bonus', sub: '10-Level Upline Bonus', pct: '7%', rate: '৳105', fill: '#10b981', amount: totalActs * 105, icon: Network, border: 'border-emerald-200/80', bg: 'bg-emerald-50/50 dark:bg-emerald-950/20', text: 'text-emerald-700 dark:text-emerald-300' },
+      { key: 'autoProfit', label: 'Auto Club', sub: 'Company Reserve Pool', pct: '3.5%', rate: '৳52.5', fill: '#8b5cf6', amount: totalActs * 52.5, icon: Zap, border: 'border-violet-200/80', bg: 'bg-violet-50/50 dark:bg-violet-950/20', text: 'text-violet-700 dark:text-violet-300' },
+      { key: 'incentiveFund', label: 'Incentive Fund', sub: 'Company Reserve Pool', pct: '2%', rate: '৳30', fill: '#f97316', amount: totalActs * 30, icon: Trophy, border: 'border-orange-200/80', bg: 'bg-orange-50/50 dark:bg-orange-950/20', text: 'text-orange-700 dark:text-orange-300' },
+      { key: 'rankDevelopmentFund', label: 'Rank Dev Fund', sub: 'Company Reserve Pool', pct: '2.5%', rate: '৳37.5', fill: '#14b8a6', amount: totalActs * 37.5, icon: TrendingUp, border: 'border-teal-200/80', bg: 'bg-teal-50/50 dark:bg-teal-950/20', text: 'text-teal-700 dark:text-teal-300' },
+      { key: 'globalProfit', label: 'Global Fund', sub: 'Company Reserve Pool', pct: '2%', rate: '৳30', fill: '#0ea5e9', amount: totalActs * 30, icon: Globe, border: 'border-sky-200/80', bg: 'bg-sky-50/50 dark:bg-sky-950/20', text: 'text-sky-700 dark:text-sky-300' },
+      { key: 'royaltyFund', label: 'Royalty Fund', sub: 'Company Reserve Pool', pct: '2%', rate: '৳30', fill: '#eab308', amount: totalActs * 30, icon: Crown, border: 'border-yellow-200/80', bg: 'bg-yellow-50/50 dark:bg-yellow-950/20', text: 'text-yellow-700 dark:text-yellow-300' },
+      { key: 'tourFund', label: 'Tour Fund', sub: 'Company Reserve Pool', pct: '5%', rate: '৳75', fill: '#06b6d4', amount: totalActs * 75, icon: Plane, border: 'border-cyan-200/80', bg: 'bg-cyan-50/50 dark:bg-cyan-950/20', text: 'text-cyan-700 dark:text-cyan-300' },
+      { key: 'communityFund', label: 'Community Fund', sub: 'Company Reserve Pool', pct: '15%', rate: '৳225', fill: '#6366f1', amount: totalActs * 225, icon: Users2, border: 'border-indigo-200/80', bg: 'bg-indigo-50/50 dark:bg-indigo-950/20', text: 'text-indigo-700 dark:text-indigo-300' },
+      { key: 'charityFund', label: 'Charity Fund', sub: 'Company Reserve Pool', pct: '1%', rate: '৳15', fill: '#ec4899', amount: totalActs * 15, icon: Heart, border: 'border-pink-200/80', bg: 'bg-pink-50/50 dark:bg-pink-950/20', text: 'text-pink-700 dark:text-pink-300' },
     ];
-  }, [fundPool, stats]);
+  }, [activePackageCount]);
 
   const totalFundPoolReserves = useMemo(() => {
     return fundPoolData.reduce((acc, curr) => acc + (curr.amount || 0), 0);
@@ -558,14 +560,48 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* ─── Beginner-Friendly Quick Financial Guide Bar ───────────────────── */}
+      <div className="rounded-2xl border bg-muted/20 p-3.5 sm:p-4 shadow-2xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Building2 className="h-4 w-4" />
+            </div>
+            <div>
+              <h2 className="text-xs sm:text-sm font-black text-foreground">
+                How Every ৳1,500 Premium Membership Works ({activePackageCount} Active Members = ৳{(activePackageCount * 1500).toLocaleString()})
+              </h2>
+              <p className="text-[11px] text-muted-foreground">
+                Company account (ABS-COMPANY) & Admin accounts are excluded from all member counts and financial metrics.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <div className="px-3 py-1.5 rounded-xl border border-blue-500/20 bg-blue-500/5 flex items-center justify-between gap-3">
+              <span className="text-[11px] font-semibold text-blue-800 dark:text-blue-300">22% Instant Bonus (৳330/m):</span>
+              <span className="font-mono font-black text-blue-950 dark:text-blue-100">৳{(activePackageCount * 330).toLocaleString()}</span>
+            </div>
+            <div className="px-3 py-1.5 rounded-xl border border-indigo-500/20 bg-indigo-500/5 flex items-center justify-between gap-3">
+              <span className="text-[11px] font-semibold text-indigo-800 dark:text-indigo-300">33% Reserve Pools (৳495/m):</span>
+              <span className="font-mono font-black text-indigo-950 dark:text-indigo-100">৳{(activePackageCount * 495).toLocaleString()}</span>
+            </div>
+            <div className="px-3 py-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-between gap-3">
+              <span className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">45% Company Profit (৳675/m):</span>
+              <span className="font-mono font-black text-emerald-950 dark:text-emerald-100">৳{(activePackageCount * 675).toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* ─── 6 Core Executive KPI Cards (2 Rows × 3 Cards) ───────────────── */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Card 1: Total Inflow */}
+        {/* Card 1: Total Package & Sales Inflow */}
         <Link href="/admin/deposits" className="block group">
           <Card className="border border-emerald-500/20 bg-linear-to-b from-emerald-500/10 via-emerald-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <span className="text-xs uppercase font-bold text-emerald-800 dark:text-emerald-300 tracking-wider">
-                Total Inflow
+                Total Package & Sales Inflow
               </span>
               <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
                 <Coins className="h-4 w-4" />
@@ -576,12 +612,12 @@ export default function AdminDashboard() {
                 ৳{(stats?.totalInflow || 0).toLocaleString()}
               </div>
               <p className="text-[11px] text-muted-foreground leading-tight">
-                MFS/Bank Deposits: <strong>৳{(stats?.completedDepositAmount || 0).toLocaleString()}</strong> · Direct Sales: <strong>৳{(stats?.directStoreRevenue || 0).toLocaleString()}</strong>
+                <strong>{activePackageCount}</strong> Premium Packages (× ৳1,500): <strong>৳{(stats?.packageActivationsRevenue || 0).toLocaleString()}</strong> · Store Sales: <strong>৳{(stats?.directStoreRevenue || 0).toLocaleString()}</strong>
               </p>
               <div className="pt-1 flex items-center justify-between text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">
                 <span className="flex items-center gap-1.5">
                   <ArrowUpRight className="h-3.5 w-3.5" />
-                  <span>{stats?.activeSubscribers || 0} Premium Activations (৳{(stats?.packageActivationsRevenue || 0).toLocaleString()})</span>
+                  <span>Unused in Member Deposit Wallets: ৳{(stats?.totalDepositWallet || 0).toLocaleString()}</span>
                 </span>
                 <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
@@ -594,7 +630,7 @@ export default function AdminDashboard() {
           <Card className="border border-blue-500/20 bg-linear-to-b from-blue-500/10 via-blue-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <span className="text-xs uppercase font-bold text-blue-800 dark:text-blue-300 tracking-wider">
-                System Balances
+                Member Wallet Balances (Total)
               </span>
               <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
                 <Wallet className="h-4 w-4" />
@@ -605,12 +641,12 @@ export default function AdminDashboard() {
                 ৳{(stats?.totalSystemWallets || 0).toLocaleString()}
               </div>
               <p className="text-[11px] text-muted-foreground leading-tight">
-                Deposit: <strong>৳{(stats?.totalDepositWallet || 0).toLocaleString()}</strong> · Bonus: <strong>৳{Math.round(stats?.totalBonusWallet || 0).toLocaleString()}</strong>
+                Deposit: <strong>৳{(stats?.totalDepositWallet || 0).toLocaleString()}</strong> + Bonus: <strong>৳{(stats?.totalBonusWallet || 0).toLocaleString()}</strong> + Withdraw: <strong>৳{(stats?.totalWithdrawalWallet || 0).toLocaleString()}</strong>
               </p>
               <div className="pt-1 flex items-center justify-between text-[10px] text-blue-700 dark:text-blue-400 font-semibold">
                 <span className="flex items-center gap-1.5">
                   <ShieldCheck className="h-3.5 w-3.5" />
-                  <span>Withdrawable Reserve: ৳{(stats?.totalWithdrawalWallet || 0).toLocaleString()}</span>
+                  <span>Ready to Withdraw (≥ ৳500): ৳{(stats?.totalWithdrawalWallet || 0).toLocaleString()}</span>
                 </span>
                 <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
@@ -623,7 +659,7 @@ export default function AdminDashboard() {
           <Card className="border border-amber-500/20 bg-linear-to-b from-amber-500/10 via-amber-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <span className="text-xs uppercase font-bold text-amber-800 dark:text-amber-300 tracking-wider">
-                Total Bonus Wallet
+                Pending Bonus Wallet (&lt; ৳500)
               </span>
               <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
                 <Sparkles className="h-4 w-4" />
@@ -631,15 +667,15 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent className="space-y-1.5">
               <div className="text-2xl sm:text-3xl font-black text-amber-950 dark:text-amber-100">
-                ৳{Math.round(stats?.totalBonusWallet || 0).toLocaleString()}
+                ৳{(stats?.totalBonusWallet || 0).toLocaleString()}
               </div>
               <p className="text-[11px] text-muted-foreground leading-tight">
-                Accumulated earnings stored across all member bonus wallets
+                Referral & generation commissions currently below ৳500 across member wallets
               </p>
               <div className="pt-1 flex items-center justify-between text-[10px] text-amber-700 dark:text-amber-400 font-semibold">
                 <span className="flex items-center gap-1.5">
                   <Coins className="h-3.5 w-3.5" />
-                  <span>Auto-Convert Rule: ≥ ৳500 to Withdrawal Wallet</span>
+                  <span>Every ৳500 auto-moves to Withdrawal Wallet (৳{(stats?.totalWithdrawalWallet || 0).toLocaleString()} converted)</span>
                 </span>
                 <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
@@ -814,9 +850,9 @@ export default function AdminDashboard() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="pt-2 border-t text-[11px] text-muted-foreground flex justify-between items-center">
-            <span>Active Subscribers: <strong className="text-foreground">{stats?.activeSubscribers || 0}</strong></span>
-            <span>Free Members: <strong className="text-foreground">{(stats?.totalUsers || 0) - (stats?.activeSubscribers || 0)}</strong></span>
+          <CardFooter className="pt-2 border-t text-[11px] text-muted-foreground flex flex-wrap justify-between items-center gap-2">
+            <span>Active Premium Members: <strong className="text-foreground">{activePackageCount}</strong> (× ৳1,500 = ৳{(activePackageCount * 1500).toLocaleString()})</span>
+            <span>Free General Members: <strong className="text-foreground">{Math.max(0, totalMembersWithRank - activePackageCount)}</strong></span>
           </CardFooter>
         </Card>
 
@@ -830,7 +866,7 @@ export default function AdminDashboard() {
                   Capital Inflow vs Reserves
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Proportional comparison of incoming funds, wallet balances, and payouts
+                  Comparison of total package/sales inflow, member wallet balances, and payouts
                 </CardDescription>
               </div>
               <Badge variant="outline" className="border-emerald-500/30 text-emerald-700 bg-emerald-50 text-[11px] font-bold">
@@ -895,7 +931,9 @@ export default function AdminDashboard() {
                       ৳{(stats?.totalInflow || 0).toLocaleString()}
                     </span>
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-1">MFS/Bank Deposits + Direct Store Sales</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    {activePackageCount} Premium Packages (৳{(activePackageCount * 1500).toLocaleString()}) + Store Sales (৳{(stats?.directStoreRevenue || 0).toLocaleString()})
+                  </p>
                 </div>
 
                 <div className="p-2.5 rounded-xl border bg-blue-50/40 border-blue-200/60 dark:bg-blue-950/20">
@@ -907,7 +945,9 @@ export default function AdminDashboard() {
                       ৳{(stats?.totalSystemWallets || 0).toLocaleString()}
                     </span>
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-1">Held safely in member wallets</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    Deposit ৳{(stats?.totalDepositWallet || 0).toLocaleString()} + Bonus ৳{(stats?.totalBonusWallet || 0).toLocaleString()} + Withdraw ৳{(stats?.totalWithdrawalWallet || 0).toLocaleString()}
+                  </p>
                 </div>
 
                 <div className="p-2.5 rounded-xl border bg-purple-50/40 border-purple-200/60 dark:bg-purple-950/20">
@@ -924,9 +964,10 @@ export default function AdminDashboard() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="pt-2 border-t text-[11px] text-muted-foreground flex justify-between items-center">
-            <span>Company Net Revenue: <strong className="text-emerald-600">৳{((fundPool?.totalActivations ?? stats?.activeSubscribers ?? 0) * 675).toLocaleString()}</strong></span>
-            <span>Strategic Reserves: <strong className="text-primary">৳{((fundPool?.totalActivations ?? stats?.activeSubscribers ?? 0) * 495).toLocaleString()}</strong></span>
+          <CardFooter className="pt-2 border-t text-[11px] text-muted-foreground flex flex-wrap justify-between items-center gap-2">
+            <span>45% Company Net: <strong className="text-emerald-600">৳{(activePackageCount * 675).toLocaleString()}</strong></span>
+            <span>33% 8 Reserve Funds: <strong className="text-primary">৳{(activePackageCount * 495).toLocaleString()}</strong></span>
+            <span>22% Instant Bonus: <strong className="text-blue-600">৳{(activePackageCount * 330).toLocaleString()}</strong></span>
           </CardFooter>
         </Card>
       </div>
@@ -938,10 +979,10 @@ export default function AdminDashboard() {
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-bold flex items-center gap-2">
               <Layers className="h-5 w-5 text-primary" />
-              Member Wallets Allocation
+              Member Wallets Allocation (৳{(stats?.totalSystemWallets || 0).toLocaleString()})
             </CardTitle>
             <CardDescription className="text-xs">
-              Live balances stored in Deposit, Bonus, and Withdrawal wallets
+              Live balances stored across all real members&apos; Deposit, Bonus, and Withdrawal wallets
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
@@ -985,15 +1026,15 @@ export default function AdminDashboard() {
 
             <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t text-center">
               <div className="p-2 rounded-lg bg-emerald-500/5">
-                <span className="text-[10px] text-muted-foreground uppercase font-bold block">Deposit</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold block">Deposit (Unused)</span>
                 <span className="text-sm font-black text-emerald-700">৳{(stats?.totalDepositWallet || 0).toLocaleString()}</span>
               </div>
               <div className="p-2 rounded-lg bg-amber-500/5">
-                <span className="text-[10px] text-muted-foreground uppercase font-bold block">Bonus</span>
-                <span className="text-sm font-black text-amber-700">৳{Math.round(stats?.totalBonusWallet || 0).toLocaleString()}</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold block">Bonus (&lt; ৳500)</span>
+                <span className="text-sm font-black text-amber-700">৳{(stats?.totalBonusWallet || 0).toLocaleString()}</span>
               </div>
               <div className="p-2 rounded-lg bg-purple-500/5">
-                <span className="text-[10px] text-muted-foreground uppercase font-bold block">Withdrawal</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold block">Withdrawable (≥ ৳500)</span>
                 <span className="text-sm font-black text-purple-700">৳{(stats?.totalWithdrawalWallet || 0).toLocaleString()}</span>
               </div>
             </div>
@@ -1336,7 +1377,7 @@ export default function AdminDashboard() {
                       <Icon className={`h-3.5 w-3.5 ${text}`} />
                     </div>
                     <div className={`text-base font-black ${text}`}>
-                      {fundLoading ? '...' : `৳${Math.round(amount).toLocaleString()}`}
+                      {fundLoading && !stats ? '...' : `৳${Number(amount.toFixed(2)).toLocaleString()}`}
                     </div>
                     <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mt-0.5 truncate leading-tight">
                       {label}
@@ -1345,6 +1386,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="mt-1.5 pt-1 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between">
                     <span className="text-[9px] font-semibold text-slate-500 dark:text-slate-400">{rate}/act</span>
+                    <span className="text-[9px] font-mono text-muted-foreground">× {activePackageCount}</span>
                   </div>
                 </div>
               ))}
@@ -1352,78 +1394,78 @@ export default function AdminDashboard() {
           </div>
 
           {/* Executive 3-Way Financial Allocation Split Summary */}
-          {fundPool?.totalActivations !== undefined && (
-            <div className="pt-2 border-t space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {/* 1. Total Package Inflow (100%) */}
-                <div className="p-3 rounded-xl border border-blue-500/20 bg-blue-500/5 flex flex-col justify-between">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider">
-                      Total Package Inflow (100%)
-                    </span>
-                    <Badge variant="outline" className="text-[10px] bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-300 font-bold">
-                      ৳1,500 / act
-                    </Badge>
-                  </div>
-                  <div className="mt-2">
-                    <span className="text-xl sm:text-2xl font-black text-blue-950 dark:text-blue-100">
-                      ৳{(fundPool.totalActivations * 1500).toLocaleString()}
-                    </span>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      From {fundPool.totalActivations} active package memberships
-                    </p>
-                  </div>
+          <div className="pt-2 border-t space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* 1. Total Package Inflow (100%) */}
+              <div className="p-3 rounded-xl border border-blue-500/20 bg-blue-500/5 flex flex-col justify-between">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider">
+                    Total Package Inflow (100%)
+                  </span>
+                  <Badge variant="outline" className="text-[10px] bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-300 font-bold">
+                    ৳1,500 / act
+                  </Badge>
                 </div>
-
-                {/* 2. Disbursed Across 10 Funds (55%) */}
-                <div className="p-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 flex flex-col justify-between">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">
-                      10 Strategic Funds (55%)
-                    </span>
-                    <Badge variant="outline" className="text-[10px] bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-300 font-bold">
-                      ৳825 / act
-                    </Badge>
-                  </div>
-                  <div className="mt-2">
-                    <span className="text-xl sm:text-2xl font-black text-indigo-950 dark:text-indigo-100">
-                      ৳{(fundPool.totalActivations * 825).toLocaleString()}
-                    </span>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      Referral, Generation & 8 company reserve pools
-                    </p>
-                  </div>
-                </div>
-
-                {/* 3. Company Net Retained Profit (45% - Remaining Amount) */}
-                <div className="p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex flex-col justify-between">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
-                      Company Net Retained (45%)
-                    </span>
-                    <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-300 font-bold">
-                      ৳675 / act
-                    </Badge>
-                  </div>
-                  <div className="mt-2">
-                    <span className="text-xl sm:text-2xl font-black text-emerald-950 dark:text-emerald-100">
-                      ৳{(fundPool.totalActivations * 675).toLocaleString()}
-                    </span>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      Direct retained gross revenue for company treasury
-                    </p>
-                  </div>
+                <div className="mt-2">
+                  <span className="text-xl sm:text-2xl font-black text-blue-950 dark:text-blue-100">
+                    ৳{(activePackageCount * 1500).toLocaleString()}
+                  </span>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    From <strong>{activePackageCount}</strong> active package memberships (× ৳1,500)
+                  </p>
                 </div>
               </div>
 
-              {fundPool.lastUpdated && (
-                <div className="flex items-center justify-between text-[10px] text-muted-foreground px-1">
-                  <span>Split Formula: 100% Inflow = 55% Distributed into 10 Funds + 45% Company Net Profit</span>
-                  <span>Last updated: {new Date(fundPool.lastUpdated).toLocaleTimeString()}</span>
+              {/* 2. Disbursed Across 10 Funds (55%) */}
+              <div className="p-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 flex flex-col justify-between">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">
+                    10 Strategic Funds (55%)
+                  </span>
+                  <Badge variant="outline" className="text-[10px] bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-300 font-bold">
+                    ৳825 / act
+                  </Badge>
                 </div>
+                <div className="mt-2">
+                  <span className="text-xl sm:text-2xl font-black text-indigo-950 dark:text-indigo-100">
+                    ৳{(activePackageCount * 825).toLocaleString()}
+                  </span>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    22% Instant Bonus (৳{(activePackageCount * 330).toLocaleString()}) + 33% Reserve Pools (৳{(activePackageCount * 495).toLocaleString()})
+                  </p>
+                </div>
+              </div>
+
+              {/* 3. Company Net Retained Profit (45% - Remaining Amount) */}
+              <div className="p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex flex-col justify-between">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
+                    Company Net Retained (45%)
+                  </span>
+                  <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-300 font-bold">
+                    ৳675 / act
+                  </Badge>
+                </div>
+                <div className="mt-2">
+                  <span className="text-xl sm:text-2xl font-black text-emerald-950 dark:text-emerald-100">
+                    ৳{(activePackageCount * 675).toLocaleString()}
+                  </span>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    {activePackageCount} active memberships × ৳675 net company profit
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-foreground px-1">
+              <span>
+                Split Formula: <strong>100% (৳{(activePackageCount * 1500).toLocaleString()})</strong> = <strong>22% Instant Bonus (৳{(activePackageCount * 330).toLocaleString()})</strong> + <strong>33% Reserve Funds (৳{(activePackageCount * 495).toLocaleString()})</strong> + <strong>45% Company Profit (৳{(activePackageCount * 675).toLocaleString()})</strong>
+              </span>
+              {fundPool?.lastUpdated && (
+                <span>Last updated: {new Date(fundPool.lastUpdated).toLocaleTimeString()}</span>
               )}
             </div>
-          )}
+          </div>
         </CardContent>
       </Card>
 

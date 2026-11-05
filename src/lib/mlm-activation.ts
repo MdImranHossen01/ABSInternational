@@ -337,28 +337,30 @@ export async function executePremiumActivation(user: any, options: ActivationOpt
     unallocatedBonus = SPONSOR_BONUS + GEN_POOL_TOTAL + AUTO_PROFIT;
   }
 
-  // 4. Fund Pool Contributions
-  let fundPool = await MlmFundPool.findOne();
-  if (!fundPool) {
-    fundPool = await MlmFundPool.create({
-      autoProfit: 0, globalProfit: 0, incentiveFund: 0,
-      rankDevelopmentFund: 0, royaltyFund: 0, tourFund: 0,
-      communityFund: 0, charityFund: 0,
-      totalActivations: 0,
-    });
-  }
+  // 4. Fund Pool Contributions (Only for real members — exclude ABS-COMPANY & super_admin)
+  if (user.memberId !== 'ABS-COMPANY' && user.role !== 'super_admin') {
+    let fundPool = await MlmFundPool.findOne();
+    if (!fundPool) {
+      fundPool = await MlmFundPool.create({
+        autoProfit: 0, globalProfit: 0, incentiveFund: 0,
+        rankDevelopmentFund: 0, royaltyFund: 0, tourFund: 0,
+        communityFund: 0, charityFund: 0,
+        totalActivations: 0,
+      });
+    }
 
-  fundPool.autoProfit += AUTO_PROFIT;
-  fundPool.globalProfit += GLOBAL_PROFIT + unallocatedBonus;
-  fundPool.incentiveFund += INCENTIVE_FUND;
-  fundPool.rankDevelopmentFund += RANK_DEV_FUND;
-  fundPool.royaltyFund += ROYALTY_FUND;
-  fundPool.tourFund = (fundPool.tourFund || 0) + TOUR_FUND;
-  fundPool.communityFund = (fundPool.communityFund || 0) + COMMUNITY_FUND;
-  fundPool.charityFund += CHARITY_FUND;
-  fundPool.totalActivations += 1;
-  fundPool.lastUpdated = new Date();
-  await fundPool.save();
+    fundPool.autoProfit += AUTO_PROFIT;
+    fundPool.globalProfit += GLOBAL_PROFIT + unallocatedBonus;
+    fundPool.incentiveFund += INCENTIVE_FUND;
+    fundPool.rankDevelopmentFund += RANK_DEV_FUND;
+    fundPool.royaltyFund += ROYALTY_FUND;
+    fundPool.tourFund = (fundPool.tourFund || 0) + TOUR_FUND;
+    fundPool.communityFund = (fundPool.communityFund || 0) + COMMUNITY_FUND;
+    fundPool.charityFund += CHARITY_FUND;
+    fundPool.totalActivations += 1;
+    fundPool.lastUpdated = new Date();
+    await fundPool.save();
+  }
 
   // 5. Rank Promotion Check
   await checkRankPromotions(user);

@@ -19,14 +19,45 @@ export async function GET(req: NextRequest) {
     }
 
     await connectToDatabase();
+
+    // Always count real active members (excluding company root node & super_admin)
+    const realActiveMembersCount = await User.countDocuments({
+      isSubscriptionActive: true,
+      memberId: { $ne: 'ABS-COMPANY' },
+      role: { $ne: 'super_admin' },
+    });
+
     const fundPool = await MlmFundPool.findOne();
     if (!fundPool) {
       return NextResponse.json({
-        autoProfit: 0, globalProfit: 0, incentiveFund: 0,
-        rankDevelopmentFund: 0, royaltyFund: 0, tourFund: 0,
-        communityFund: 0, charityFund: 0,
-        totalActivations: 0
+        autoProfit: realActiveMembersCount * 52.5,
+        globalProfit: realActiveMembersCount * 30,
+        incentiveFund: realActiveMembersCount * 30,
+        rankDevelopmentFund: realActiveMembersCount * 37.5,
+        royaltyFund: realActiveMembersCount * 30,
+        tourFund: realActiveMembersCount * 75,
+        communityFund: realActiveMembersCount * 225,
+        charityFund: realActiveMembersCount * 15,
+        totalActivations: realActiveMembersCount,
       });
+    }
+
+    // Sync fundPool if totalActivations included ABS-COMPANY or out-of-sync test records
+    if (fundPool.totalActivations !== realActiveMembersCount) {
+      fundPool.totalActivations = realActiveMembersCount;
+      fundPool.autoProfit = realActiveMembersCount * 52.5;
+      fundPool.incentiveFund = realActiveMembersCount * 30;
+      fundPool.rankDevelopmentFund = realActiveMembersCount * 37.5;
+      fundPool.royaltyFund = realActiveMembersCount * 30;
+      fundPool.tourFund = realActiveMembersCount * 75;
+      fundPool.communityFund = realActiveMembersCount * 225;
+      fundPool.charityFund = realActiveMembersCount * 15;
+      // Keep globalProfit aligned with 2% (৳30/act) unless a manual distribution reduced it below that
+      if (fundPool.globalProfit > realActiveMembersCount * 30) {
+        fundPool.globalProfit = realActiveMembersCount * 30;
+      }
+      fundPool.lastUpdated = new Date();
+      await fundPool.save();
     }
 
     return NextResponse.json(fundPool);
@@ -58,8 +89,12 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'No Global Profit available to distribute.' }, { status: 400 });
       }
 
-      // Find all active members
-      const activeMembers = await User.find({ isSubscriptionActive: true, role: 'user' });
+      // Find all real active members (excluding ABS-COMPANY & super_admin)
+      const activeMembers = await User.find({
+        isSubscriptionActive: true,
+        role: { $ne: 'super_admin' },
+        memberId: { $ne: 'ABS-COMPANY' },
+      });
       if (activeMembers.length === 0) {
         return NextResponse.json({ message: 'No active members found.' }, { status: 400 });
       }
