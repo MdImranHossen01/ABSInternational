@@ -156,9 +156,10 @@ export function UsersManagementView({
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Filter & Sort States
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || 'all');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [rankFilter, setRankFilter] = useState<string>('all');
+  const [walletFilter, setWalletFilter] = useState<string>(searchParams.get('wallet') || 'all');
   const [sortBy, setSortBy] = useState<string>('newest');
 
   const handleCopyText = async (text: string, idKey: string) => {
@@ -179,8 +180,15 @@ export function UsersManagementView({
     setStatusFilter('all');
     setRoleFilter('all');
     setRankFilter('all');
+    setWalletFilter('all');
     setSortBy('newest');
     setCurrentPage(1);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('wallet');
+    params.delete('status');
+    params.delete('page');
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname);
   };
 
   const hasActiveFilters = Boolean(
@@ -188,6 +196,7 @@ export function UsersManagementView({
     statusFilter !== 'all' ||
     roleFilter !== 'all' ||
     rankFilter !== 'all' ||
+    walletFilter !== 'all' ||
     sortBy !== 'newest'
   );
 
@@ -205,6 +214,7 @@ export function UsersManagementView({
         status: statusFilter,
         role: roleFilter,
         rank: rankFilter,
+        wallet: walletFilter,
         sortBy
       });
       const response = await fetch(`/api/admin/users?${params.toString()}`);
@@ -223,12 +233,20 @@ export function UsersManagementView({
 
   useEffect(() => {
     fetchUsers(currentPage);
-  }, [currentPage, debouncedSearchTerm, type, statusFilter, roleFilter, rankFilter, sortBy]);
+  }, [currentPage, debouncedSearchTerm, type, statusFilter, roleFilter, rankFilter, walletFilter, sortBy]);
 
   useEffect(() => {
     const pageFromParams = Math.max(1, parseInt(searchParams.get('page') || '1'));
     if (pageFromParams !== currentPage) {
       setCurrentPage(pageFromParams);
+    }
+    const walletFromParams = searchParams.get('wallet');
+    if (walletFromParams && walletFromParams !== walletFilter) {
+      setWalletFilter(walletFromParams);
+    }
+    const statusFromParams = searchParams.get('status');
+    if (statusFromParams && statusFromParams !== statusFilter) {
+      setStatusFilter(statusFromParams);
     }
   }, [searchParams]);
 
@@ -623,6 +641,25 @@ export function UsersManagementView({
               </select>
             </div>
 
+            {/* Wallet Filter */}
+            <div className="flex items-center">
+              <select
+                value={walletFilter}
+                onChange={(e) => {
+                  setWalletFilter(e.target.value);
+                  if (currentPage > 1) setCurrentPage(1);
+                }}
+                className="h-10 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 shadow-2xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+                aria-label="Filter by Wallet Balance"
+              >
+                <option value="all">All Wallets</option>
+                <option value="deposit">Unused Deposit (&gt; ৳0)</option>
+                <option value="bonus">Has Bonus (&gt; ৳0)</option>
+                <option value="withdrawal">Withdrawable (&gt; ৳0)</option>
+                <option value="any">Any Wallet (&gt; ৳0)</option>
+              </select>
+            </div>
+
             {/* Sort Filter */}
             <div className="flex items-center">
               <select
@@ -636,6 +673,9 @@ export function UsersManagementView({
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
+                <option value="deposit_desc">Highest Deposit</option>
+                <option value="bonus_desc">Highest Bonus</option>
+                <option value="withdrawal_desc">Highest Withdraw</option>
                 <option value="orders_desc">Most Orders</option>
                 <option value="spent_desc">Highest Spent</option>
                 <option value="name_asc">Name (A-Z)</option>
@@ -662,24 +702,23 @@ export function UsersManagementView({
       {/* Table Card */}
       <div className="rounded-2xl border bg-white shadow-xs overflow-hidden">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
-          <Table>
+        <div className="hidden md:block">
+          <Table className="w-full table-auto">
             <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableHead className="w-[60px]">Avatar</TableHead>
-                <TableHead className="font-bold min-w-[200px]">Member</TableHead>
-                <TableHead className="font-bold min-w-[190px]">Sponsor</TableHead>
-                <TableHead className="font-bold">MLM Rank & Status</TableHead>
-                <TableHead className="font-bold">Orders / Spent</TableHead>
-                <TableHead className="font-bold">Role</TableHead>
-                <TableHead className="font-bold">Joined</TableHead>
-                <TableHead className="text-right font-bold">Actions</TableHead>
+                <TableHead className="font-bold px-3">Member</TableHead>
+                <TableHead className="font-bold px-2.5">Sponsor</TableHead>
+                <TableHead className="font-bold px-2.5">Rank &amp; Status</TableHead>
+                <TableHead className="font-bold px-2.5">Wallets (Dep / Bon / Wdr)</TableHead>
+                <TableHead className="font-bold px-2.5">Orders</TableHead>
+                <TableHead className="font-bold px-2.5">Joined</TableHead>
+                <TableHead className="text-right font-bold px-3">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="h-48 text-center">
+                  <TableCell colSpan={7} className="h-48 text-center">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <Loader2 className="h-8 w-8 animate-spin text-primary" />
                       <p className="text-muted-foreground font-medium text-xs">Loading accounts...</p>
@@ -688,164 +727,210 @@ export function UsersManagementView({
                 </TableRow>
               ) : users.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="h-48 text-center">
+                  <TableCell colSpan={7} className="h-48 text-center">
                     <p className="text-muted-foreground text-xs font-medium">No accounts found in this directory.</p>
                   </TableCell>
                 </TableRow>
               ) : (
-                users.map((user) => (
-                  <TableRow key={user._id} className="hover:bg-muted/20 transition-colors">
-                    <TableCell>
-                      {user.image && user.image !== '' ? (
-                        <div className="relative h-9 w-9 rounded-full overflow-hidden border">
-                          <Image 
-                            src={user.image} 
-                            alt={user.name} 
-                            width={36}
-                            height={36}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-                          <UserIcon className="h-4 w-4" />
-                        </div>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col space-y-0.5">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <Link 
-                            href={`/admin/users/${user._id}`}
-                            className="font-bold text-slate-900 hover:text-primary transition-colors text-left text-xs sm:text-sm hover:underline"
-                          >
-                            {user.name}
-                          </Link>
-                          {user.nidStatus === 'Approved' && (
-                            <span 
-                              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs shrink-0" 
-                              title="KYC Verified Member"
-                            >
-                              <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
-                              Verified
-                            </span>
+                users.map((user) => {
+                  const dep = Number((user.depositWallet || 0).toFixed(2));
+                  const bon = Number((user.bonusWallet || 0).toFixed(2));
+                  const wdr = Number((user.withdrawalWallet || 0).toFixed(2));
+
+                  return (
+                    <TableRow key={user._id} className="hover:bg-muted/20 transition-colors">
+                      {/* 1. Member (Avatar + Name + ID + Contact) */}
+                      <TableCell className="px-3 py-2.5">
+                        <div className="flex items-start gap-2.5">
+                          {user.image && user.image !== '' ? (
+                            <div className="relative h-8 w-8 shrink-0 rounded-full overflow-hidden border mt-0.5">
+                              <Image 
+                                src={user.image} 
+                                alt={user.name} 
+                                width={32}
+                                height={32}
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-8 w-8 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20 mt-0.5">
+                              <UserIcon className="h-3.5 w-3.5" />
+                            </div>
                           )}
-                        </div>
-                        <div className="flex items-center gap-1 font-mono text-[11px]">
-                          <span className="font-bold text-primary">{user.memberId || 'N/A'}</span>
-                          {user.memberId && (
-                            <button
-                              type="button"
-                              onClick={() => handleCopyText(user.memberId!, `user-${user._id}`)}
-                              className="p-0.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
-                              title="Copy Member ID"
-                              aria-label="Copy Member ID"
-                            >
-                              {copiedId === `user-${user._id}` ? (
-                                <Check className="h-3 w-3 text-emerald-600" />
-                              ) : (
-                                <Copy className="h-3 w-3" />
-                              )}
-                            </button>
-                          )}
-                        </div>
-                        <div className="text-[11px] text-slate-500 font-medium truncate max-w-[200px]">{user.email}</div>
-                        {user.phone && (
-                          <div className="text-[11px] text-slate-500 font-mono">
-                            {user.phone}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col space-y-0.5">
-                        {user.sponsorId ? (
-                          <>
-                            {user.sponsorObjectId ? (
+                          <div className="flex flex-col space-y-0.5 min-w-0">
+                            <div className="flex items-center gap-1 flex-wrap">
                               <Link 
-                                href={`/admin/users/${user.sponsorObjectId}`}
-                                className="font-bold text-xs text-slate-800 hover:text-primary hover:underline transition-colors text-left"
+                                href={`/admin/users/${user._id}`}
+                                className="font-bold text-slate-900 hover:text-primary transition-colors text-left text-xs hover:underline truncate max-w-[155px]"
+                                title={user.name}
                               >
-                                {user.sponsorName || (user.sponsorId === 'ABS-COMPANY' ? 'ABS Company' : 'Unknown')}
+                                {user.name}
                               </Link>
-                            ) : (
-                              <span className="font-bold text-xs text-slate-800">
-                                {user.sponsorName || (user.sponsorId === 'ABS-COMPANY' ? 'ABS Company' : 'Unknown')}
-                              </span>
-                            )}
+                              {user.nidStatus === 'Approved' && (
+                                <span 
+                                  className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0" 
+                                  title="KYC Verified Member"
+                                >
+                                  <CheckCircle2 className="h-2.5 w-2.5 text-emerald-600 shrink-0" />
+                                  KYC
+                                </span>
+                              )}
+                            </div>
                             <div className="flex items-center gap-1 font-mono text-[11px]">
-                              <span className="text-slate-600 font-semibold">{user.sponsorId}</span>
-                              {user.sponsorId !== 'ABS-COMPANY' && (
+                              <span className="font-bold text-primary">{user.memberId || 'N/A'}</span>
+                              {user.memberId && (
                                 <button
                                   type="button"
-                                  onClick={() => handleCopyText(user.sponsorId!, `sponsor-${user._id}`)}
+                                  onClick={() => handleCopyText(user.memberId!, `user-${user._id}`)}
                                   className="p-0.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
-                                  title="Copy Sponsor ID"
-                                  aria-label="Copy Sponsor ID"
+                                  title="Copy Member ID"
+                                  aria-label="Copy Member ID"
                                 >
-                                  {copiedId === `sponsor-${user._id}` ? (
-                                    <Check className="h-3 w-3 text-emerald-600" />
+                                  {copiedId === `user-${user._id}` ? (
+                                    <Check className="h-2.5 w-2.5 text-emerald-600" />
                                   ) : (
-                                    <Copy className="h-3 w-3" />
+                                    <Copy className="h-2.5 w-2.5" />
                                   )}
                                 </button>
                               )}
                             </div>
-                            {user.sponsorPhone && (
-                              <div className="text-[11px] text-slate-500 font-mono">
-                                {user.sponsorPhone}
+                            <div className="text-[10px] text-slate-500 font-medium truncate max-w-[165px]" title={user.email}>
+                              {user.email}
+                            </div>
+                            {user.phone && (
+                              <div className="text-[10px] text-slate-500 font-mono">
+                                {user.phone}
                               </div>
                             )}
-                          </>
-                        ) : (
-                          <span className="text-xs text-muted-foreground italic">None / Direct</span>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        {user.rank && user.rank !== 'user' ? (
-                          <Badge className="bg-amber-100 text-amber-900 border-amber-300 text-[10px] font-bold">
-                            {user.rank}
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-[10px] text-muted-foreground">
-                            General
-                          </Badge>
-                        )}
-                        {user.isSubscriptionActive ? (
-                          <Badge className="bg-emerald-500 text-white text-[10px]">Active</Badge>
-                        ) : (
-                          <Badge className="bg-slate-200 text-slate-700 text-[10px]">Free</Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col text-xs">
-                        <span className="font-bold text-slate-700">{user.totalOrders} Orders</span>
-                        <span className="text-[11px] text-muted-foreground font-medium">৳{user.totalSpent.toLocaleString()}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant={user.role === 'admin' || user.role === 'super_admin' ? 'default' : 'outline'}
-                        className={`
-                          capitalize px-2.5 py-0.5 rounded-full font-bold text-[10px]
-                          ${user.role === 'admin' || user.role === 'super_admin' ? 'bg-blue-600 text-white' : ''}
-                          ${user.role === 'manager' ? 'bg-emerald-600 text-white' : ''}
-                        `}
-                      >
-                        {user.role}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-slate-500 text-xs">
-                      {new Date(user.createdAt).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
-                    </TableCell>
-                    <TableCell className="text-right">
+                          </div>
+                        </div>
+                      </TableCell>
+
+                      {/* 2. Sponsor */}
+                      <TableCell className="px-2.5 py-2.5">
+                        <div className="flex flex-col space-y-0.5">
+                          {user.sponsorId ? (
+                            <>
+                              {user.sponsorObjectId ? (
+                                <Link 
+                                  href={`/admin/users/${user.sponsorObjectId}`}
+                                  className="font-bold text-xs text-slate-800 hover:text-primary hover:underline transition-colors text-left truncate max-w-[135px]"
+                                  title={user.sponsorName || user.sponsorId}
+                                >
+                                  {user.sponsorName || (user.sponsorId === 'ABS-COMPANY' ? 'ABS Company' : 'Unknown')}
+                                </Link>
+                              ) : (
+                                <span className="font-bold text-xs text-slate-800 truncate max-w-[135px]">
+                                  {user.sponsorName || (user.sponsorId === 'ABS-COMPANY' ? 'ABS Company' : 'Unknown')}
+                                </span>
+                              )}
+                              <div className="flex items-center gap-1 font-mono text-[10px]">
+                                <span className="text-slate-600 font-semibold">{user.sponsorId}</span>
+                                {user.sponsorId !== 'ABS-COMPANY' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleCopyText(user.sponsorId!, `sponsor-${user._id}`)}
+                                    className="p-0.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                                    title="Copy Sponsor ID"
+                                    aria-label="Copy Sponsor ID"
+                                  >
+                                    {copiedId === `sponsor-${user._id}` ? (
+                                      <Check className="h-2.5 w-2.5 text-emerald-600" />
+                                    ) : (
+                                      <Copy className="h-2.5 w-2.5" />
+                                    )}
+                                  </button>
+                                )}
+                              </div>
+                              {user.sponsorPhone && (
+                                <div className="text-[10px] text-slate-500 font-mono">
+                                  {user.sponsorPhone}
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-xs text-muted-foreground italic">None / Direct</span>
+                          )}
+                        </div>
+                      </TableCell>
+
+                      {/* 3. MLM Rank, Status & Role */}
+                      <TableCell className="px-2.5 py-2.5">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-1 flex-wrap">
+                            {user.rank && user.rank !== 'user' ? (
+                              <Badge className="bg-amber-100 text-amber-900 border-amber-300 text-[10px] font-bold px-1.5 py-0">
+                                {user.rank}
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px] text-muted-foreground px-1.5 py-0">
+                                General
+                              </Badge>
+                            )}
+                            {user.isSubscriptionActive ? (
+                              <Badge className="bg-emerald-500 text-white text-[10px] px-1.5 py-0">Active</Badge>
+                            ) : (
+                              <Badge className="bg-slate-200 text-slate-700 text-[10px] px-1.5 py-0">Free</Badge>
+                            )}
+                          </div>
+                          {user.role !== 'user' && (
+                            <div>
+                              <Badge 
+                                variant="default"
+                                className={`capitalize px-1.5 py-0 rounded-full font-bold text-[9px] ${
+                                  user.role === 'admin' || user.role === 'super_admin' ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'
+                                }`}
+                              >
+                                {user.role}
+                              </Badge>
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+
+                      {/* 4. Wallets (Deposit / Bonus / Withdrawal in 1 Column) */}
+                      <TableCell className="px-2.5 py-2.5">
+                        <div className="flex flex-col gap-1 text-[11px] font-mono min-w-[125px]">
+                          <div className="flex items-center justify-between gap-2 px-1.5 py-0.5 rounded bg-emerald-50/70 border border-emerald-100">
+                            <span className="text-[9px] font-sans font-bold uppercase text-emerald-700">Dep:</span>
+                            <span className={`font-bold ${dep > 0 ? 'text-emerald-700' : 'text-slate-400'}`}>
+                              ৳{dep.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between gap-2 px-1.5 py-0.5 rounded bg-amber-50/70 border border-amber-100">
+                            <span className="text-[9px] font-sans font-bold uppercase text-amber-700">Bon:</span>
+                            <span className={`font-bold ${bon > 0 ? 'text-amber-700' : 'text-slate-400'}`}>
+                              ৳{bon.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between gap-2 px-1.5 py-0.5 rounded bg-purple-50/70 border border-purple-100">
+                            <span className="text-[9px] font-sans font-bold uppercase text-purple-700">Wdr:</span>
+                            <span className={`font-bold ${wdr > 0 ? 'text-purple-700' : 'text-slate-400'}`}>
+                              ৳{wdr.toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+
+                      {/* 5. Orders / Spent */}
+                      <TableCell className="px-2.5 py-2.5">
+                        <div className="flex flex-col text-xs whitespace-nowrap">
+                          <span className="font-bold text-slate-700">{user.totalOrders} Orders</span>
+                          <span className="text-[11px] text-muted-foreground font-mono font-medium">৳{user.totalSpent.toLocaleString()}</span>
+                        </div>
+                      </TableCell>
+
+                      {/* 6. Joined */}
+                      <TableCell className="px-2.5 py-2.5 text-slate-500 text-[11px] whitespace-nowrap">
+                        {new Date(user.createdAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </TableCell>
+
+                      {/* 7. Actions */}
+                      <TableCell className="px-3 py-2.5 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 hover:text-primary">
@@ -930,7 +1015,8 @@ export function UsersManagementView({
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))
+                  );
+                })
               )}
             </TableBody>
           </Table>
@@ -1125,6 +1211,22 @@ export function UsersManagementView({
                   <span className="text-[11px] text-slate-500 font-medium ml-auto">
                     {user.totalOrders || 0} orders • ৳{(user.totalSpent || 0).toLocaleString()}
                   </span>
+                </div>
+
+                {/* Wallets Breakdown (Mobile) */}
+                <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-[11px]">
+                  <div className="p-1.5 rounded-lg bg-emerald-50/70 border border-emerald-100">
+                    <span className="text-[9px] font-sans font-bold uppercase text-emerald-700 block">Deposit</span>
+                    <span className="font-bold text-emerald-800">৳{Number((user.depositWallet || 0).toFixed(2)).toLocaleString()}</span>
+                  </div>
+                  <div className="p-1.5 rounded-lg bg-amber-50/70 border border-amber-100">
+                    <span className="text-[9px] font-sans font-bold uppercase text-amber-700 block">Bonus</span>
+                    <span className="font-bold text-amber-800">৳{Number((user.bonusWallet || 0).toFixed(2)).toLocaleString()}</span>
+                  </div>
+                  <div className="p-1.5 rounded-lg bg-purple-50/70 border border-purple-100">
+                    <span className="text-[9px] font-sans font-bold uppercase text-purple-700 block">Withdraw</span>
+                    <span className="font-bold text-purple-800">৳{Number((user.withdrawalWallet || 0).toFixed(2)).toLocaleString()}</span>
+                  </div>
                 </div>
 
                 {/* Contact Information */}

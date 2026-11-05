@@ -597,8 +597,8 @@ export default function AdminDashboard() {
       {/* ─── 6 Core Executive KPI Cards (2 Rows × 3 Cards) ───────────────── */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {/* Card 1: Total Package & Sales Inflow */}
-        <Link href="/admin/deposits" className="block group">
-          <Card className="border border-emerald-500/20 bg-linear-to-b from-emerald-500/10 via-emerald-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full cursor-pointer">
+        <Card className="border border-emerald-500/20 bg-linear-to-b from-emerald-500/10 via-emerald-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full flex flex-col justify-between">
+          <Link href="/admin/users?status=active" className="block group">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <span className="text-xs uppercase font-bold text-emerald-800 dark:text-emerald-300 tracking-wider">
                 Total Package & Sales Inflow
@@ -607,26 +607,32 @@ export default function AdminDashboard() {
                 <Coins className="h-4 w-4" />
               </div>
             </CardHeader>
-            <CardContent className="space-y-1.5">
+            <CardContent className="space-y-1.5 pb-2">
               <div className="text-2xl sm:text-3xl font-black text-emerald-950 dark:text-emerald-100">
                 ৳{(stats?.totalInflow || 0).toLocaleString()}
               </div>
               <p className="text-[11px] text-muted-foreground leading-tight">
                 <strong>{activePackageCount}</strong> Premium Packages (× ৳1,500): <strong>৳{(stats?.packageActivationsRevenue || 0).toLocaleString()}</strong> · Store Sales: <strong>৳{(stats?.directStoreRevenue || 0).toLocaleString()}</strong>
               </p>
-              <div className="pt-1 flex items-center justify-between text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">
-                <span className="flex items-center gap-1.5">
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                  <span>Unused in Member Deposit Wallets: ৳{(stats?.totalDepositWallet || 0).toLocaleString()}</span>
-                </span>
-                <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
             </CardContent>
-          </Card>
-        </Link>
+          </Link>
+          <div className="px-6 pb-4 pt-1">
+            <Link
+              href="/admin/users?wallet=deposit"
+              className="flex items-center justify-between text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold hover:underline group/unused py-0.5"
+              title="Click to view members with unused Deposit Wallet balance"
+            >
+              <span className="flex items-center gap-1.5">
+                <ArrowUpRight className="h-3.5 w-3.5" />
+                <span>Unused in Member Deposit Wallets: ৳{(stats?.totalDepositWallet || 0).toLocaleString()}</span>
+              </span>
+              <ExternalLink className="h-3 w-3 opacity-70 group-hover/unused:opacity-100 transition-opacity" />
+            </Link>
+          </div>
+        </Card>
 
         {/* Card 2: Total Balances in Wallets */}
-        <Link href="/admin/ledger" className="block group">
+        <Link href="/admin/users?wallet=any" className="block group">
           <Card className="border border-blue-500/20 bg-linear-to-b from-blue-500/10 via-blue-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <span className="text-xs uppercase font-bold text-blue-800 dark:text-blue-300 tracking-wider">
@@ -655,7 +661,7 @@ export default function AdminDashboard() {
         </Link>
 
         {/* Card 3: Total Bonus Wallet (All Users Accumulated) */}
-        <Link href="/admin/users" className="block group">
+        <Link href="/admin/users?wallet=bonus" className="block group">
           <Card className="border border-amber-500/20 bg-linear-to-b from-amber-500/10 via-amber-500/5 to-transparent relative overflow-hidden shadow-xs hover:shadow-md transition-all h-full cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <span className="text-xs uppercase font-bold text-amber-800 dark:text-amber-300 tracking-wider">

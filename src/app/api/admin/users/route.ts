@@ -22,12 +22,14 @@ export async function GET(req: NextRequest) {
     const statusFilter = searchParams.get('status') || 'all';
     const roleFilter = searchParams.get('role') || 'all';
     const rankFilter = searchParams.get('rank') || 'all';
+    const walletFilter = searchParams.get('wallet') || 'all';
     const sortBy = searchParams.get('sortBy') || 'newest';
 
     await connectToDatabase();
 
     const matchQuery: any = {
-      role: { $ne: 'super_admin' }
+      role: { $ne: 'super_admin' },
+      memberId: { $ne: 'ABS-COMPANY' }
     };
 
     if (type === 'admins') {
@@ -36,10 +38,8 @@ export async function GET(req: NextRequest) {
       matchQuery.sponsorId = 'ABS-COMPANY';
     } else if (type === 'active') {
       matchQuery.isSubscriptionActive = true;
-      matchQuery.memberId = { $ne: 'ABS-COMPANY' };
     } else if (type === 'free') {
       matchQuery.isSubscriptionActive = false;
-      matchQuery.memberId = { $ne: 'ABS-COMPANY' };
     } else if (type === 'ranks') {
       matchQuery.rank = { $nin: ['user', null, ''] };
     }
@@ -49,6 +49,26 @@ export async function GET(req: NextRequest) {
       matchQuery.isSubscriptionActive = true;
     } else if (statusFilter === 'free') {
       matchQuery.isSubscriptionActive = false;
+    }
+
+    // Explicit Wallet Filter
+    if (walletFilter === 'deposit') {
+      matchQuery.depositWallet = { $gt: 0 };
+    } else if (walletFilter === 'bonus') {
+      matchQuery.bonusWallet = { $gt: 0 };
+    } else if (walletFilter === 'withdrawal') {
+      matchQuery.withdrawalWallet = { $gt: 0 };
+    } else if (walletFilter === 'any') {
+      matchQuery.$and = [
+        ...(matchQuery.$and || []),
+        {
+          $or: [
+            { depositWallet: { $gt: 0 } },
+            { bonusWallet: { $gt: 0 } },
+            { withdrawalWallet: { $gt: 0 } },
+          ],
+        },
+      ];
     }
 
     // Explicit Role Filter
@@ -61,12 +81,17 @@ export async function GET(req: NextRequest) {
     // Explicit Rank Filter
     if (rankFilter && rankFilter !== 'all') {
       if (rankFilter === 'General' || rankFilter === 'user') {
-        matchQuery.$or = [
-          { rank: 'user' },
-          { rank: 'General' },
-          { rank: null },
-          { rank: '' },
-          { rank: { $exists: false } }
+        matchQuery.$and = [
+          ...(matchQuery.$and || []),
+          {
+            $or: [
+              { rank: 'user' },
+              { rank: 'General' },
+              { rank: null },
+              { rank: '' },
+              { rank: { $exists: false } }
+            ],
+          },
         ];
       } else {
         matchQuery.rank = rankFilter;
@@ -81,12 +106,7 @@ export async function GET(req: NextRequest) {
         { memberId: { $regex: search, $options: 'i' } },
         { sponsorId: { $regex: search, $options: 'i' } },
       ];
-      if (matchQuery.$or) {
-        matchQuery.$and = [{ $or: matchQuery.$or }, { $or: searchOr }];
-        delete matchQuery.$or;
-      } else {
-        matchQuery.$or = searchOr;
-      }
+      matchQuery.$and = [...(matchQuery.$and || []), { $or: searchOr }];
     }
     const totalCount = await User.countDocuments(matchQuery);
 
@@ -96,6 +116,12 @@ export async function GET(req: NextRequest) {
       sortStage = { createdAt: 1 };
     } else if (sortBy === 'name_asc') {
       sortStage = { name: 1 };
+    } else if (sortBy === 'deposit_desc') {
+      sortStage = { depositWallet: -1, createdAt: -1 };
+    } else if (sortBy === 'bonus_desc') {
+      sortStage = { bonusWallet: -1, createdAt: -1 };
+    } else if (sortBy === 'withdrawal_desc') {
+      sortStage = { withdrawalWallet: -1, createdAt: -1 };
     }
 
     const isOrderSort = sortBy === 'orders_desc' || sortBy === 'spent_desc';
