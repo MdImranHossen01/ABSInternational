@@ -67,7 +67,7 @@ jobs:
                 container_name: absinternational-app
                 restart: unless-stopped
                 ports:
-                  - "3002:3000"
+                  - "3015:3000"
                 environment:
                   - NODE_OPTIONS=--max-old-space-size=125
                 env_file:
