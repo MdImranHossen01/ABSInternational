@@ -6,6 +6,8 @@ import connectToDatabase from '@/lib/db';
 import Category from '@/models/Category';
 import Product from '@/models/Product';
 import { auth } from '@/auth';
+import { deleteFromR2 } from '@/lib/r2';
+import { purgeCloudflareCache } from '@/lib/cloudflareCache';
 
 // GET a single category
 export async function GET(
@@ -61,6 +63,11 @@ export async function PUT(
     await connectToDatabase();
 
     const query = mongoose.Types.ObjectId.isValid(slug) ? { _id: slug } : { slug };
+    const existingCategory = await Category.findOne(query);
+    if (!existingCategory) {
+      return NextResponse.json({ message: 'Category not found' }, { status: 404 });
+    }
+
     const updatedCategory = await Category.findOneAndUpdate(
       query,
       { $set: updateData },
@@ -71,8 +78,18 @@ export async function PUT(
       return NextResponse.json({ message: 'Category not found' }, { status: 404 });
     }
 
+    // Clean up old category image from R2 if image was changed
+    if (existingCategory.image && updateData.image && existingCategory.image !== updateData.image) {
+      deleteFromR2(existingCategory.image).catch((err) =>
+        console.error('Failed to delete old category image from R2:', err)
+      );
+    }
+
     await revalidateTag('categories', 'max');
     revalidatePath('/');
+    purgeCloudflareCache().catch((err) =>
+      console.error('Failed to purge Cloudflare cache on category update:', err)
+    );
 
     return NextResponse.json(updatedCategory);
   } catch (error) {
@@ -123,6 +140,18 @@ export async function DELETE(
 
         await Category.findOneAndDelete({ _id: category._id }, { session: dbSession });
       });
+
+      // Delete category image from Cloudflare R2
+      if (category.image) {
+        deleteFromR2(category.image).catch((err) =>
+          console.error('Failed to delete category image from R2:', err)
+        );
+      }
+
+      // Purge Cloudflare cache
+      purgeCloudflareCache().catch((err) =>
+        console.error('Failed to purge Cloudflare cache on category delete:', err)
+      );
 
       try {
         await revalidateTag('categories', 'max');

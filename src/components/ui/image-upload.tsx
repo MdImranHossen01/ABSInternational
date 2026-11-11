@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Upload, X, Loader2, Image as ImageIcon, User } from 'lucide-react';
-import { uploadToImgBB } from '@/lib/upload';
+import { uploadImageToR2 } from '@/lib/upload';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -18,9 +18,23 @@ interface ImageUploadProps {
   iconClassName?: string;
   compact?: boolean;
   aspect?: "square" | "video" | "banner" | "circle";
+  folder?: string;
+  maxWidthOrHeight?: number;
+  targetMaxKB?: number;
 }
 
-export function ImageUpload({ onUpload, value, label, className, iconClassName, compact, aspect = "banner" }: ImageUploadProps) {
+export function ImageUpload({ 
+  onUpload, 
+  value, 
+  label, 
+  className, 
+  iconClassName, 
+  compact, 
+  aspect = "banner",
+  folder,
+  maxWidthOrHeight,
+  targetMaxKB
+}: ImageUploadProps) {
   const [loading, setLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const generatedId = useId();
@@ -43,9 +57,30 @@ export function ImageUpload({ onUpload, value, label, className, iconClassName, 
       return;
     }
 
+    // 1 MB File Size Guard: Disallow any image over 1 MB
+    const MAX_ALLOWED_BYTES = 1 * 1024 * 1024; // 1 MB
+    if (file.size > MAX_ALLOWED_BYTES) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      toast.error(`Image size cannot exceed 1 MB! Your file is ${sizeMB} MB. Please choose an image under 1 MB.`);
+      if ('target' in e && 'value' in e.target) {
+        (e.target as any).value = '';
+      }
+      setIsDragging(false);
+      return;
+    }
+
     setLoading(true);
     try {
-      const url = await uploadToImgBB(file);
+      const isBanner = folder === 'banners' || (!compact && aspect === 'banner' && folder !== 'products');
+      const uploadFolder = folder || (isBanner ? 'banners' : 'products');
+      const maxDim = maxWidthOrHeight ?? (isBanner ? 2100 : 1200);
+      const maxKB = targetMaxKB ?? (isBanner ? 400 : 150);
+
+      const url = await uploadImageToR2(file, {
+        folder: uploadFolder,
+        maxWidthOrHeight: maxDim,
+        targetMaxKB: maxKB,
+      });
       onUpload(url);
       toast.success('Image uploaded successfully');
     } catch (error: any) {
@@ -75,9 +110,9 @@ export function ImageUpload({ onUpload, value, label, className, iconClassName, 
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleFileChange}
             className={cn(
-              "relative flex flex-col items-center justify-center w-full h-full rounded-full border-2 border-dashed transition-all duration-300 overflow-hidden bg-emerald-50/10 hover:bg-emerald-50/20 cursor-pointer",
+              "relative flex flex-col items-center justify-center w-full h-full rounded-full border-2 border-dashed transition-all duration-300 overflow-hidden bg-primary/5 hover:bg-primary/10 cursor-pointer",
               isDragging 
-                ? "border-primary bg-primary/5 scale-[0.99]" 
+                ? "border-primary bg-primary/10 scale-[0.99]" 
                 : "border-primary/40 hover:border-primary hover:shadow-xl hover:shadow-primary/5",
               loading && "opacity-70 cursor-not-allowed"
             )}
@@ -96,7 +131,7 @@ export function ImageUpload({ onUpload, value, label, className, iconClassName, 
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center text-center gap-1">
-                <div className={cn("rounded-full bg-emerald-50 p-1 text-primary", iconClassName)}>
+                <div className={cn("rounded-full bg-primary/10 p-1 text-primary", iconClassName)}>
                   <User className="h-8 w-8 text-primary" />
                 </div>
                 <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary">Upload</span>
@@ -116,25 +151,22 @@ export function ImageUpload({ onUpload, value, label, className, iconClassName, 
           {value && !loading && (
             <button
               type="button"
-              className="absolute -top-1 -right-1 h-6 w-6 rounded-full bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition-all shadow-md flex items-center justify-center border border-white z-10"
+              className="absolute -top-1 -right-1 h-6 w-6 rounded-full bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-all shadow-md flex items-center justify-center border border-white z-10"
               onClick={removeImage}
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-3 w-3" />
             </button>
           )}
         </div>
-        {label && (
-          <span className="text-xs font-bold uppercase tracking-wider text-primary">
-            {label}
-          </span>
-        )}
+        {label && <p className="text-xs font-semibold text-muted-foreground">{label}</p>}
+        <p className="text-[10px] text-muted-foreground uppercase font-medium">PNG, JPG or WEBP (Max 1MB)</p>
       </div>
     );
   }
 
   return (
-    <div className={cn("w-full", !compact && "space-y-3")}>
-      {label && !compact && <Label className="text-xs font-bold uppercase tracking-widest text-gray-500">{label}</Label>}
+    <div className={cn("space-y-2 w-full", compact && "space-y-0 h-full")}>
+      {label && <Label className="text-sm font-semibold">{label}</Label>}
       
       <div className="relative group h-full w-full">
         <Label
@@ -147,7 +179,7 @@ export function ImageUpload({ onUpload, value, label, className, iconClassName, 
             compact ? "h-full min-h-0 rounded-lg border-0 bg-transparent" : "min-h-[120px] rounded-2xl border-2 border-dashed",
             isDragging 
               ? "border-primary bg-primary/5 scale-[0.99]" 
-              : !compact && "border-gray-200 bg-gray-50/50 hover:bg-white hover:border-primary hover:shadow-xl hover:shadow-primary/5",
+              : !compact && "border-border bg-muted/30 hover:bg-background hover:border-primary hover:shadow-xl hover:shadow-primary/5",
             loading && "opacity-70 cursor-not-allowed",
             className
           )}
@@ -160,7 +192,7 @@ export function ImageUpload({ onUpload, value, label, className, iconClassName, 
           ) : value ? (
             <div className={cn("flex flex-col items-center w-full", compact ? "p-0 h-full" : "p-4")}>
                <div className={cn(
-                  "relative rounded-xl overflow-hidden border-2 border-white shadow-xl group/img transition-all duration-500",
+                  "relative rounded-xl overflow-hidden border-2 border-background shadow-xl group/img transition-all duration-500",
                   compact ? "h-full w-full rounded-none border-0 shadow-none" : "w-full max-h-[400px]",
                   !compact && aspect === "banner" && "aspect-[21/9]",
                   !compact && aspect === "video" && "aspect-video",
@@ -175,16 +207,16 @@ export function ImageUpload({ onUpload, value, label, className, iconClassName, 
                   </div>
                </div>
                {!compact && (
-                 <div className="flex items-center justify-between w-full mt-4 bg-white/50 p-3 rounded-2xl border border-gray-100 shadow-sm">
+                 <div className="flex items-center justify-between w-full mt-4 bg-muted/40 p-3 rounded-2xl border border-border shadow-sm">
                   <div className="flex-1 min-w-0 pr-4">
-                      <p className="text-sm font-bold text-gray-900 truncate">Image Selected</p>
-                      <p className="text-[10px] text-gray-500 uppercase tracking-tight font-medium">Professional Quality • PNG, JPG or WEBP</p>
+                      <p className="text-sm font-bold text-foreground truncate">Image Selected</p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-tight font-medium">Professional Quality • PNG, JPG or WEBP</p>
                   </div>
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all active:scale-90 shadow-sm"
+                    className="h-10 w-10 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-all active:scale-90 shadow-sm"
                     onClick={removeImage}
                   >
                     <X className="h-5 w-5" />
@@ -195,7 +227,7 @@ export function ImageUpload({ onUpload, value, label, className, iconClassName, 
           ) : (
             <div className={cn("flex flex-col items-center text-center", compact ? "gap-1 p-0" : "gap-2 p-6")}>
               <div className={cn(
-                "rounded-2xl bg-white shadow-sm border border-gray-100 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500",
+                "rounded-2xl bg-background shadow-sm border border-border group-hover:scale-110 group-hover:rotate-3 transition-all duration-500",
                 compact ? "p-1.5 rounded-lg" : "p-3",
                 iconClassName
               )}>
@@ -203,11 +235,11 @@ export function ImageUpload({ onUpload, value, label, className, iconClassName, 
               </div>
               {!compact && (
                 <div className="space-y-1">
-                  <p className="text-sm font-bold text-gray-900">
+                  <p className="text-sm font-bold text-foreground">
                     Click to <span className="text-primary underline underline-offset-4">upload</span>
                   </p>
-                  <p className="text-[10px] text-gray-400 uppercase font-medium text-center max-w-full px-2 break-words">
-                    PNG, JPG or WEBP (Max 5MB)
+                  <p className="text-[10px] text-muted-foreground uppercase font-medium text-center max-w-full px-2 break-words">
+                    PNG, JPG or WEBP (Max 1MB)
                   </p>
                 </div>
               )}
@@ -227,6 +259,3 @@ export function ImageUpload({ onUpload, value, label, className, iconClassName, 
     </div>
   );
 }
-
-
-

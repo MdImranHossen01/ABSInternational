@@ -3,6 +3,8 @@ import { revalidateTag, revalidatePath } from 'next/cache';
 import connectToDatabase from '@/lib/db';
 import Brand from '@/models/Brand';
 import { auth } from '@/auth';
+import { deleteFromR2 } from '@/lib/r2';
+import { purgeCloudflareCache } from '@/lib/cloudflareCache';
 
 export async function GET(
   req: NextRequest,
@@ -49,6 +51,8 @@ export async function PUT(
       }
     }
 
+    const oldImage = brand.image;
+
     if (name !== undefined) brand.name = name;
     if (slug !== undefined) brand.slug = slug;
     if (image !== undefined) brand.image = image;
@@ -56,9 +60,19 @@ export async function PUT(
 
     await brand.save();
 
+    // Clean up old brand image from R2 if image was changed
+    if (oldImage && image && oldImage !== image) {
+      deleteFromR2(oldImage).catch((err) =>
+        console.error('Failed to delete old brand image from R2:', err)
+      );
+    }
+
     try {
       revalidateTag('brands', 'max');
       revalidatePath('/');
+      purgeCloudflareCache().catch((err) =>
+        console.error('Failed to purge Cloudflare cache on brand update:', err)
+      );
     } catch (e) {
       // Ignore cache revalidation errors
     }
@@ -88,9 +102,18 @@ export async function DELETE(
       return NextResponse.json({ message: 'Brand not found' }, { status: 404 });
     }
 
+    if (deleted.image) {
+      deleteFromR2(deleted.image).catch((err) =>
+        console.error('Failed to delete brand image from R2:', err)
+      );
+    }
+
     try {
       revalidateTag('brands', 'max');
       revalidatePath('/');
+      purgeCloudflareCache().catch((err) =>
+        console.error('Failed to purge Cloudflare cache on brand delete:', err)
+      );
     } catch (e) {
       // Ignore cache revalidation errors
     }

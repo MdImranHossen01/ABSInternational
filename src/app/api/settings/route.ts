@@ -3,6 +3,7 @@ import { revalidateTag, revalidatePath } from 'next/cache';
 import connectToDatabase from '@/lib/db';
 import GlobalSettings from '@/models/GlobalSettings';
 import { auth } from '@/auth';
+import { purgeCloudflareCache } from '@/lib/cloudflareCache';
 
 // Helper to return settings without masking sensitive data or fallback to environment variables
 const getMaskedSettings = (raw: any, masked: any) => ({
@@ -214,6 +215,9 @@ export async function POST(req: NextRequest) {
     revalidatePath('/', 'layout');
     revalidatePath('/shop', 'page');
     revalidatePath('/blog', 'page');
+    purgeCloudflareCache().catch((err) =>
+      console.error('Failed to purge Cloudflare cache on settings update:', err)
+    );
 
     // Mask sensitive response data for the return
     const updatedRaw = settings.toObject({ getters: false });

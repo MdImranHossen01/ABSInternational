@@ -7,6 +7,8 @@ import Product from '@/models/Product';
 import { auth } from '@/auth';
 import { generateUniqueSlug } from '@/lib/slugify-server';
 import { CACHE_TAGS } from '@/lib/data-fetching';
+import { deleteMultipleFromR2 } from '@/lib/r2';
+import { purgeCloudflareCache } from '@/lib/cloudflareCache';
 
 // GET a single product
 export async function GET(
@@ -126,6 +128,38 @@ export async function PUT(
       { new: true, runValidators: true }
     ).populate('categories').populate('brand', 'name image slug');
 
+    // Clean up any removed images from Cloudflare R2
+    try {
+      const oldImages: string[] = [];
+      if (Array.isArray(existingProduct.images)) oldImages.push(...existingProduct.images);
+      if (Array.isArray(existingProduct.variants)) {
+        existingProduct.variants.forEach((v: any) => {
+          if (Array.isArray(v.images)) oldImages.push(...v.images);
+          if (v.image) oldImages.push(v.image);
+        });
+      }
+
+      const newImages = new Set<string>();
+      if (updatedProduct && Array.isArray(updatedProduct.images)) {
+        updatedProduct.images.forEach((img: string) => newImages.add(img));
+      }
+      if (updatedProduct && Array.isArray(updatedProduct.variants)) {
+        updatedProduct.variants.forEach((v: any) => {
+          if (Array.isArray(v.images)) v.images.forEach((img: string) => newImages.add(img));
+          if (v.image) newImages.add(v.image);
+        });
+      }
+
+      const removedImages = oldImages.filter((img) => !newImages.has(img));
+      if (removedImages.length > 0) {
+        deleteMultipleFromR2(removedImages).catch((err) =>
+          console.error('Failed to clean up removed product images from R2:', err)
+        );
+      }
+    } catch (cleanErr) {
+      console.warn('Error checking removed product images:', cleanErr);
+    }
+
     try {
       revalidateTag(CACHE_TAGS.products, 'max');
       if (existingProduct.slug) {
@@ -136,6 +170,9 @@ export async function PUT(
       }
       revalidatePath('/shop');
       revalidatePath('/');
+      purgeCloudflareCache().catch((err) =>
+        console.error('Failed to purge Cloudflare cache on product update:', err)
+      );
     } catch (e) {
       // Ignore cache revalidation errors
     }
@@ -178,6 +215,24 @@ export async function DELETE(
       return NextResponse.json({ message: 'Product not found' }, { status: 404 });
     }
 
+    // Collect all image URLs for cleanup from Cloudflare R2
+    const imagesToDelete: string[] = [];
+    if (Array.isArray(deletedProduct.images)) {
+      imagesToDelete.push(...deletedProduct.images);
+    }
+    if (Array.isArray(deletedProduct.variants)) {
+      deletedProduct.variants.forEach((v: any) => {
+        if (Array.isArray(v.images)) imagesToDelete.push(...v.images);
+        if (v.image) imagesToDelete.push(v.image);
+      });
+    }
+
+    if (imagesToDelete.length > 0) {
+      deleteMultipleFromR2(imagesToDelete).catch((err) =>
+        console.error('Failed to delete product images from R2:', err)
+      );
+    }
+
     try {
       revalidateTag(CACHE_TAGS.products, 'max');
       if (deletedProduct.slug) {
@@ -185,6 +240,9 @@ export async function DELETE(
       }
       revalidatePath('/shop');
       revalidatePath('/');
+      purgeCloudflareCache().catch((err) =>
+        console.error('Failed to purge Cloudflare cache on product delete:', err)
+      );
     } catch (e) {
       // Ignore cache revalidation errors
     }

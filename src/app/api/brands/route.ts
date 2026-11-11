@@ -3,6 +3,7 @@ import { revalidateTag, revalidatePath } from 'next/cache';
 import connectToDatabase from '@/lib/db';
 import Brand from '@/models/Brand';
 import { auth } from '@/auth';
+import { purgeCloudflareCache } from '@/lib/cloudflareCache';
 
 // GET all brands
 export async function GET(req: NextRequest) {
@@ -54,6 +55,9 @@ export async function POST(req: NextRequest) {
     try {
       revalidateTag('brands', 'max');
       revalidatePath('/');
+      purgeCloudflareCache().catch((err) =>
+        console.error('Failed to purge Cloudflare cache on brand create:', err)
+      );
     } catch (e) {
       // Ignore cache revalidation errors
     }
