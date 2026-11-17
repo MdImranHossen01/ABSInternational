@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose, { Document, Model, Schema } from 'mongoose';
 
+import './Category';
+import './Brand';
 export interface IProduct extends Document {
   name: string;
   slug: string;
@@ -160,10 +162,6 @@ ProductSchema.pre('validate', function(this: any) {
   }
 });
 
-if (mongoose.models && mongoose.models.Product) {
-  delete (mongoose.models as any).Product;
-}
-
-const Product: Model<IProduct> = mongoose.model<IProduct>('Product', ProductSchema);
+const Product: Model<IProduct> = mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
 
 export default Product;
