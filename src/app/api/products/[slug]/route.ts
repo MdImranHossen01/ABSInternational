@@ -170,7 +170,7 @@ export async function PUT(
       }
       revalidatePath('/shop');
       revalidatePath('/');
-      purgeCloudflareCache().catch((err) =>
+      await purgeCloudflareCache().catch((err) =>
         console.error('Failed to purge Cloudflare cache on product update:', err)
       );
     } catch (e) {
@@ -240,7 +240,7 @@ export async function DELETE(
       }
       revalidatePath('/shop');
       revalidatePath('/');
-      purgeCloudflareCache().catch((err) =>
+      await purgeCloudflareCache().catch((err) =>
         console.error('Failed to purge Cloudflare cache on product delete:', err)
       );
     } catch (e) {

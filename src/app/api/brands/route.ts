@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     try {
       revalidateTag('brands', 'max');
       revalidatePath('/');
-      purgeCloudflareCache().catch((err) =>
+      await purgeCloudflareCache().catch((err) =>
         console.error('Failed to purge Cloudflare cache on brand create:', err)
       );
     } catch (e) {

@@ -215,7 +215,7 @@ export async function POST(req: NextRequest) {
     revalidatePath('/', 'layout');
     revalidatePath('/shop', 'page');
     revalidatePath('/blog', 'page');
-    purgeCloudflareCache().catch((err) =>
+    await purgeCloudflareCache().catch((err) =>
       console.error('Failed to purge Cloudflare cache on settings update:', err)
     );
 

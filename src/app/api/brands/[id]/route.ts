@@ -70,7 +70,7 @@ export async function PUT(
     try {
       revalidateTag('brands', 'max');
       revalidatePath('/');
-      purgeCloudflareCache().catch((err) =>
+      await purgeCloudflareCache().catch((err) =>
         console.error('Failed to purge Cloudflare cache on brand update:', err)
       );
     } catch (e) {
@@ -111,7 +111,7 @@ export async function DELETE(
     try {
       revalidateTag('brands', 'max');
       revalidatePath('/');
-      purgeCloudflareCache().catch((err) =>
+      await purgeCloudflareCache().catch((err) =>
         console.error('Failed to purge Cloudflare cache on brand delete:', err)
       );
     } catch (e) {
