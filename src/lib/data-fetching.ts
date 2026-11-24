@@ -197,7 +197,7 @@ export const getCachedSettings = () => {
       return serialize(settings);
     },
     ['global-settings'],
-    { tags: [CACHE_TAGS.settings], revalidate: 3600 }
+    { tags: [CACHE_TAGS.settings], revalidate: 31536000 }
   )();
 };
 

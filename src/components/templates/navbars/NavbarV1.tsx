@@ -71,7 +71,9 @@ export default function Navbar() {
 
   useEffect(() => { setMounted(true); }, []);
 
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>(() =>
+    Array.isArray(settings?.categories) ? settings.categories.filter((c: any) => c.isActive) : []
+  );
   const [profile, setProfile] = useState<any>(null);
   const [copiedMemberId, setCopiedMemberId] = useState(false);
 
@@ -90,6 +92,7 @@ export default function Navbar() {
   useEffect(() => {
     const controller = new AbortController();
     async function fetchCats() {
+      if (Array.isArray(settings?.categories)) { setCategories(settings.categories.filter((c: any) => c.isActive)); return; }
       try {
         const res = await fetch('/api/categories', { signal: controller.signal });
         if (res.ok) {
