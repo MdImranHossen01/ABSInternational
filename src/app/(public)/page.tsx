@@ -19,6 +19,8 @@ import HeroBanner from '@/components/storefront/HeroBanner';
 import { AtAGlance } from '@/components/storefront/AtAGlance';
 import { CounterSection } from '@/components/storefront/CounterSection';
 
+export const revalidate = 31536000;
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getCachedSettings();
   const brandName = settings?.brandName || 'ABS International';

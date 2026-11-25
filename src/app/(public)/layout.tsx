@@ -5,11 +5,8 @@ import { ScrollToTop } from '@/components/layout/ScrollToTop';
 import { MobileBottomNavbar } from '@/components/layout/MobileBottomNavbar';
 import { FloatingActions } from '@/components/layout/FloatingActions';
 import SubscriptionBlocker from '../components/SubscriptionBlocker';
-import { auth } from '@/auth';
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth();
-  const isSuperAdmin = (session?.user as any)?.role === 'super_admin';
 
   let settings = null;
   try {
@@ -24,7 +21,7 @@ export default async function PublicLayout({ children }: { children: React.React
   const isExpired = sub ? (sub.status !== 'Active' || (sub.expiryDate && new Date(sub.expiryDate).getTime() < new Date().getTime())) : false;
 
   // Only show blocker if expired and NOT a super admin
-  const showBlocker = isExpired && !isSuperAdmin;
+  const showBlocker = isExpired;
 
   const marqueeText = settings?.marqueeText || 'Welcome to ABS International! Free shipping on orders over $500.';
   const ui = {
