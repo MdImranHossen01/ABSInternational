@@ -1,21 +1,21 @@
 import dynamic from 'next/dynamic';
 
 // --- FOOTERS ---
-import FooterV1 from './footers/FooterV1';
+const FooterV1 = dynamic(() => import('./footers/FooterV1'));
 
 export const FooterSelector = ({ style }: { style: string }) => {
   return <FooterV1 />;
 };
 
 // --- PRODUCT DETAILS ---
-import ProductDetailsV1 from './product-details/ProductDetailsV1';
+const ProductDetailsV1 = dynamic(() => import('./product-details/ProductDetailsV1'));
 
 export const ProductDetailsSelector = ({ style, product }: { style: string, product: any }) => {
   return <ProductDetailsV1 product={product} />;
 };
 
 // --- BLOG DETAILS ---
-import BlogDetailsV1 from './blog-details/BlogDetailsV1';
+const BlogDetailsV1 = dynamic(() => import('./blog-details/BlogDetailsV1'));
 
 export const BlogDetailsSelector = ({ style, blog, readingTime }: { style: string, blog: any, readingTime: number }) => {
   return <BlogDetailsV1 blog={blog} readingTime={readingTime} />;
