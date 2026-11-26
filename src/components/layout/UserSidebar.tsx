@@ -128,7 +128,7 @@ export function UserSidebar() {
     <Sidebar collapsible="icon" className="border-r border-slate-800/80 bg-[#0a152e] text-slate-100">
       {/* Header Logo & Mobile Close */}
       <SidebarHeader className="border-b border-slate-800/80 h-14 lg:h-[60px] px-3.5 flex flex-row items-center justify-between overflow-hidden bg-[#0a152e]">
-        <Link href="/" onClick={closeMobileSidebar} className="flex items-center">
+        <Link prefetch={false} href="/" onClick={closeMobileSidebar} className="flex items-center">
           <Logo 
             imageClassName="size-7 shrink-0 rounded-md" 
             textClassName="!text-white font-black text-sm tracking-tight whitespace-nowrap leading-none" 
@@ -160,7 +160,7 @@ export function UserSidebar() {
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
-                      render={<Link href={item.href} onClick={closeMobileSidebar} />}
+                      render={<Link prefetch={false} href={item.href} onClick={closeMobileSidebar} />}
                       onClick={closeMobileSidebar}
                       isActive={isActive}
                       tooltip={item.title}

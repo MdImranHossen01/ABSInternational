@@ -317,7 +317,7 @@ function NavMain({ items, pathname, role }: { items: typeof data.navMain; pathna
                       return (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton
-                            render={<Link href={subItem.url} onClick={handleLinkClick} />}
+                            render={<Link prefetch={false} href={subItem.url} onClick={handleLinkClick} />}
                             isActive={isSubActive}
                             className={`h-8 rounded-lg px-3 text-xs transition-all duration-150 cursor-pointer ${
                               isSubActive
@@ -360,7 +360,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props} className="border-r border-slate-800/80 bg-[#0a152e] text-slate-100">
       <SidebarHeader className="border-b border-slate-800/80 h-14 lg:h-[60px] px-3.5 flex flex-row items-center justify-between overflow-hidden bg-[#0a152e]">
-        <Link href="/" onClick={closeMobileSidebar} className="flex items-center">
+        <Link prefetch={false} href="/" onClick={closeMobileSidebar} className="flex items-center">
           <Logo
             imageClassName="size-7 shrink-0 rounded-md"
             textClassName="!text-white font-black text-sm tracking-tight whitespace-nowrap leading-none"

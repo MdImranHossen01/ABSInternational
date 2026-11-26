@@ -90,10 +90,8 @@ export default function UserTopbar() {
       }
     }
     fetchUserData();
-    const interval = setInterval(fetchUserData, 45000);
     return () => {
       isMounted = false;
-      clearInterval(interval);
     };
   }, [session?.user]);
 

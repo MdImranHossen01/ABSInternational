@@ -82,8 +82,6 @@ export default function AdminNotificationPopover() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 30000); // Poll every 30s
-    return () => clearInterval(interval);
   }, [fetchData]);
 
   const markAllAsRead = async () => {
@@ -161,7 +159,7 @@ export default function AdminNotificationPopover() {
   const totalBadgeCount = queues.totalQueueActions + unreadCount;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(nextOpen) => { setOpen(nextOpen); if (nextOpen) fetchData(); }}>
       <PopoverTrigger
         nativeButton={true}
         render={
