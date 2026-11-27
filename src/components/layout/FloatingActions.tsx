@@ -18,7 +18,7 @@ export function FloatingActions() {
   return (
     <div className="fixed right-0 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-0 shadow-2xl">
       {/* Wishlist */}
-      <Link
+      <Link prefetch={false}
         href="/dashboard/wishlist"
         aria-label="Wishlist"
         className="relative flex flex-col items-center justify-center w-9 h-10 md:w-12 md:h-14 bg-card border border-border border-r-0 rounded-tl-2xl hover:bg-primary hover:text-primary-foreground transition-all duration-300 group"

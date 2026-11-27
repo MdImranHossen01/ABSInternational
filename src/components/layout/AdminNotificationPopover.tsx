@@ -212,7 +212,7 @@ export default function AdminNotificationPopover() {
             Queues Requiring Action
           </p>
           <div className="grid grid-cols-2 gap-2 text-xs">
-            <Link
+            <Link prefetch={false}
               href="/admin/orders"
               onClick={() => setOpen(false)}
               className="flex items-center justify-between p-2 rounded-lg bg-card hover:bg-primary/[0.06] border border-border/60 transition-colors"
@@ -228,7 +228,7 @@ export default function AdminNotificationPopover() {
               </Badge>
             </Link>
 
-            <Link
+            <Link prefetch={false}
               href="/admin/withdrawals"
               onClick={() => setOpen(false)}
               className="flex items-center justify-between p-2 rounded-lg bg-card hover:bg-primary/[0.06] border border-border/60 transition-colors"
@@ -244,7 +244,7 @@ export default function AdminNotificationPopover() {
               </Badge>
             </Link>
 
-            <Link
+            <Link prefetch={false}
               href="/admin/deposits"
               onClick={() => setOpen(false)}
               className="flex items-center justify-between p-2 rounded-lg bg-card hover:bg-primary/[0.06] border border-border/60 transition-colors"
@@ -260,7 +260,7 @@ export default function AdminNotificationPopover() {
               </Badge>
             </Link>
 
-            <Link
+            <Link prefetch={false}
               href="/admin/kyc"
               onClick={() => setOpen(false)}
               className="flex items-center justify-between p-2 rounded-lg bg-card hover:bg-primary/[0.06] border border-border/60 transition-colors"
@@ -278,7 +278,7 @@ export default function AdminNotificationPopover() {
           </div>
 
           {queues.lowStock > 0 && (
-            <Link
+            <Link prefetch={false}
               href="/admin/products"
               onClick={() => setOpen(false)}
               className="mt-2 flex items-center justify-between p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-200 text-xs font-semibold"
@@ -333,7 +333,7 @@ export default function AdminNotificationPopover() {
 
         {/* Footer */}
         <div className="p-2.5 bg-muted/40 border-t text-center">
-          <Link
+          <Link prefetch={false}
             href="/admin/notifications"
             onClick={() => setOpen(false)}
             className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-primary hover:underline"

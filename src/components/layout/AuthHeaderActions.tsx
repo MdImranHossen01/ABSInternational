@@ -92,14 +92,14 @@ export function AuthHeaderActions() {
               {/* Role Based Navigation */}
               {((session.user as any)?.role === 'super_admin' || (session.user as any)?.role === 'admin' || (session.user as any)?.role === 'manager') && (
                 <DropdownMenuItem asChild>
-                  <Link href="/admin/dashboard" className="cursor-pointer flex items-center gap-2 hover:bg-[#dfb248]/15 hover:text-[#dfb248] text-slate-200">
+                  <Link prefetch={false} href="/admin/dashboard" className="cursor-pointer flex items-center gap-2 hover:bg-[#dfb248]/15 hover:text-[#dfb248] text-slate-200">
                     <LayoutDashboard className="h-4 w-4 text-[#dfb248]" /> Admin Dashboard
                   </Link>
                 </DropdownMenuItem>
               )}
 
               <DropdownMenuItem asChild>
-                <Link href="/dashboard" className="cursor-pointer flex items-center gap-2 hover:bg-[#dfb248]/15 hover:text-[#dfb248] text-slate-200">
+                <Link prefetch={false} href="/dashboard" className="cursor-pointer flex items-center gap-2 hover:bg-[#dfb248]/15 hover:text-[#dfb248] text-slate-200">
                   <LayoutDashboard className="h-4 w-4 text-[#dfb248]" /> User Dashboard
                 </Link>
               </DropdownMenuItem>
@@ -127,13 +127,13 @@ export function AuthHeaderActions() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 p-1.5 shadow-2xl border border-[#dfb248]/30 bg-[#12141a] text-slate-100 backdrop-blur-md">
             <DropdownMenuItem asChild>
-              <Link href="/login" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-[#dfb248]/15 hover:text-[#dfb248] text-slate-200 transition-colors">
+              <Link prefetch={false} href="/login" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-[#dfb248]/15 hover:text-[#dfb248] text-slate-200 transition-colors">
                 <LogIn className="h-4 w-4 text-[#dfb248]" />
                 <span>Login</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href="/register" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-[#dfb248]/15 hover:text-[#dfb248] text-slate-200 transition-colors">
+              <Link prefetch={false} href="/register" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-[#dfb248]/15 hover:text-[#dfb248] text-slate-200 transition-colors">
                 <UserPlus className="h-4 w-4 text-[#dfb248]" />
                 <span>Register</span>
               </Link>

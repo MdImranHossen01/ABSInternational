@@ -72,19 +72,19 @@ export default function AdminTopbar() {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
-                  <Link href="/admin/settings/profile">
+                  <Link prefetch={false} href="/admin/settings/profile">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="text-primary font-semibold">
+                  <Link prefetch={false} href="/dashboard" className="text-primary font-semibold">
                     <UserCheck className="mr-2 h-4 w-4 text-primary" />
                     <span>Personal Dashboard</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/register">
+                  <Link prefetch={false} href="/register">
                     <UserPlus className="mr-2 h-4 w-4" />
                     <span>Register</span>
                   </Link>

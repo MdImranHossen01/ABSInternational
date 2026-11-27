@@ -489,12 +489,12 @@ export default function Navbar() {
                         {(session.user as any)?.role === 'super_admin' && (
                           <>
                             <DropdownMenuItem asChild>
-                              <Link href="/admin/dashboard" className="cursor-pointer">
+                              <Link prefetch={false} href="/admin/dashboard" className="cursor-pointer">
                                 <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Dashboard
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                              <Link href="/admin/system-design" className="cursor-pointer">
+                              <Link prefetch={false} href="/admin/system-design" className="cursor-pointer">
                                 <Settings className="mr-2 h-4 w-4" /> Infrastructure & Marketing
                               </Link>
                             </DropdownMenuItem>
@@ -504,12 +504,12 @@ export default function Navbar() {
                         {(session.user as any)?.role === 'admin' && (
                           <>
                             <DropdownMenuItem asChild>
-                              <Link href="/admin/dashboard" className="cursor-pointer">
+                              <Link prefetch={false} href="/admin/dashboard" className="cursor-pointer">
                                 <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Dashboard
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                              <Link href="/admin/orders" className="cursor-pointer">
+                              <Link prefetch={false} href="/admin/orders" className="cursor-pointer">
                                 <Truck className="mr-2 h-4 w-4" /> Manage Orders
                               </Link>
                             </DropdownMenuItem>
@@ -519,7 +519,7 @@ export default function Navbar() {
                         {(session.user as any)?.role === 'user' && (
                           <>
                             <DropdownMenuItem asChild>
-                              <Link href="/dashboard" className="cursor-pointer">
+                              <Link prefetch={false} href="/dashboard" className="cursor-pointer">
                                 <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
                               </Link>
                             </DropdownMenuItem>
@@ -552,7 +552,7 @@ export default function Navbar() {
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem asChild>
-                          <Link href="/register" className="cursor-pointer">
+                          <Link prefetch={false} href="/register" className="cursor-pointer">
                             <UserPlus className="mr-2 h-4 w-4" /> Register
                           </Link>
                         </DropdownMenuItem>
@@ -575,13 +575,13 @@ export default function Navbar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 p-1.5 shadow-lg border">
                       <DropdownMenuItem asChild>
-                        <Link href="/login" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
+                        <Link prefetch={false} href="/login" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
                           <LogIn className="h-4 w-4 text-primary" />
                           <span>Login</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/register" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
+                        <Link prefetch={false} href="/register" className="flex items-center gap-2.5 font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
                           <UserPlus className="h-4 w-4 text-primary" />
                           <span>Register</span>
                         </Link>

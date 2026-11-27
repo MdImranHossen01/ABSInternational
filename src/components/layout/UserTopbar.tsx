@@ -120,7 +120,7 @@ export default function UserTopbar() {
 
       <div className="flex items-center gap-3">
 
-        <Link href="/dashboard/notifications">
+        <Link prefetch={false} href="/dashboard/notifications">
           <Button variant="ghost" size="icon" className="relative rounded-full" title="Notifications">
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
@@ -246,21 +246,21 @@ export default function UserTopbar() {
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/dashboard/profile">
+                <Link prefetch={false} href="/dashboard/profile">
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
               {isAdmin && !isImpersonated && (
                 <DropdownMenuItem asChild>
-                  <Link href="/admin/dashboard" className="text-amber-700 dark:text-amber-300 font-semibold">
+                  <Link prefetch={false} href="/admin/dashboard" className="text-amber-700 dark:text-amber-300 font-semibold">
                     <ShieldCheck className="mr-2 h-4 w-4 text-amber-600" />
                     <span>System Dashboard</span>
                   </Link>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem asChild>
-                <Link href="/register">
+                <Link prefetch={false} href="/register">
                   <UserPlus className="mr-2 h-4 w-4" />
                   <span>Register</span>
                 </Link>
